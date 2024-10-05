@@ -1,0 +1,180 @@
+/* No Nonsense Plain CSS */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Source Sans 3", sans-serif;
+  font-optical-sizing: auto;
+}
+
+#app {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template:
+    "header header" 60px
+    "ui-control canvas" 1fr
+    / 20% 1fr;
+}
+
+#app-2 {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template:
+    "header" 60px
+    "canvas2" 1fr
+    / 100%;
+}
+
+#header {
+  margin: 0;
+  padding: 10px 60px;
+  background-color: white;
+  grid-area: header;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.118);
+  z-index: 100;
+  vertical-align: middle;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#header > img {
+  width: 40px;
+  height: 40px;
+}
+
+#header span {
+  font-size: 1.5em;
+}
+
+#header button {
+  font-weight: 500;
+  color: #4460FF;
+  border: none;
+  cursor: pointer;
+  background-color: unset;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+#header a {
+  text-decoration: none;
+  color: #4460FF;
+}
+
+#header button::after {
+  content: "";
+  display: block;
+  border: 1px solid #4460FF;
+}
+
+#ui-control {
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid rgb(218, 218, 218);
+  grid-area: ui-control;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.118);
+  z-index: 99;
+}
+
+#canvas {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  /* border: 2px solid red; */
+  grid-area: canvas;
+}
+
+#canvas-2 {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  /* border: 2px solid red; */
+  grid-area: canvas2;
+}
+
+#canvas-2 canvas {
+  display: block;
+  vertical-align: middle;
+}
+
+#sub-canvas-left {
+  position: absolute;
+  /* border: 2px solid green; */
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+#sub-canvas-right {
+  position: absolute;
+  /* border: 2px solid yellow; */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  border-right: 1px solid black;
+}
+
+#sub-slider {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  background-color: #4460FF;
+  z-index: 100;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+#og-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+/**
+ * UI Controls
+ */
+
+.ui-control-card{
+  margin: 10px;
+  padding: 12px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.16);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.og-btn {
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8em;
+  background-color: #4460FF;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.16);
+}

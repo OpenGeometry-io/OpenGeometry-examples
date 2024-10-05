@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenGeometry Slider</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="OpenGeometry Map Slider">
+  <meta name="author" content="OpenGeometry">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./../resources/og-style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.168.0/build/three.module.js",
+        "OrbitControls": "https://unpkg.com/three@0.168.0/examples/jsm/controls/OrbitControls.js",
+        "ogMapScene": "./src/og-map-scene.js",
+        "ogPlaneScene": "./src/og-plane-scene.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app-2">
+    <div id="header">
+      <img src="https://opengeometry.io/images/ogLogoXL.png" alt="OpenGeometry Logo">
+      <span>OpenGeometry</span>
+      <div id="action-menu">
+        <button><a href="https://opengeometry.io/" target="_blank">SIGN UP</a></button>
+      </div>
+    </div>
+    <div id="canvas-2">
+      <div id="sub-canvas-left"></div>
+      <div id="sub-slider"></div>
+      <div id="sub-canvas-right"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as OG from './../resources/data/bundle.js';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'OrbitControls';
+    import * as ogMapScene from 'ogMapScene';
+    import * as ogPlaneScene from 'ogPlaneScene';
+
+    const openGeometry = new OG.OpenGeometry();
+    await openGeometry.setup();
+    
+    let leftCanvas, rightCanvas;
+    let camera, controls;
+    let mainContainer;
+
+    async function init(){
+      // const oPoly = new OPolygon();
+
+      // oPoly.addVertex(3.0,    -2.0, 48.0, );
+      // oPoly.addVertex(52.0,   -2.0, 8.0,  );
+      // oPoly.addVertex(99.0,   -2.0, 50.0, );
+      // oPoly.addVertex(138.0,  -2.0, 25.0, );
+      // oPoly.addVertex(175.0,  -2.0, 77.0, );
+      // oPoly.addVertex(131.0,  -2.0, 72.0, );
+      // oPoly.addVertex(111.0,  -2.0, 113.0,);
+      // oPoly.addVertex(72.0,   -2.0, 43.0, );
+      // oPoly.addVertex(26.0,   -2.0, 55.0, );
+      // oPoly.addVertex(29.0,   -2.0, 100.0,);
+
+      // // // Create Cube
+      // // oPoly.addVertex(2, 0, 2);
+      // // oPoly.addVertex(2, 0, 0);
+      // // oPoly.addVertex(0, 0, 0);
+      // // oPoly.addVertex(0, 0, 2);
+
+      // oPoly.generateMesh();
+
+      // // // take the extrude direction as well as the extrude distance
+      // const oPolyMesh = oPoly.extrude(15);
+      // console.log(oPolyMesh);
+
+      // const geometry = new THREE.BufferGeometry();
+      // geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(oPolyMesh), 3));
+      // geometry.computeVertexNormals();
+
+      // // each face should have different color
+      // const colors = new Float32Array(oPolyMesh.length);
+      // for (let i = 0; i < colors.length; i += 9) {
+      //   const r = Math.random();
+      //   const g = Math.random();
+      //   const b = Math.random();
+      //   colors[i] = r;
+      //   colors[i + 1] = g;
+      //   colors[i + 2] = b;
+      //   colors[i + 3] = r;
+      //   colors[i + 4] = g;
+      //   colors[i + 5] = b;
+      //   colors[i + 6] = r;
+      //   colors[i + 7] = g;
+      //   colors[i + 8] = b;
+      // }
+
+      // geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      // const material = new THREE.MeshPhongMaterial( {
+			// 		color: 0xffffff,
+			// 		flatShading: true,
+			// 		vertexColors: true,
+			// 		shininess: 0
+			// });
+      
+      let mainContainer = document.getElementById('canvas-2');
+
+      camera = new THREE.PerspectiveCamera(75, mainContainer.clientWidth/mainContainer.clientHeight, 0.1, 1000);
+
+      leftCanvas = document.getElementById('sub-canvas-left');
+      rightCanvas = document.getElementById('sub-canvas-right');
+
+      ogMapScene.init(THREE, OG, rightCanvas, mainContainer);
+      ogPlaneScene.init(THREE, OG, leftCanvas, mainContainer);
+
+      // one loop for both renderers
+      ogMapScene.renderer.setAnimationLoop(animate);
+
+      camera.position.z = 15;
+      camera.position.y = 12;
+      // camera.position.x = 10;
+
+      // controls
+      controls = new OrbitControls(camera, mainContainer);
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+
+    function onWindowResize() {
+      camera.aspect = mainContainer.clientWidth / mainContainer.clientHeight;
+      camera.updateProjectionMatrix();
+
+      ogMapScene.renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
+      ogPlaneScene.renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
+    }
+
+    function animate() {
+      ogMapScene.update(camera);
+      ogPlaneScene.update(camera);
+    }
+
+    init();
+
+    function prepareOverlay() {
+      const subSlider = document.getElementById('sub-slider');
+      const subCanvasRight = document.getElementById('sub-canvas-right');
+      const w = subCanvasRight.clientWidth;
+      const h = subCanvasRight.clientHeight; 
+      subCanvasRight.style.width = ( w / 2) + 'px';
+      
+      let clicked = 0;
+
+      const slideReady = () => {
+        clicked = 1;
+      }
+      const slideFinish = () => {
+        clicked = 0;
+        controls.enabled = true;
+      }
+      const slideMove = (e) => {
+        if (clicked === 0) return;
+        let pos = getCursorPos(e);
+        if (pos < 0) pos = 0;
+        if (pos > w) pos = w;
+
+        slide(pos);
+      }
+      function getCursorPos(e) {
+        e = e || window.event;
+        return ( e.clientX - subCanvasRight.offsetLeft ) - window.pageXOffset;
+      }
+      function slide(x) {
+        event.preventDefault();
+        controls.enabled = false;
+        subCanvasRight.style.width = x + 'px';
+        subSlider.style.left = subCanvasRight.style.width;
+      }
+
+      subSlider.addEventListener('mousedown', slideReady);
+      document.addEventListener('mouseup', slideFinish);
+      document.addEventListener('mousemove', slideMove);
+    }
+    
+    prepareOverlay();
+  </script>
+  <script>
+    
+  </script>
+</body>
+</html>
