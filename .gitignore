@@ -2,3 +2,4 @@
 firebase.json
 .vscode/
 .firebase/
+.DS_Store
