@@ -1,0 +1,23 @@
+{
+  "name": "@opengeometry/examples",
+  "version": "0.0.1",
+  "author": "Vishwajeet Mane",
+  "description": "OpenGeometry Examples",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "clean": "rimraf dist",
+    "build-examples": "vite build",
+    "build": "npm run clean && rollup -c"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^6.3.4"
+  },
+  "dependencies": {
+    "three": "^0.176.0"
+  }
+}

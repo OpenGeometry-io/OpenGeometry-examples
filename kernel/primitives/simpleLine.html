@@ -27,7 +27,6 @@
     } from './../index.ts';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-  
     let scene, camera, renderer;
     let openGeometry;
 
@@ -41,20 +40,22 @@
       });
       renderer.setSize(app.clientWidth, app.clientHeight);
       app.appendChild(renderer.domElement);
-
-      openGeometry = new OpenGeometry(app, scene, camera);
-      await openGeometry.setup();
+      
+      openGeometry = await OpenGeometry.create({
+        container: app,
+        scene: scene,
+        camera: camera,
+        wasmURL: '/WASM/opengeometry_bg.wasm'
+      });
 
       scene.background = new THREE.Color(0xf0f0f0);
 
       camera.position.z = 5;
       camera.position.y = 5;
     
-      // ambient light
       const ambientLight = new THREE.AmbientLight(0xffffff, 1);
       scene.add(ambientLight);
 
-      // controls
       const controls = new OrbitControls(
         camera,
         openGeometry.labelRenderer.domElement
@@ -71,12 +72,20 @@
       const ogSimple = new SimpleLine();
       scene.add(ogSimple);
 
-      // Line with 2 points 
+      // Line with 2 points
       const ogSimple2 = new SimpleLine(
-        new Vector3D(1, 4, 2),
-        new Vector3D(1, 4, -2)
+        new Vector3D(1, 1, 2),
+        new Vector3D(1, 1, -2)
       );
       scene.add(ogSimple2);
+
+      // Line with 2 points and color
+      const ogSimple3 = new SimpleLine(
+        new Vector3D(-1, 1, 2),
+        new Vector3D(-1, 1, -2)
+      );
+      ogSimple3.color = 0x00ff00;
+      scene.add(ogSimple3);
 
       initGUI();
       animate();
