@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenGeometry | Rectangle</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import {
+      OpenGeometry,
+      BasePoly,
+      Rectangle,
+      Vector3D,
+      SpotLabel,
+      PolyLine
+    } from './../../../core/';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+  
+    let scene, camera, renderer;
+    let openGeometry;
+
+    async function init(){
+      const app = document.getElementById('app');
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(app.clientWidth, app.clientHeight);
+      app.appendChild(renderer.domElement);
+
+      openGeometry = await OpenGeometry.create({
+        container: app,
+        scene: scene,
+        camera: camera,
+        wasmURL: './../../../core/opengeometry_bg.wasm'
+      });
+
+      scene.background = new THREE.Color(0xf0f0f0);
+
+      camera.position.z = 15;
+      camera.position.y = 5;
+    
+      // ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      scene.add(ambientLight);
+
+      // controls
+      const controls = new OrbitControls(
+        camera,
+        openGeometry.labelRenderer.domElement
+      );
+      controls.update();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      const rectangleData = {
+        center: new Vector3D(0, 0, 0),
+        width: 2,
+        breadth: 10
+      }
+
+      // Create Base Rectangle
+      const ogRectangle = new Rectangle(rectangleData);
+      scene.add(ogRectangle);
+
+      // Create Base Rectangle with Color and Modifying Width and Breadth
+      const ogRectangle2 = new Rectangle({
+        center: new Vector3D(0, 3, 0),
+        width: 2,
+        breadth: 10
+      });
+      ogRectangle2.color = 0x00ff00;
+      ogRectangle2.width = 5;
+      ogRectangle2.breadth = 15;
+
+      scene.add(ogRectangle2);
+      
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      openGeometry.update(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>

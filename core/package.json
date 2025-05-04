@@ -1,0 +1,50 @@
+{
+  "name": "opengeometry",
+  "version": "0.0.1",
+  "description": "Kernel For CAD and Graphics",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-three": "rollup -c rollup.config.js",
+    "build-core": "cd main/opengeometry && wasm-pack build --target web && cargo build --release",
+    "cpy-wasm-dist": "cpy main/opengeometry/pkg/opengeometry_bg.wasm dist --flat",
+    "cpy-wasm-dt-dist": "cpy main/opengeometry/pkg/opengeometry_bg.wasm.d.ts dist --flat",
+    "build": "npm run build-core && npm run build-three && npm run cpy-wasm-dist && npm run cpy-wasm-dt-dist",
+    "build-local": "npm run build && cpy dist/* ./../openplans/kernel/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenGeometry-io/OpenGeometry.git"
+  },
+  "keywords": [
+    "Graphics",
+    "Kernel",
+    "Geometry"
+  ],
+  "author": "Vishwajeet Vinayak Mane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OpenGeometry-io/OpenGeometry/issues"
+  },
+  "homepage": "https://github.com/OpenGeometry-io/OpenGeometry#readme",
+  "peerDependencies": {
+    "three": "^0.168.0"
+  },
+  "dependencies": {
+    "tsc": "^2.0.4",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/three": "^0.168.0",
+    "@types/uuid": "^10.0.0",
+    "rollup": "^4.21.3",
+    "tslib": "^2.7.0",
+    "vite": "^6.2.2"
+  }
+}

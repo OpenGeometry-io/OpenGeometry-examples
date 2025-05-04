@@ -1,1 +1,0 @@
-export * from "./../../OpenGeometry-Kernel/dist/index";
