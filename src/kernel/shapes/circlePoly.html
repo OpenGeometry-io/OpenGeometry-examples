@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | PolyLine</title>
+  <title>OpenGeometry | CirclePoly</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -22,8 +22,7 @@
       BaseCircle,
       CirclePoly,
       Vector3D,
-      SpotLabel,
-      PolyLine
+      SpotLabel
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -49,14 +48,28 @@
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
+      // grid
+      const gridHelper = new THREE.GridHelper(200, 200);
+      // scene.add(gridHelper);
+
       scene.background = new THREE.Color(0xf0f0f0);
 
-      camera.position.z = 4;
-      camera.position.y = 0;
+      camera.position.z = 20;
+      camera.position.y = 20;
     
       // ambient light
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
+
+      // directional light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(0, 50, 2);
+      scene.add(directionalLight);
+
+      // directional light 2
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight2.position.set(-20, 50, 2);
+      scene.add(directionalLight2);
 
       // controls
       const controls = new OrbitControls(
@@ -71,29 +84,36 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      const polyLine = new PolyLine();
-      scene.add(polyLine);
+      const circleData = {
+        radius: 3,
+        segments: 15,
+        position: new Vector3D(10, 0, 0),
+        startAngle: 0,
+        endAngle: Math.PI * 2,
+      }
 
-      polyLine.addPoint(new Vector3D(0, 0, 0));
-      polyLine.addPoint(new Vector3D(1, 0, 0));
-      polyLine.addPoint(new Vector3D(1, 1, 0));
-      polyLine.addPoint(new Vector3D(0, 1, 0));
-      polyLine.addPoint(new Vector3D(0, 0, 0));
+      // Create Base Circle
+      const ogCircle = new BaseCircle(circleData);
+      scene.add(ogCircle);
 
-      console.log('Is PolyLine 1 Closed:', polyLine.isClosed);
+      const circlePoly = new CirclePoly(ogCircle);
+      scene.add(circlePoly);
+      
 
-      // Different Color
-      const polyLine2 = new PolyLine();
-      scene.add(polyLine2);
-      polyLine2.addPoint(new Vector3D(0, 0, 0));
-      polyLine2.addPoint(new Vector3D(-1, 0, 0));
-      polyLine2.addPoint(new Vector3D(-1, -1, 0));
-      polyLine2.addPoint(new Vector3D(0, -1, 0));
+      // Circle Poly and Extrude
+      const circleData2 = {
+        radius: 3,
+        segments: 15,
+        position: new Vector3D(-10, 0, 0),
+        startAngle: 0,
+        endAngle: Math.PI * 2,
+      }
+      const ogCircle2 = new BaseCircle(circleData2);
+      scene.add(ogCircle2);
+      const circlePoly2 = new CirclePoly(ogCircle2);
+      scene.add(circlePoly2);
+      circlePoly2.extrude(5);
 
-      polyLine2.color = 0x00ff00;
-      console.log('Is PolyLine 2 Closed:', polyLine2.isClosed);
-
-      initGUI();
       animate();
     }
 
@@ -104,10 +124,6 @@
     }
 
     init();
-
-    function initGUI() {
-      
-    }
   </script>
 </body>
 </html>

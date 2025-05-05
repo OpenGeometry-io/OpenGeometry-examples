@@ -13210,15 +13210,11 @@ class BasePoly extends Mesh {
         }
     }
     addHole(holeVertices) {
-        console.log(holeVertices);
         if (!this.polygon)
             return;
         this.polygon.add_holes(holeVertices);
-        console.log(this.polygon.get_geometry());
         const triResult = JSON.parse(this.polygon.new_triangulate());
-        console.log(triResult);
         const newBufferFlush = triResult.new_buffer;
-        console.log(newBufferFlush);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(newBufferFlush), 3));
         this.geometry = geometry;
@@ -13227,14 +13223,31 @@ class BasePoly extends Mesh {
     }
     addFlushBufferToScene(flush) {
         const flushBuffer = JSON.parse(flush);
-        console.log(flushBuffer);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
-        const material = new MeshStandardMaterial({ color: 0x3a86ff, transparent: true, opacity: 0.5 });
+        geometry.computeVertexNormals();
+        const material = new MeshStandardMaterial({ color: 0x3a86ff, side: DoubleSide });
         this.geometry = geometry;
         this.material = material;
-        // this.geometry.attributes.position.needsUpdate = true;
-        // this.geometry.computeVertexNormals();
+    }
+    extrude(height) {
+        if (!this.polygon)
+            return;
+        const extruded_buff = this.polygon.extrude_by_height(height);
+        this.generateExtrudedGeometry(extruded_buff);
+    }
+    generateExtrudedGeometry(extruded_buff) {
+        // THIS WORKS
+        const flushBuffer = JSON.parse(extruded_buff);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
+        geometry.computeVertexNormals();
+        const material = new MeshPhongMaterial({
+            color: 0x3a86ff,
+        });
+        material.side = DoubleSide;
+        this.geometry = geometry;
+        this.material = material;
     }
 }
 class CirclePoly extends Mesh {
@@ -13270,34 +13283,31 @@ class CirclePoly extends Mesh {
             return;
         const bufFlush = this.polygon.get_buffer_flush();
         const flushBuffer = JSON.parse(bufFlush);
-        console.log(flushBuffer);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
+        // TODO: Do this using a set method, poly.visualizeTriangles = true
         // different colors for each triangle in the polygon dont interolate
-        const colors = new Float32Array(flushBuffer.length);
-        for (let i = 0; i < colors.length; i += 9) {
-            const r = Math.random();
-            const g = Math.random();
-            const b = Math.random();
-            colors[i] = r;
-            colors[i + 1] = g;
-            colors[i + 2] = b;
-            colors[i + 3] = r;
-            colors[i + 4] = g;
-            colors[i + 5] = b;
-            colors[i + 6] = r;
-            colors[i + 7] = g;
-            colors[i + 8] = b;
-        }
-        geometry.setAttribute('color', new BufferAttribute(colors, 3));
-        const material = new MeshPhongMaterial({
-            color: 0xffffff,
-            flatShading: true,
-            vertexColors: true,
-            shininess: 0,
+        // const colors = new Float32Array(flushBuffer.length);
+        // for (let i = 0; i < colors.length; i += 9) {
+        //   const r = Math.random();
+        //   const g = Math.random();
+        //   const b = Math.random();
+        //   colors[i] = r;
+        //   colors[i + 1] = g;
+        //   colors[i + 2] = b;
+        //   colors[i + 3] = r;
+        //   colors[i + 4] = g;
+        //   colors[i + 5] = b;
+        //   colors[i + 6] = r;
+        //   colors[i + 7] = g;
+        //   colors[i + 8] = b;
+        // }
+        // geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const material = new MeshStandardMaterial({
+            color: 0x4460FF,
             side: DoubleSide,
             transparent: true,
-            opacity: 0.1
+            opacity: 0.8
         });
         this.geometry = geometry;
         this.material = material;
@@ -13309,7 +13319,6 @@ class CirclePoly extends Mesh {
         if (!this.polygon)
             return;
         const extruded_buff = this.polygon.extrude_by_height(height);
-        console.log(JSON.parse(extruded_buff));
         this.isExtruded = true;
         this.generateExtrudedGeometry(extruded_buff);
     }
@@ -13357,7 +13366,6 @@ class CirclePoly extends Mesh {
             center.add(vertex);
         }
         center.divideScalar(uniqueVertices.length);
-        console.log(center);
         uniqueVertices.sort((a, b) => {
             if (type === "side") {
                 const angleA = Math.atan2(a.y - center.y, a.z - center.z);
@@ -13464,7 +13472,6 @@ class RectanglePoly extends Mesh {
             return;
         const bufFlush = this.polygon.get_buffer_flush();
         const flushBuffer = JSON.parse(bufFlush);
-        console.log(flushBuffer);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
         const material = new MeshStandardMaterial({ color: 0x3a86ff, transparent: true, opacity: 0.5 });
@@ -13478,7 +13485,6 @@ class RectanglePoly extends Mesh {
         if (!this.polygon)
             return;
         const extruded_buff = this.polygon.extrude_by_height(height);
-        console.log(JSON.parse(extruded_buff));
         this.isExtruded = true;
         this.generateExtrudedGeometry(extruded_buff);
     }
@@ -13562,7 +13568,6 @@ class RectanglePoly extends Mesh {
             center.add(vertex);
         }
         center.divideScalar(uniqueVertices.length);
-        console.log(center);
         uniqueVertices.sort((a, b) => {
             if (type === "side") {
                 const angleA = Math.atan2(a.y - center.y, a.z - center.z);

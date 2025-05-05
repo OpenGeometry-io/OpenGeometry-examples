@@ -35,6 +35,8 @@ export declare class BasePoly extends THREE.Mesh {
     addVertex(threeVertex: Vector3D): void;
     addHole(holeVertices: Vector3D[]): void;
     addFlushBufferToScene(flush: string): void;
+    extrude(height: number): void;
+    generateExtrudedGeometry(extruded_buff: string): void;
 }
 export declare class CirclePoly extends THREE.Mesh {
     ogid: string;

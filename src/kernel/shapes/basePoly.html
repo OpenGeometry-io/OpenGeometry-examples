@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenGeometry | Polygon</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"
+    style="width: 100vw; height: 100vh;"
+  ></div>
+
+  <script type="module">
+    import {
+      OpenGeometry,
+      BasePoly,
+      BaseCircle,
+      CirclePoly,
+      Vector3D,
+      SpotLabel
+    } from './../../../core/';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+  
+    let scene, camera, renderer;
+    let openGeometry;
+
+    async function init(){
+      const app = document.getElementById('app');
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(app.clientWidth, app.clientHeight);
+      app.appendChild(renderer.domElement);
+
+      openGeometry = await OpenGeometry.create({
+        container: app,
+        scene: scene,
+        camera: camera,
+        wasmURL: './../../../core/opengeometry_bg.wasm'
+      });
+
+      // grid
+      const gridHelper = new THREE.GridHelper(200, 200);
+      // scene.add(gridHelper);
+
+      scene.background = new THREE.Color(0xf0f0f0);
+
+      camera.position.z = 20;
+      camera.position.y = 20;
+    
+      // ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      // directional light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(0, 50, 2);
+      scene.add(directionalLight);
+
+      // directional light 2
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight2.position.set(-20, 50, 2);
+      scene.add(directionalLight2);
+
+      // controls
+      const controls = new OrbitControls(
+        camera,
+        openGeometry.labelRenderer.domElement
+      );
+      controls.update();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      const vertices = [
+        new Vector3D(1, 0, -1),
+        new Vector3D(1, 0, 7),
+        new Vector3D(9, 0, 6),
+        new Vector3D(10, 0, 3),
+        new Vector3D(9, 0, 1),
+      ];
+      const ogPoly = new BasePoly(vertices);
+      ogPoly.position.set(5, 0, 0);
+      
+      scene.add(ogPoly);
+      
+      // Extrude Poly
+      ogPoly.extrude(4);
+
+      // Polygon with Holes
+      const ogVertices = [
+        new Vector3D(-3, 0, -1),
+        new Vector3D(0, 0, -3),
+        new Vector3D(2, 0, -1),
+        new Vector3D(4, 0, -1),
+        new Vector3D(2, 0, 0), // 4
+        new Vector3D(1.5, 0, 2), // 5
+        new Vector3D(0.5, 0, 2), // 6
+        new Vector3D(0.75, 0, 0.5), // 7
+        new Vector3D(0.75, 0, 1.5), // 8
+        new Vector3D(1.25, 0, 1.5), // 9
+        new Vector3D(1.5, 0, 0.5), // 10
+        new Vector3D(0, 0, 0), // 11
+        new Vector3D(0, 0, 2), // 12
+        new Vector3D(1, 0, 4), // 13
+        new Vector3D(-2, 0, 2), // 14
+      ];
+
+      const ogPolyComplex = new BasePoly(ogVertices);
+      scene.add(ogPolyComplex);
+
+      //This hole set is working
+      const holeClockwise = [
+        new Vector3D(-1, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -2),
+        new Vector3D(-1, 0, -2),
+      ];
+      ogPolyComplex.addHole(holeClockwise);
+      ogPolyComplex.extrude(4);
+      ogPolyComplex.position.set(-5, 0, 0);
+
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      openGeometry.update(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>
