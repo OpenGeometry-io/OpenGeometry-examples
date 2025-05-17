@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | CirclePoly</title>
+  <title>OpenGeometry | Cylinder</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -18,18 +18,24 @@
   <script type="module">
     import {
       OpenGeometry,
-      BasePoly,
-      BaseCircle,
-      CirclePoly,
-      Vector3D,
-      SpotLabel
+      Cylinder,
+      Vector3D
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+
+    import Stats from 'three/examples/jsm/libs/stats.module.js';
   
     let scene, camera, renderer;
     let openGeometry;
+    let stats = new Stats();
+    let heightPlacement = -4;
+    let horizontalPlacement = -12;
+    let cylinders = [];
+
+    let ogMesh;
+    let cube;
 
     async function init(){
       const app = document.getElementById('app');
@@ -51,7 +57,7 @@
 
       // grid
       const gridHelper = new THREE.GridHelper(200, 200);
-      // scene.add(gridHelper);
+      scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
 
@@ -85,47 +91,72 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      const circleData = {
+      const ogCylinder = new Cylinder({
         radius: 2,
+        height: 5,
         segments: 3,
-        position: new Vector3D(0, 0, 0),
-        startAngle: 0,
-        endAngle: Math.PI * 2,
-      }
+        angle: Math.PI * 2,
+        center: new Vector3D(4, 0, 0),
+      });
+      scene.add(ogCylinder);
 
-      // Create Base Circle
-      const ogCircle = new BaseCircle(circleData);
-      scene.add(ogCircle);
-
-      const circlePoly = new CirclePoly(ogCircle);
-      scene.add(circlePoly);
-
-      circlePoly.extrude(5);
-      // Vertex Normal Helper
-      circlePoly.geometry.computeVertexNormals();
-      const helper = new VertexNormalsHelper( circlePoly, 1, 0xff0000 );
+      ogCylinder.outline = true;
+      ogCylinder.getBrepData();
+      ogMesh = ogCylinder;
+      const helper = new VertexNormalsHelper( ogCylinder, 1, 0xff0000 );
       scene.add(helper);
 
-      circlePoly.getBrepData();
-      
+      // // 3 to 10 segment cylinder
+      // for (let i = 3; i <= 10; i++) {
+      //   const segment = Math.sqrt(i * i);
+      //   const cylinder = new Cylinder({
+      //     radius: 2,
+      //     height: 5,
+      //     segments: segment,
+      //     angle: Math.PI * 2,
+      //     center: new Vector3D(
+      //       horizontalPlacement,
+      //       0,
+      //       heightPlacement
+      //     ),
+      //   });
 
-      // // Circle Poly and Extrude
-      // const circleData2 = {
-      //   radius: 3,
-      //   segments: 15,
-      //   position: new Vector3D(-10, 0, 0),
-      //   startAngle: 0,
-      //   endAngle: Math.PI * 2,
+      //   scene.add(cylinder);
+
+      //   cylinder.outline = true;
+      //   cylinder.getBrepData();
+
+
+
+      //   horizontalPlacement += 8;
+      //   if (i === 6) {
+      //     horizontalPlacement = -12;
+      //     heightPlacement = 4;
+      //   }
+      //   cylinders.push(cylinder);
       // }
-      // const ogCircle2 = new BaseCircle(circleData2);
-      // scene.add(ogCircle2);
-      // const circlePoly2 = new CirclePoly(ogCircle2);
-      // scene.add(circlePoly2);
-      // circlePoly2.extrude(5);
 
-      // Vertex Normal Helper
-      // const helper = new VertexNormalsHelper( circlePoly2, 1, 0xff0000 );
+      // TODO: Either computeVertexNormals or provide normals when creating the cylinder
+      // const helper = new VertexNormalsHelper( ogCylinder, 1, 0xff0000 );
       // scene.add(helper);
+
+      // 1000 cylinders
+      // for (let i = 0; i < 1000; i++) {
+      //   const cylinder = new Cylinder({
+      //     radius: Math.random() * 2,
+      //     height: Math.random() * 3,
+      //     segments: Math.floor(Math.random() * 10) + 3,
+      //     angle: Math.PI * Math.random(),
+      //     center: new Vector3D(
+      //       (Math.random() - 0.5) * 20,
+      //       (Math.random() - 0.5) * 20,
+      //       (Math.random() - 0.5) * 20
+      //     ),
+      //   });
+      //   scene.add(cylinder);
+      //   cylinder.outline = true;
+      // }
+
 
       animate();
     }
@@ -134,9 +165,21 @@
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
       openGeometry.update(scene, camera);
+
+      for (let i = 0; i < cylinders.length; i++) {
+        // cylinders[i].rotation.x += 0.01;
+        cylinders[i].rotation.y += 0.005;
+      }
+
+      // if (ogMesh) {
+      //   ogMesh.rotation.y += 0.005;
+      // }
+
+      stats.update();
     }
 
     init();
+    document.body.appendChild(stats.dom);
   </script>
 </body>
 </html>

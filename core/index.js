@@ -822,6 +822,141 @@ typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_colorrgb_free(ptr >>> 0, 1));
 typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_matrix3d_free(ptr >>> 0, 1));
+const OGCylinderFinalization = typeof FinalizationRegistry === 'undefined' ? {
+  register: () => {},
+  unregister: () => {}
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogcylinder_free(ptr >>> 0, 1));
+/**
+*/
+class OGCylinder {
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    OGCylinderFinalization.unregister(this);
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_ogcylinder_free(ptr, 0);
+  }
+  /**
+  * @param {string} id
+  */
+  set id(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogcylinder_set_id(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+  * @returns {string}
+  */
+  get id() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogcylinder_id(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @param {string} id
+  */
+  constructor(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.ogcylinder_new(ptr0, len0);
+    this.__wbg_ptr = ret >>> 0;
+    OGCylinderFinalization.register(this, this.__wbg_ptr, this);
+    return this;
+  }
+  /**
+  * @param {Vector3D} center
+  * @param {number} radius
+  * @param {number} height
+  * @param {number} angle
+  * @param {number} segments
+  */
+  set_config(center, radius, height, angle, segments) {
+    _assertClass(center, Vector3D);
+    var ptr0 = center.__destroy_into_raw();
+    wasm.ogcylinder_set_config(this.__wbg_ptr, ptr0, radius, height, angle, segments);
+  }
+  /**
+  */
+  generate_geometry() {
+    wasm.ogcylinder_generate_geometry(this.__wbg_ptr);
+  }
+  /**
+  * @returns {string}
+  */
+  get_geometry() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogcylinder_get_geometry(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  */
+  discard_geometry() {
+    wasm.ogcylinder_discard_geometry(this.__wbg_ptr);
+  }
+  /**
+  * @returns {string}
+  */
+  outline_edges() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogcylinder_outline_edges(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  get_brep_dump() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogcylinder_get_brep_dump(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+}
 const OGPolyLineFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -963,6 +1098,400 @@ class OGPolyLine {
   */
   check_closed_test() {
     wasm.ogpolyline_check_closed_test(this.__wbg_ptr);
+  }
+}
+const OGPolygonFinalization = typeof FinalizationRegistry === 'undefined' ? {
+  register: () => {},
+  unregister: () => {}
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogpolygon_free(ptr >>> 0, 1));
+/**
+*/
+class OGPolygon {
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(OGPolygon.prototype);
+    obj.__wbg_ptr = ptr;
+    OGPolygonFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    OGPolygonFinalization.unregister(this);
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_ogpolygon_free(ptr, 0);
+  }
+  /**
+  * @returns {boolean}
+  */
+  get extruded() {
+    const ret = wasm.__wbg_get_ogpolygon_extruded(this.__wbg_ptr);
+    return ret !== 0;
+  }
+  /**
+  * @param {boolean} arg0
+  */
+  set extruded(arg0) {
+    wasm.__wbg_set_ogpolygon_extruded(this.__wbg_ptr, arg0);
+  }
+  /**
+  * @returns {number}
+  */
+  get extruded_height() {
+    const ret = wasm.__wbg_get_ogpolygon_extruded_height(this.__wbg_ptr);
+    return ret;
+  }
+  /**
+  * @param {number} arg0
+  */
+  set extruded_height(arg0) {
+    wasm.__wbg_set_ogpolygon_extruded_height(this.__wbg_ptr, arg0);
+  }
+  /**
+  * @returns {boolean}
+  */
+  get is_polygon() {
+    const ret = wasm.__wbg_get_ogpolygon_is_polygon(this.__wbg_ptr);
+    return ret !== 0;
+  }
+  /**
+  * @param {boolean} arg0
+  */
+  set is_polygon(arg0) {
+    wasm.__wbg_set_ogpolygon_is_polygon(this.__wbg_ptr, arg0);
+  }
+  /**
+  * @returns {Vector3D}
+  */
+  get position() {
+    const ret = wasm.__wbg_get_ogpolygon_position(this.__wbg_ptr);
+    return Vector3D.__wrap(ret);
+  }
+  /**
+  * @param {Vector3D} arg0
+  */
+  set position(arg0) {
+    _assertClass(arg0, Vector3D);
+    var ptr0 = arg0.__destroy_into_raw();
+    wasm.__wbg_set_ogpolygon_position(this.__wbg_ptr, ptr0);
+  }
+  /**
+  * @returns {Vector3D}
+  */
+  get rotation() {
+    const ret = wasm.__wbg_get_ogpolygon_rotation(this.__wbg_ptr);
+    return Vector3D.__wrap(ret);
+  }
+  /**
+  * @param {Vector3D} arg0
+  */
+  set rotation(arg0) {
+    _assertClass(arg0, Vector3D);
+    var ptr0 = arg0.__destroy_into_raw();
+    wasm.__wbg_set_ogpolygon_rotation(this.__wbg_ptr, ptr0);
+  }
+  /**
+  * @returns {Vector3D}
+  */
+  get scale() {
+    const ret = wasm.__wbg_get_ogpolygon_scale(this.__wbg_ptr);
+    return Vector3D.__wrap(ret);
+  }
+  /**
+  * @param {Vector3D} arg0
+  */
+  set scale(arg0) {
+    _assertClass(arg0, Vector3D);
+    var ptr0 = arg0.__destroy_into_raw();
+    wasm.__wbg_set_ogpolygon_scale(this.__wbg_ptr, ptr0);
+  }
+  /**
+  * @param {string} id
+  */
+  set id(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogpolygon_set_id(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+  * @returns {string}
+  */
+  get id() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_id(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @param {string} id
+  */
+  constructor(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.ogpolygon_new(ptr0, len0);
+    this.__wbg_ptr = ret >>> 0;
+    OGPolygonFinalization.register(this, this.__wbg_ptr, this);
+    return this;
+  }
+  /**
+  * @param {CircleArc} circle_arc
+  * @returns {OGPolygon}
+  */
+  static new_with_circle(circle_arc) {
+    _assertClass(circle_arc, CircleArc);
+    var ptr0 = circle_arc.__destroy_into_raw();
+    const ret = wasm.ogpolygon_new_with_circle(ptr0);
+    return OGPolygon.__wrap(ret);
+  }
+  /**
+  * @param {OGRectangle} rectangle
+  * @returns {OGPolygon}
+  */
+  static new_with_rectangle(rectangle) {
+    _assertClass(rectangle, OGRectangle);
+    var ptr0 = rectangle.__destroy_into_raw();
+    const ret = wasm.ogpolygon_new_with_rectangle(ptr0);
+    return OGPolygon.__wrap(ret);
+  }
+  /**
+  * @param {(Vector3D)[]} vertices
+  */
+  add_vertices(vertices) {
+    const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogpolygon_add_vertices(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+  * @param {Vector3D} vertex
+  */
+  add_vertex(vertex) {
+    _assertClass(vertex, Vector3D);
+    var ptr0 = vertex.__destroy_into_raw();
+    wasm.ogpolygon_add_vertex(this.__wbg_ptr, ptr0);
+  }
+  /**
+  * @param {(Vector3D)[]} holes
+  */
+  add_holes(holes) {
+    const ptr0 = passArrayJsValueToWasm0(holes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogpolygon_add_holes(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+  * @returns {string}
+  */
+  triangulate() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_triangulate(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @param {boolean} is_ccw
+  * @returns {string}
+  */
+  triangulate_with_holes_variable_geometry(is_ccw) {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_triangulate_with_holes_variable_geometry(retptr, this.__wbg_ptr, is_ccw);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  triangulate_with_holes() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_triangulate_with_holes(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  get_buffer_flush() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_get_buffer_flush(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  */
+  clear_vertices() {
+    wasm.ogpolygon_clear_vertices(this.__wbg_ptr);
+  }
+  /**
+  */
+  reset_polygon() {
+    wasm.ogpolygon_reset_polygon(this.__wbg_ptr);
+  }
+  /**
+  * @param {number} height
+  * @returns {string}
+  */
+  extrude_by_height_with_holes(height) {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_extrude_by_height_with_holes(retptr, this.__wbg_ptr, height);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @param {number} height
+  * @returns {string}
+  */
+  extrude_by_height(height) {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_extrude_by_height(retptr, this.__wbg_ptr, height);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  get_outlines() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_get_outlines(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  get_geometry() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_get_geometry(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  get_brep_data() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_get_brep_data(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @returns {string}
+  */
+  outline_edges() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_outline_edges(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
   }
 }
 const OGRectangleFinalization = typeof FinalizationRegistry === 'undefined' ? {
@@ -1198,12 +1727,12 @@ class OGSimpleLine {
   /**
   */
   dispose_points() {
-    wasm.ogpolyline_destroy(this.__wbg_ptr);
+    wasm.ogsimpleline_destroy(this.__wbg_ptr);
   }
   /**
   */
   destroy() {
-    wasm.ogpolyline_destroy(this.__wbg_ptr);
+    wasm.ogsimpleline_destroy(this.__wbg_ptr);
   }
   /**
   * @returns {string}
@@ -12070,6 +12599,56 @@ function checkIntersection( object, raycaster, ray, thresholdSq, a, b ) {
 
 }
 
+const _start = /*@__PURE__*/ new Vector3();
+const _end = /*@__PURE__*/ new Vector3();
+
+class LineSegments extends Line {
+
+	constructor( geometry, material ) {
+
+		super( geometry, material );
+
+		this.isLineSegments = true;
+
+		this.type = 'LineSegments';
+
+	}
+
+	computeLineDistances() {
+
+		const geometry = this.geometry;
+
+		// we assume non-indexed geometry
+
+		if ( geometry.index === null ) {
+
+			const positionAttribute = geometry.attributes.position;
+			const lineDistances = [];
+
+			for ( let i = 0, l = positionAttribute.count; i < l; i += 2 ) {
+
+				_start.fromBufferAttribute( positionAttribute, i );
+				_end.fromBufferAttribute( positionAttribute, i + 1 );
+
+				lineDistances[ i ] = ( i === 0 ) ? 0 : lineDistances[ i - 1 ];
+				lineDistances[ i + 1 ] = lineDistances[ i ] + _start.distanceTo( _end );
+
+			}
+
+			geometry.setAttribute( 'lineDistance', new Float32BufferAttribute( lineDistances, 1 ) );
+
+		} else {
+
+			console.warn( 'THREE.LineSegments.computeLineDistances(): Computation only possible with non-indexed BufferGeometry.' );
+
+		}
+
+		return this;
+
+	}
+
+}
+
 class MeshStandardMaterial extends Material {
 
 	constructor( parameters ) {
@@ -13011,6 +13590,7 @@ class BaseCircle extends Line {
         this.circleArc.generate_points();
         const bufRaw = this.circleArc.get_points();
         const bufFlush = JSON.parse(bufRaw);
+        console.log(bufFlush);
         const line = new BufferGeometry().setFromPoints(bufFlush);
         const material = new LineBasicMaterial({ color: 0x000000 });
         this.geometry = line;
@@ -13079,6 +13659,242 @@ class Rectangle extends Line {
     }
 }
 _Rectangle_color = new WeakMap();
+
+var _Cylinder_outlineMesh;
+class Cylinder extends Mesh {
+    constructor(options) {
+        super();
+        _Cylinder_outlineMesh.set(this, null);
+        // Store local center offset to align outlines
+        // TODO: Can this be moved to Engine? It can increase performance | Needs to be used in other shapes too
+        this._geometryCenterOffset = new Vector3();
+        this.ogid = getUUID();
+        this.options = options;
+        this.cylinder = new OGCylinder(this.ogid);
+        this.setConfig();
+        this.generateGeometry();
+    }
+    validateOptions() {
+        if (!this.options) {
+            throw new Error("Options are not defined for Cylinder");
+        }
+    }
+    setConfig() {
+        this.validateOptions();
+        const { radius, height, segments, angle, center } = this.options;
+        this.cylinder.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3D(0, 0, 0), radius, height, angle, segments);
+    }
+    generateGeometry() {
+        var _a, _b, _c;
+        this.cylinder.generate_geometry();
+        const geometryData = this.cylinder.get_geometry();
+        const bufferData = JSON.parse(geometryData);
+        console.log(bufferData);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
+        const material = new MeshStandardMaterial({
+            color: 0x00ff00,
+            transparent: true,
+            opacity: 0.6,
+        });
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        const boundingBox = geometry.boundingBox;
+        if (boundingBox) {
+            boundingBox.getCenter(this._geometryCenterOffset);
+            geometry.translate(-this._geometryCenterOffset.x, -this._geometryCenterOffset.y, -this._geometryCenterOffset.z);
+        }
+        this.geometry = geometry;
+        this.material = material;
+        this.position.set(((_a = this.options.center) === null || _a === void 0 ? void 0 : _a.x) || 0, ((_b = this.options.center) === null || _b === void 0 ? void 0 : _b.y) || 0, ((_c = this.options.center) === null || _c === void 0 ? void 0 : _c.z) || 0);
+    }
+    set outline(enable) {
+        if (enable && !__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+            const outline_buff = this.cylinder.outline_edges();
+            const outline_buf = JSON.parse(outline_buff);
+            const outlineGeometry = new BufferGeometry();
+            outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
+            outlineGeometry.translate(-this._geometryCenterOffset.x, -this._geometryCenterOffset.y, -this._geometryCenterOffset.z);
+            const outlineMaterial = new LineBasicMaterial({ color: 0x000000 });
+            __classPrivateFieldSet(this, _Cylinder_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
+            this.add(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
+        }
+        if (!enable && __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cylinder_outlineMesh, null, "f");
+        }
+    }
+    getBrepData() {
+        const brepData = this.cylinder.get_brep_dump();
+        const brepDataParsed = JSON.parse(brepData);
+        console.log(brepDataParsed);
+    }
+}
+_Cylinder_outlineMesh = new WeakMap();
+
+var _Polygon_outlineMesh;
+class Polygon extends Mesh {
+    constructor(vertices) {
+        var _a, _b;
+        super();
+        this.layerVertices = [];
+        this.layerBackVertices = [];
+        this.polygon = null;
+        this.isTriangulated = false;
+        _Polygon_outlineMesh.set(this, null);
+        this._geometryCenterOffset = new Vector3();
+        this.ogid = getUUID();
+        this.polygon = new OGPolygon(this.ogid);
+        if (vertices) {
+            this.polygon.add_vertices(vertices);
+            // Triangulate the polygon - WORKS
+            (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.triangulate();
+            const bufFlush = (_b = this.polygon) === null || _b === void 0 ? void 0 : _b.get_buffer_flush();
+            this.addFlushBufferToScene(bufFlush);
+            // Testing New Triangulation - FAILING
+            // const triResult = JSON.parse(this.polygon.new_triangulate());
+            // console.log(triResult);
+        }
+        // THIS MIGHT HELP WITH SHARING THE POSITION with KERNEL when something is changed
+        // const originalSet = this.position.set.bind(this.position);
+        // this.position.set = (x: number, y: number, z: number) => {
+        //   console.log(`Position set to (${x}, ${y}, ${z})`);
+        //   // your custom logic here (e.g., notify OpenGeometry)
+        //   return originalSet(x, y, z);
+        // };
+        // // Optional: Override copy if you're using .copy() too
+        // const originalCopy = this.position.copy.bind(this.position);
+        // this.position.copy = (v: THREE.Vector3) => {
+        //   console.log(`Position copied from ${v.x}, ${v.y}, ${v.z}`);
+        //   return originalCopy(v);
+        // };
+    }
+    addVertices(vertices) {
+        var _a, _b;
+        if (!this.polygon)
+            return;
+        this.polygon.add_vertices(vertices);
+        (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.triangulate();
+        const bufFlush = (_b = this.polygon) === null || _b === void 0 ? void 0 : _b.get_buffer_flush();
+        this.addFlushBufferToScene(bufFlush);
+    }
+    resetVertices() {
+        var _a;
+        if (!this.polygon)
+            return;
+        this.layerVertices = [];
+        this.geometry.dispose();
+        (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.reset_polygon();
+        this.isTriangulated = false;
+    }
+    addVertex(threeVertex) {
+        var _a, _b, _c;
+        if (this.isTriangulated) {
+            this.layerVertices = [];
+            this.geometry.dispose();
+            (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.reset_polygon();
+            this.isTriangulated = false;
+            for (const vertex of this.layerBackVertices) {
+                this.layerVertices.push(vertex.clone());
+            }
+        }
+        const backupVertex = new Vector3D(parseFloat(threeVertex.x.toFixed(2)), 0, parseFloat(threeVertex.z.toFixed(2)));
+        this.layerBackVertices.push(backupVertex);
+        const vertex = new Vector3D(parseFloat(threeVertex.x.toFixed(2)), 
+        // when doing the parse operation getting -0 instead of 0
+        0, parseFloat(threeVertex.z.toFixed(2)));
+        this.layerVertices.push(vertex);
+        if (this.layerVertices.length > 3) {
+            (_b = this.polygon) === null || _b === void 0 ? void 0 : _b.add_vertices(this.layerVertices);
+            const bufFlush = (_c = this.polygon) === null || _c === void 0 ? void 0 : _c.triangulate();
+            if (!bufFlush) {
+                return;
+            }
+            this.addFlushBufferToScene(bufFlush);
+            this.isTriangulated = true;
+        }
+    }
+    addHole(holeVertices) {
+        if (!this.polygon)
+            return;
+        this.polygon.add_holes(holeVertices);
+        const triResult = JSON.parse(this.polygon.triangulate_with_holes());
+        console.log(triResult);
+        const newBufferFlush = triResult.new_buffer;
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(new Float32Array(newBufferFlush), 3));
+        this.geometry = geometry;
+        // const bufFlush = this.polygon.get_buffer_flush();
+        // this.addFlushBufferToScene(bufFlush);
+    }
+    addFlushBufferToScene(flush) {
+        const flushBuffer = JSON.parse(flush);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
+        geometry.computeVertexNormals();
+        const material = new MeshStandardMaterial({
+            color: 0x00ff00,
+            // side: THREE.DoubleSide, 
+            transparent: true,
+            opacity: 0.5,
+            // wireframe: true
+        });
+        this.geometry = geometry;
+        this.material = material;
+    }
+    extrude(height) {
+        if (!this.polygon)
+            return;
+        const extruded_buff = this.polygon.extrude_by_height(height);
+        console.log(extruded_buff);
+        this.generateExtrudedGeometry(extruded_buff);
+    }
+    generateExtrudedGeometry(extruded_buff) {
+        // THIS WORKS
+        const flushBuffer = JSON.parse(extruded_buff);
+        console.log(flushBuffer);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
+        geometry.computeVertexNormals();
+        this.geometry = geometry;
+        // const material = new THREE.MeshStandardMaterial({
+        //   color: 0x3a86ff,
+        // });
+        // // material.side = THREE.DoubleSide;
+        // this.material = material;
+    }
+    getBrepData() {
+        if (!this.polygon)
+            return;
+        const brepData = this.polygon.get_brep_data();
+        const parsedData = JSON.parse(brepData);
+        console.log(parsedData);
+    }
+    set outline(enable) {
+        if (enable && !__classPrivateFieldGet(this, _Polygon_outlineMesh, "f") && this.polygon) {
+            const outline_buff = this.polygon.outline_edges();
+            const outline_buf = JSON.parse(outline_buff);
+            const outlineGeometry = new BufferGeometry();
+            outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
+            // TODO: Fix the outline position
+            // outlineGeometry.translate(
+            //   -this._geometryCenterOffset.x,
+            //   -this._geometryCenterOffset.y,
+            //   -this._geometryCenterOffset.z
+            // );
+            const outlineMaterial = new LineBasicMaterial({ color: 0x000000 });
+            __classPrivateFieldSet(this, _Polygon_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
+            this.add(__classPrivateFieldGet(this, _Polygon_outlineMesh, "f"));
+        }
+        if (!enable && __classPrivateFieldGet(this, _Polygon_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Polygon_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Polygon_outlineMesh, null, "f");
+        }
+    }
+}
+_Polygon_outlineMesh = new WeakMap();
 
 class OpenGeometry {
     constructor(container, threeScene, camera) {
@@ -13225,8 +14041,14 @@ class BasePoly extends Mesh {
         const flushBuffer = JSON.parse(flush);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
-        geometry.computeVertexNormals();
-        const material = new MeshStandardMaterial({ color: 0x3a86ff, side: DoubleSide });
+        // geometry.computeVertexNormals();
+        const material = new MeshStandardMaterial({
+            color: 0x00ff00,
+            // side: THREE.DoubleSide, 
+            transparent: true,
+            opacity: 0.5,
+            // wireframe: true
+        });
         this.geometry = geometry;
         this.material = material;
     }
@@ -13239,15 +14061,16 @@ class BasePoly extends Mesh {
     generateExtrudedGeometry(extruded_buff) {
         // THIS WORKS
         const flushBuffer = JSON.parse(extruded_buff);
-        const geometry = new BufferGeometry();
-        geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
-        geometry.computeVertexNormals();
-        const material = new MeshPhongMaterial({
-            color: 0x3a86ff,
-        });
-        material.side = DoubleSide;
-        this.geometry = geometry;
-        this.material = material;
+        console.log(flushBuffer);
+        // const geometry = new THREE.BufferGeometry();
+        // geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(flushBuffer), 3));
+        // // geometry.computeVertexNormals();
+        // // const material = new THREE.MeshPhongMaterial({
+        // //   color: 0x3a86ff,
+        // // });
+        // // material.side = THREE.DoubleSide;
+        // this.geometry = geometry;
+        // this.material = material;
     }
 }
 class CirclePoly extends Mesh {
@@ -13276,7 +14099,7 @@ class CirclePoly extends Mesh {
     generateGeometry() {
         if (!this.baseCircle.circleArc)
             return;
-        this.polygon = BasePolygon.new_with_circle(this.baseCircle.circleArc.clone());
+        this.polygon = OGPolygon.new_with_circle(this.baseCircle.circleArc.clone());
     }
     addFlushBufferToScene() {
         if (!this.polygon)
@@ -13304,10 +14127,11 @@ class CirclePoly extends Mesh {
         // }
         // geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         const material = new MeshStandardMaterial({
-            color: 0x4460FF,
-            side: DoubleSide,
+            color: 0x00ff00,
+            // side: THREE.DoubleSide, 
             transparent: true,
-            opacity: 0.8
+            opacity: 0.5,
+            // wireframe: true
         });
         this.geometry = geometry;
         this.material = material;
@@ -13319,8 +14143,16 @@ class CirclePoly extends Mesh {
         if (!this.polygon)
             return;
         const extruded_buff = this.polygon.extrude_by_height(height);
+        console.log(JSON.parse(extruded_buff));
         this.isExtruded = true;
         this.generateExtrudedGeometry(extruded_buff);
+    }
+    getBrepData() {
+        if (!this.polygon)
+            return;
+        const brepData = this.polygon.get_brep_data();
+        const parsedData = JSON.parse(brepData);
+        console.log(parsedData);
     }
     getOutline(type) {
         if (!this.polygon)
@@ -13406,7 +14238,6 @@ class CirclePoly extends Mesh {
         const flushBuffer = JSON.parse(extruded_buff);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
-        geometry.computeVertexNormals();
         // To Test If Triangulation is working
         // const colors = new Float32Array(flushBuffer.length);
         // for (let i = 0; i < colors.length; i += 9) {
@@ -13431,12 +14262,12 @@ class CirclePoly extends Mesh {
         //     shininess: 0,
         //     side: THREE.DoubleSide
         // });
-        const material = new MeshPhongMaterial({
-            color: 0x3a86ff,
-        });
-        material.side = DoubleSide;
+        // const material = new THREE.MeshPhongMaterial({
+        //   color: 0x3a86ff,
+        // });
+        // material.side = THREE.DoubleSide;
         this.geometry = geometry;
-        this.material = material;
+        // this.material = material;
     }
 }
 class RectanglePoly extends Mesh {
@@ -13622,5 +14453,5 @@ class FlatMesh extends Mesh {
     }
 }
 
-export { BaseCircle, BasePoly, CirclePoly, FlatMesh, OpenGeometry, PolyLine, Rectangle, RectanglePoly, SimpleLine, SpotLabel, Vector3D };
+export { BaseCircle, BasePoly, CirclePoly, Cylinder, FlatMesh, OpenGeometry, PolyLine, Polygon, Rectangle, RectanglePoly, SimpleLine, SpotLabel, Vector3D };
 //# sourceMappingURL=index.js.map
