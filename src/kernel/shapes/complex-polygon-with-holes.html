@@ -33,7 +33,6 @@
   </style>
 </head>
 <body>
-
   <div class="gui-oc">
     <div class="gui-oc-control">
       <og-button label="Extrude By 5" id="extrude-btn"></og-button>
@@ -95,7 +94,7 @@
       scene.background = new THREE.Color(0xf0f0f0);
 
       camera.position.z = 20;
-      camera.position.y = 20;
+      camera.position.y = -10;
     
       // ambient light
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -130,35 +129,45 @@
       // sphere.position.set(1, 0, -1);
       scene.add(sphere);
 
-      // Simple Polygon with Hole - Works
-      const vertices = [
-        new Vector3D(-3, 0, -5),
-        new Vector3D(-3, 0, 7),
-        new Vector3D(9, 0, 6),
-        new Vector3D(13, 0, 3),
-        new Vector3D(9, 0, -4)
+      // Complex Polygon with Holes - Not Working
+      const ogVertices = [
+        new Vector3D(-2, 0, 2),       // 14
+        new Vector3D(1, 0, 4),        // 13
+        new Vector3D(0, 0, 2),        // 12
+        new Vector3D(0, 0, 0),        // 11
+        new Vector3D(1.5, 0, 0.5),    // 10
+        new Vector3D(1.25, 0, 1.5),   // 9
+        new Vector3D(0.75, 0, 1.5),   // 8
+        new Vector3D(0.75, 0, 0.5),   // 7
+        new Vector3D(0.5, 0, 2),      // 6
+        new Vector3D(1.5, 0, 2),      // 5
+        new Vector3D(2, 0, 0),        // 4
+        new Vector3D(4, 0, -1),
+        new Vector3D(2, 0, -1),
+        new Vector3D(0, 0, -3),
+        new Vector3D(-3, 0, -1)
       ];
-      const ogPoly = new Polygon(vertices);
 
-      // View from top
-      const holeClockwise = [
-        new Vector3D(-2, 0, -2),
-        new Vector3D(4, 0, -2),
-        new Vector3D(4, 0, 2),
-        new Vector3D(-2, 0, 4),
+      const ogPolyComplex = new Polygon(ogVertices);
+      // This hole set is working
+      const holeClockwise2 = [
+        new Vector3D(-1, 0, -2),
+        new Vector3D(0, 0, -2),
+        new Vector3D(0, 0, -1),
+        new Vector3D(-1, 0, -1)
       ];
-      ogPoly.addHole(holeClockwise);
-      scene.add(ogPoly);
+      ogPolyComplex.addHole(holeClockwise2);
+      scene.add(ogPolyComplex);
       
-      // Extrude Poly
-      ogPoly.extrude(5);
+      // ogPolyComplex.extrude(4);
+      
+      // ogPolyComplex.geometry.computeVertexNormals();
+      // const helper2 = new VertexNormalsHelper( ogPolyComplex, 1, 0xff0000 );
+      // scene.add(helper2);
 
-      ogPoly.geometry.computeVertexNormals();
-      const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
-      // scene.add(helper);      
-      // ogPoly.getBrepData();
+      // ogPolyComplex.getBrepData();
 
-      ogPoly.outline = true;
+      // ogPolyComplex.outline = true;
 
       animate();
     }

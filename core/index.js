@@ -13893,6 +13893,12 @@ class Polygon extends Mesh {
             __classPrivateFieldSet(this, _Polygon_outlineMesh, null, "f");
         }
     }
+    get outline() {
+        if (__classPrivateFieldGet(this, _Polygon_outlineMesh, "f")) {
+            return true;
+        }
+        return false;
+    }
 }
 _Polygon_outlineMesh = new WeakMap();
 

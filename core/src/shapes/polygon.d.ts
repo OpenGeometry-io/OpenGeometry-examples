@@ -18,4 +18,5 @@ export declare class Polygon extends THREE.Mesh {
     generateExtrudedGeometry(extruded_buff: string): void;
     getBrepData(): void;
     set outline(enable: boolean);
+    get outline(): boolean;
 }
