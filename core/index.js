@@ -13835,7 +13835,7 @@ class Polygon extends Mesh {
         geometry.computeVertexNormals();
         const material = new MeshStandardMaterial({
             color: 0x00ff00,
-            // side: THREE.DoubleSide, 
+            side: DoubleSide,
             transparent: true,
             opacity: 0.5,
             // wireframe: true
@@ -13858,11 +13858,14 @@ class Polygon extends Mesh {
         geometry.setAttribute("position", new BufferAttribute(new Float32Array(flushBuffer), 3));
         geometry.computeVertexNormals();
         this.geometry = geometry;
-        // const material = new THREE.MeshStandardMaterial({
-        //   color: 0x3a86ff,
-        // });
-        // // material.side = THREE.DoubleSide;
-        // this.material = material;
+        const material = new MeshStandardMaterial({
+            color: 0x00ff00,
+            side: FrontSide,
+            transparent: true,
+            opacity: 0.5,
+            // wireframe: true
+        });
+        this.material = material;
     }
     getBrepData() {
         if (!this.polygon)
