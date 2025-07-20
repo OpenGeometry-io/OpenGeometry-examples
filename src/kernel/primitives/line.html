@@ -21,7 +21,7 @@
       BasePoly,
       BaseCircle,
       CirclePoly,
-      Vector3D,
+      Vector3,
       SpotLabel,
       SimpleLine
     } from './../../../core/';
@@ -74,15 +74,15 @@
 
       // Line with 2 points
       const ogSimple2 = new SimpleLine(
-        new Vector3D(1, 1, 2),
-        new Vector3D(1, 1, -2)
+        new Vector3(1, 1, 2),
+        new Vector3(1, 1, -2)
       );
       scene.add(ogSimple2);
 
       // Line with 2 points and color
       const ogSimple3 = new SimpleLine(
-        new Vector3D(-1, 1, 2), 
-        new Vector3D(-1, 1, -2)
+        new Vector3(-1, 1, 2), 
+        new Vector3(-1, 1, -2)
       );
       ogSimple3.color = 0x00ff00;
       scene.add(ogSimple3);

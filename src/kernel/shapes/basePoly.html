@@ -21,7 +21,7 @@
       Polygon,
       BaseCircle,
       CirclePoly,
-      Vector3D,
+      Vector3,
       SpotLabel
     } from './../../../core/';
     import * as THREE from 'three';
@@ -92,20 +92,26 @@
       scene.add(sphere);
 
       const vertices = [
-        new Vector3D(1, 0, -1),
-        new Vector3D(1, 0, 7),
-        new Vector3D(9, 0, 6),
-        new Vector3D(10, 0, 3),
-        new Vector3D(9, 0, 1),
+        new Vector3(1, 0, -1),
+        new Vector3(1, 0, 7),
+        new Vector3(9, 0, 6),
+        new Vector3(10, 0, 3),
+        new Vector3(9, 0, 1),
       ];
       const ogPoly = new Polygon(vertices);
       scene.add(ogPoly);
       
       // Extrude Poly
-      ogPoly.extrude(4);
+      // ogPoly.extrude(4);
 
       // const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
       // scene.add(helper);
+
+      ogPoly.outline = true;
+      
+      ogPoly.getBrepData();
+
+      ogPoly.bTree();
 
       animate();
     }

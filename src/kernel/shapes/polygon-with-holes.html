@@ -70,7 +70,7 @@
       Polygon,
       BaseCircle,
       CirclePoly,
-      Vector3D,
+      Vector3,
       SpotLabel
     } from './../../../core/';
     import * as THREE from 'three';
@@ -142,20 +142,20 @@
 
       // Simple Polygon with Hole - Works
       const vertices = [
-        new Vector3D(-3, 0, -5),
-        new Vector3D(-3, 0, 7),
-        new Vector3D(9, 0, 6),
-        new Vector3D(13, 0, 3),
-        new Vector3D(9, 0, -4)
+        new Vector3(-3, 0, -5),
+        new Vector3(-3, 0, 7),
+        new Vector3(9, 0, 6),
+        new Vector3(13, 0, 3),
+        new Vector3(9, 0, -4)
       ];
       const ogPoly = new Polygon(vertices);
 
       // View from top
       const holeClockwise = [
-        new Vector3D(-2, 0, -2),
-        new Vector3D(4, 0, -2),
-        new Vector3D(4, 0, 2),
-        new Vector3D(-2, 0, 4),
+        new Vector3(-2, 0, -2),
+        new Vector3(4, 0, -2),
+        new Vector3(4, 0, 2),
+        new Vector3(-2, 0, 4),
       ];
       ogPoly.addHole(holeClockwise);
       scene.add(ogPoly);

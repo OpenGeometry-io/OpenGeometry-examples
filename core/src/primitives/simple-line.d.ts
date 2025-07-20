@@ -1,13 +1,13 @@
-import { Vector3D } from "./../../../opengeometry/pkg/opengeometry";
+import { Vector3 } from "./../../../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
 /**
  * Simple Line defined by Two Points
  */
 export declare class SimpleLine extends THREE.Line {
     ogid: string;
-    points: Vector3D[];
+    points: Vector3[];
     set color(color: number);
-    constructor(start?: Vector3D, end?: Vector3D);
-    addPoint(point: Vector3D): void;
+    constructor(start?: Vector3, end?: Vector3);
+    addPoint(point: Vector3): void;
     private generateGeometry;
 }

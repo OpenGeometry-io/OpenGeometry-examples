@@ -1,11 +1,11 @@
-import { OGCylinder, Vector3D } from "./../../../opengeometry/pkg/opengeometry";
+import { OGCylinder, Vector3 } from "./../../../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
 interface ICylinderOptions {
     radius: number;
     height: number;
     segments: number;
     angle: number;
-    center?: Vector3D;
+    center?: Vector3;
 }
 export declare class Cylinder extends THREE.Mesh {
     #private;

@@ -21,7 +21,7 @@
       BasePoly,
       BaseCircle,
       CirclePoly,
-      Vector3D,
+      Vector3,
       SpotLabel
     } from './../../../core/';
     import * as THREE from 'three';
@@ -88,7 +88,7 @@
       const circleData = {
         radius: 2,
         segments: 12,
-        position: new Vector3D(0, 0, 0),
+        position: new Vector3(0, 0, 0),
         startAngle: 0,
         endAngle: Math.PI * 2,
       }
@@ -100,7 +100,7 @@
       const circlePoly = new CirclePoly(ogCircle);
       scene.add(circlePoly);
 
-      circlePoly.extrude(5);
+      // circlePoly.extrude(5);
       // Vertex Normal Helper
       circlePoly.geometry.computeVertexNormals();
       const helper = new VertexNormalsHelper( circlePoly, 1, 0xff0000 );
@@ -112,7 +112,7 @@
       // const circleData2 = {
       //   radius: 3,
       //   segments: 15,
-      //   position: new Vector3D(-10, 0, 0),
+      //   position: new Vector3(-10, 0, 0),
       //   startAngle: 0,
       //   endAngle: Math.PI * 2,
       // }

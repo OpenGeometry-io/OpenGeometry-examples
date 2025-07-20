@@ -76,6 +76,19 @@ function addHeapObject(obj) {
   heap[idx] = obj;
   return idx;
 }
+function getObject(idx) {
+  return heap[idx];
+}
+function dropObject(idx) {
+  if (idx < 132) return;
+  heap[idx] = heap_next;
+  heap_next = idx;
+}
+function takeObject(idx) {
+  const ret = getObject(idx);
+  dropObject(idx);
+  return ret;
+}
 function _assertClass(instance, klass) {
   if (!(instance instanceof klass)) {
     throw new Error(`expected instance of ${klass.name}`);
@@ -144,19 +157,6 @@ function passArrayJsValueToWasm0(array, malloc) {
   WASM_VECTOR_LEN = array.length;
   return ptr;
 }
-function getObject(idx) {
-  return heap[idx];
-}
-function dropObject(idx) {
-  if (idx < 132) return;
-  heap[idx] = heap_next;
-  heap_next = idx;
-}
-function takeObject(idx) {
-  const ret = getObject(idx);
-  dropObject(idx);
-  return ret;
-}
 function getArrayJsValueFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
   const mem = getDataViewMemory0();
@@ -210,47 +210,47 @@ class BaseFlatMesh {
     wasm.__wbg_set_baseflatmesh_is_mesh(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get position() {
     const ret = wasm.__wbg_get_baseflatmesh_position(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set position(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_baseflatmesh_position(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get rotation() {
     const ret = wasm.__wbg_get_baseflatmesh_rotation(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set rotation(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_baseflatmesh_rotation(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get scale() {
     const ret = wasm.__wbg_get_baseflatmesh_scale(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set scale(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_baseflatmesh_scale(this.__wbg_ptr, ptr0);
   }
@@ -293,7 +293,7 @@ class BaseFlatMesh {
     return this;
   }
   /**
-  * @param {(Vector3D)[]} vertices
+  * @param {(Vector3)[]} vertices
   */
   add_vertices(vertices) {
     const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
@@ -301,10 +301,10 @@ class BaseFlatMesh {
     wasm.baseflatmesh_add_vertices(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3D} vertex
+  * @param {Vector3} vertex
   */
   add_vertex(vertex) {
-    _assertClass(vertex, Vector3D);
+    _assertClass(vertex, Vector3$1);
     var ptr0 = vertex.__destroy_into_raw();
     wasm.baseflatmesh_add_vertex(this.__wbg_ptr, ptr0);
   }
@@ -418,47 +418,47 @@ class BasePolygon {
     wasm.__wbg_set_basepolygon_is_polygon(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get position() {
     const ret = wasm.__wbg_get_basepolygon_position(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set position(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_basepolygon_position(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get rotation() {
     const ret = wasm.__wbg_get_basepolygon_rotation(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set rotation(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_basepolygon_rotation(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get scale() {
     const ret = wasm.__wbg_get_basepolygon_scale(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set scale(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_basepolygon_scale(this.__wbg_ptr, ptr0);
   }
@@ -521,7 +521,7 @@ class BasePolygon {
     return BasePolygon.__wrap(ret);
   }
   /**
-  * @param {(Vector3D)[]} vertices
+  * @param {(Vector3)[]} vertices
   */
   add_vertices(vertices) {
     const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
@@ -529,15 +529,15 @@ class BasePolygon {
     wasm.basepolygon_add_vertices(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3D} vertex
+  * @param {Vector3} vertex
   */
   add_vertex(vertex) {
-    _assertClass(vertex, Vector3D);
+    _assertClass(vertex, Vector3$1);
     var ptr0 = vertex.__destroy_into_raw();
     wasm.basepolygon_add_vertex(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {(Vector3D)[]} holes
+  * @param {(Vector3)[]} holes
   */
   add_holes(holes) {
     const ptr0 = passArrayJsValueToWasm0(holes, wasm.__wbindgen_malloc);
@@ -740,14 +740,14 @@ class CircleArc {
     return CircleArc.__wrap(ret);
   }
   /**
-  * @param {Vector3D} center
+  * @param {Vector3} center
   * @param {number} radius
   * @param {number} start_angle
   * @param {number} end_angle
   * @param {number} segments
   */
   set_config(center, radius, start_angle, end_angle, segments) {
-    _assertClass(center, Vector3D);
+    _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.circlearc_set_config(this.__wbg_ptr, ptr0, radius, start_angle, end_angle, segments);
   }
@@ -763,10 +763,10 @@ class CircleArc {
     wasm.circlearc_update_radius(this.__wbg_ptr, radius);
   }
   /**
-  * @param {Vector3D} center
+  * @param {Vector3} center
   */
   update_center(center) {
-    _assertClass(center, Vector3D);
+    _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.circlearc_update_center(this.__wbg_ptr, ptr0);
   }
@@ -800,7 +800,7 @@ class CircleArc {
     }
   }
   /**
-  * @returns {(Vector3D)[]}
+  * @returns {(Vector3)[]}
   */
   get_raw_points() {
     try {
@@ -821,7 +821,9 @@ typeof FinalizationRegistry === 'undefined' ? {
 typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_colorrgb_free(ptr >>> 0, 1));
 typeof FinalizationRegistry === 'undefined' ? {
-  } : new FinalizationRegistry(ptr => wasm.__wbg_matrix3d_free(ptr >>> 0, 1));
+  } : new FinalizationRegistry(ptr => wasm.__wbg_matrix3_free(ptr >>> 0, 1));
+typeof FinalizationRegistry === 'undefined' ? {
+  } : new FinalizationRegistry(ptr => wasm.__wbg_matrix4_free(ptr >>> 0, 1));
 const OGCylinderFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -878,14 +880,14 @@ class OGCylinder {
     return this;
   }
   /**
-  * @param {Vector3D} center
+  * @param {Vector3} center
   * @param {number} radius
   * @param {number} height
   * @param {number} angle
   * @param {number} segments
   */
   set_config(center, radius, height, angle, segments) {
-    _assertClass(center, Vector3D);
+    _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogcylinder_set_config(this.__wbg_ptr, ptr0, radius, height, angle, segments);
   }
@@ -1027,30 +1029,36 @@ class OGPolyLine {
     return OGPolyLine.__wrap(ret);
   }
   /**
-  * @param {(Vector3D)[]} points
+  * @param {Vector3} translation
   */
-  set_config(points) {
+  translate(translation) {
+    _assertClass(translation, Vector3$1);
+    var ptr0 = translation.__destroy_into_raw();
+    wasm.ogpolyline_translate(this.__wbg_ptr, ptr0);
+  }
+  /**
+  * @param {Vector3} position
+  */
+  set_position(position) {
+    _assertClass(position, Vector3$1);
+    var ptr0 = position.__destroy_into_raw();
+    wasm.ogpolyline_set_position(this.__wbg_ptr, ptr0);
+  }
+  /**
+  * @param {(Vector3)[]} points
+  */
+  add_multiple_points(points) {
     const ptr0 = passArrayJsValueToWasm0(points, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    wasm.ogpolyline_set_config(this.__wbg_ptr, ptr0, len0);
+    wasm.ogpolyline_add_multiple_points(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3D} point
+  * @param {Vector3} point
   */
   add_point(point) {
-    _assertClass(point, Vector3D);
+    _assertClass(point, Vector3$1);
     var ptr0 = point.__destroy_into_raw();
     wasm.ogpolyline_add_point(this.__wbg_ptr, ptr0);
-  }
-  /**
-  */
-  dispose_points() {
-    wasm.ogpolyline_destroy(this.__wbg_ptr);
-  }
-  /**
-  */
-  destroy() {
-    wasm.ogpolyline_destroy(this.__wbg_ptr);
   }
   /**
   * @returns {string}
@@ -1072,7 +1080,7 @@ class OGPolyLine {
     }
   }
   /**
-  * @returns {(Vector3D)[]}
+  * @returns {(Vector3)[]}
   */
   get_raw_points() {
     try {
@@ -1098,6 +1106,65 @@ class OGPolyLine {
   */
   check_closed_test() {
     wasm.ogpolyline_check_closed_test(this.__wbg_ptr);
+  }
+  /**
+  */
+  generate_brep() {
+    wasm.ogpolyline_generate_brep(this.__wbg_ptr);
+  }
+  /**
+  * @returns {string}
+  */
+  get_brep_data() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolyline_get_brep_data(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @param {number} distance
+  * @returns {string}
+  */
+  get_offset(distance) {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolyline_get_offset(retptr, this.__wbg_ptr, distance);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+  * @param {Vector3} point_a
+  * @param {Vector3} point_b
+  * @param {Vector3} point_c
+  * @param {Vector3} point_d
+  * @returns {Vector3 | undefined}
+  */
+  static calculate_2D_interesection(point_a, point_b, point_c, point_d) {
+    _assertClass(point_a, Vector3$1);
+    _assertClass(point_b, Vector3$1);
+    _assertClass(point_c, Vector3$1);
+    _assertClass(point_d, Vector3$1);
+    const ret = wasm.ogpolyline_calculate_2D_interesection(point_a.__wbg_ptr, point_b.__wbg_ptr, point_c.__wbg_ptr, point_d.__wbg_ptr);
+    return ret === 0 ? undefined : Vector3$1.__wrap(ret);
   }
 }
 const OGPolygonFinalization = typeof FinalizationRegistry === 'undefined' ? {
@@ -1164,47 +1231,47 @@ class OGPolygon {
     wasm.__wbg_set_ogpolygon_is_polygon(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get position() {
     const ret = wasm.__wbg_get_ogpolygon_position(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set position(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_ogpolygon_position(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get rotation() {
     const ret = wasm.__wbg_get_ogpolygon_rotation(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set rotation(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_ogpolygon_rotation(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   get scale() {
     const ret = wasm.__wbg_get_ogpolygon_scale(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3D} arg0
+  * @param {Vector3} arg0
   */
   set scale(arg0) {
-    _assertClass(arg0, Vector3D);
+    _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_ogpolygon_scale(this.__wbg_ptr, ptr0);
   }
@@ -1247,6 +1314,14 @@ class OGPolygon {
     return this;
   }
   /**
+  * @param {Vector3} translation
+  */
+  translate(translation) {
+    _assertClass(translation, Vector3$1);
+    var ptr0 = translation.__destroy_into_raw();
+    wasm.ogpolygon_translate(this.__wbg_ptr, ptr0);
+  }
+  /**
   * @param {CircleArc} circle_arc
   * @returns {OGPolygon}
   */
@@ -1267,7 +1342,7 @@ class OGPolygon {
     return OGPolygon.__wrap(ret);
   }
   /**
-  * @param {(Vector3D)[]} vertices
+  * @param {(Vector3)[]} vertices
   */
   add_vertices(vertices) {
     const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
@@ -1275,15 +1350,15 @@ class OGPolygon {
     wasm.ogpolygon_add_vertices(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3D} vertex
+  * @param {Vector3} vertex
   */
   add_vertex(vertex) {
-    _assertClass(vertex, Vector3D);
+    _assertClass(vertex, Vector3$1);
     var ptr0 = vertex.__destroy_into_raw();
     wasm.ogpolygon_add_vertex(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {(Vector3D)[]} holes
+  * @param {(Vector3)[]} holes
   */
   add_holes(holes) {
     const ptr0 = passArrayJsValueToWasm0(holes, wasm.__wbindgen_malloc);
@@ -1366,6 +1441,11 @@ class OGPolygon {
       wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
+  }
+  /**
+  */
+  clear_buffer() {
+    wasm.ogpolygon_clear_buffer(this.__wbg_ptr);
   }
   /**
   */
@@ -1493,6 +1573,25 @@ class OGPolygon {
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
+  /**
+  * @returns {string}
+  */
+  binary_tree() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.ogpolygon_binary_tree(retptr, this.__wbg_ptr);
+      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+      deferred1_0 = r0;
+      deferred1_1 = r1;
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
 }
 const OGRectangleFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
@@ -1564,12 +1663,12 @@ class OGRectangle {
     return OGRectangle.__wrap(ret);
   }
   /**
-  * @param {Vector3D} center
+  * @param {Vector3} center
   * @param {number} width
   * @param {number} breadth
   */
   set_config(center, width, breadth) {
-    _assertClass(center, Vector3D);
+    _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogrectangle_set_config(this.__wbg_ptr, ptr0, width, breadth);
   }
@@ -1591,10 +1690,10 @@ class OGRectangle {
     wasm.ogrectangle_update_breadth(this.__wbg_ptr, breadth);
   }
   /**
-  * @param {Vector3D} center
+  * @param {Vector3} center
   */
   update_center(center) {
-    _assertClass(center, Vector3D);
+    _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogrectangle_update_center(this.__wbg_ptr, ptr0);
   }
@@ -1628,7 +1727,7 @@ class OGRectangle {
     }
   }
   /**
-  * @returns {(Vector3D)[]}
+  * @returns {(Vector3)[]}
   */
   get_raw_points() {
     try {
@@ -1714,13 +1813,13 @@ class OGSimpleLine {
     return OGSimpleLine.__wrap(ret);
   }
   /**
-  * @param {Vector3D} start
-  * @param {Vector3D} end
+  * @param {Vector3} start
+  * @param {Vector3} end
   */
   set_config(start, end) {
-    _assertClass(start, Vector3D);
+    _assertClass(start, Vector3$1);
     var ptr0 = start.__destroy_into_raw();
-    _assertClass(end, Vector3D);
+    _assertClass(end, Vector3$1);
     var ptr1 = end.__destroy_into_raw();
     wasm.ogsimpleline_set_config(this.__wbg_ptr, ptr0, ptr1);
   }
@@ -1754,7 +1853,7 @@ class OGSimpleLine {
     }
   }
   /**
-  * @returns {(Vector3D)[]}
+  * @returns {(Vector3)[]}
   */
   get_raw_points() {
     try {
@@ -1770,22 +1869,22 @@ class OGSimpleLine {
     }
   }
 }
-const Vector3DFinalization = typeof FinalizationRegistry === 'undefined' ? {
+const Vector3Finalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
-} : new FinalizationRegistry(ptr => wasm.__wbg_vector3d_free(ptr >>> 0, 1));
+} : new FinalizationRegistry(ptr => wasm.__wbg_vector3_free(ptr >>> 0, 1));
 /**
 */
-class Vector3D {
+let Vector3$1 = class Vector3 {
   static __wrap(ptr) {
     ptr = ptr >>> 0;
-    const obj = Object.create(Vector3D.prototype);
+    const obj = Object.create(Vector3.prototype);
     obj.__wbg_ptr = ptr;
-    Vector3DFinalization.register(obj, obj.__wbg_ptr, obj);
+    Vector3Finalization.register(obj, obj.__wbg_ptr, obj);
     return obj;
   }
   static __unwrap(jsValue) {
-    if (!(jsValue instanceof Vector3D)) {
+    if (!(jsValue instanceof Vector3)) {
       return 0;
     }
     return jsValue.__destroy_into_raw();
@@ -1793,51 +1892,51 @@ class Vector3D {
   __destroy_into_raw() {
     const ptr = this.__wbg_ptr;
     this.__wbg_ptr = 0;
-    Vector3DFinalization.unregister(this);
+    Vector3Finalization.unregister(this);
     return ptr;
   }
   free() {
     const ptr = this.__destroy_into_raw();
-    wasm.__wbg_vector3d_free(ptr, 0);
+    wasm.__wbg_vector3_free(ptr, 0);
   }
   /**
   * @returns {number}
   */
   get x() {
-    const ret = wasm.__wbg_get_matrix3d_m11(this.__wbg_ptr);
+    const ret = wasm.__wbg_get_vector3_x(this.__wbg_ptr);
     return ret;
   }
   /**
   * @param {number} arg0
   */
   set x(arg0) {
-    wasm.__wbg_set_matrix3d_m11(this.__wbg_ptr, arg0);
+    wasm.__wbg_set_vector3_x(this.__wbg_ptr, arg0);
   }
   /**
   * @returns {number}
   */
   get y() {
-    const ret = wasm.__wbg_get_matrix3d_m12(this.__wbg_ptr);
+    const ret = wasm.__wbg_get_vector3_y(this.__wbg_ptr);
     return ret;
   }
   /**
   * @param {number} arg0
   */
   set y(arg0) {
-    wasm.__wbg_set_matrix3d_m12(this.__wbg_ptr, arg0);
+    wasm.__wbg_set_vector3_y(this.__wbg_ptr, arg0);
   }
   /**
   * @returns {number}
   */
   get z() {
-    const ret = wasm.__wbg_get_matrix3d_m13(this.__wbg_ptr);
+    const ret = wasm.__wbg_get_vector3_z(this.__wbg_ptr);
     return ret;
   }
   /**
   * @param {number} arg0
   */
   set z(arg0) {
-    wasm.__wbg_set_matrix3d_m13(this.__wbg_ptr, arg0);
+    wasm.__wbg_set_vector3_z(this.__wbg_ptr, arg0);
   }
   /**
   * @param {number} x
@@ -1845,90 +1944,210 @@ class Vector3D {
   * @param {number} z
   */
   constructor(x, y, z) {
-    const ret = wasm.vector3d_create(x, y, z);
+    const ret = wasm.vector3_new(x, y, z);
     this.__wbg_ptr = ret >>> 0;
-    Vector3DFinalization.register(this, this.__wbg_ptr, this);
+    Vector3Finalization.register(this, this.__wbg_ptr, this);
     return this;
   }
   /**
-  * @param {number} x
-  * @param {number} y
-  * @param {number} z
-  */
-  update(x, y, z) {
-    wasm.vector3d_update(this.__wbg_ptr, x, y, z);
-  }
-  /**
-  * @param {Vector3D} other
-  * @returns {Vector3D}
+  *
+  *  * Add the elements of another vector to this one.
+  *
+  * @param {Vector3} other
+  * @returns {Vector3}
   */
   add(other) {
-    _assertClass(other, Vector3D);
-    const ret = wasm.vector3d_add(this.__wbg_ptr, other.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_add(this.__wbg_ptr, other.__wbg_ptr);
+    return Vector3.__wrap(ret);
   }
   /**
-  * @param {Vector3D} other
-  * @returns {Vector3D}
-  */
-  subtract(other) {
-    _assertClass(other, Vector3D);
-    const ret = wasm.vector3d_subtract(this.__wbg_ptr, other.__wbg_ptr);
-    return Vector3D.__wrap(ret);
-  }
-  /**
+  *
+  *  * Add a scalar value to each element of the vector.
+  *
   * @param {number} scalar
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   add_scalar(scalar) {
-    const ret = wasm.vector3d_add_scalar(this.__wbg_ptr, scalar);
-    return Vector3D.__wrap(ret);
+    const ret = wasm.vector3_add_scalar(this.__wbg_ptr, scalar);
+    return Vector3.__wrap(ret);
   }
   /**
+  *
+  *  * Subtract the elements of another vector from this one.
+  *
+  * @param {Vector3} other
+  * @returns {Vector3}
+  */
+  subtract(other) {
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_subtract(this.__wbg_ptr, other.__wbg_ptr);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Subtract a scalar value from each element of the vector.
+  *
   * @param {number} scalar
-  * @returns {Vector3D}
+  * @returns {Vector3}
   */
   subtract_scalar(scalar) {
-    const ret = wasm.vector3d_subtract_scalar(this.__wbg_ptr, scalar);
-    return Vector3D.__wrap(ret);
+    const ret = wasm.vector3_subtract_scalar(this.__wbg_ptr, scalar);
+    return Vector3.__wrap(ret);
   }
   /**
-  * @param {number} height
-  * @param {Vector3D} up_vector
-  * @returns {Vector3D}
+  *
+  *  * Clone the Vector3 instance and return a new one.
+  *
+  * @returns {Vector3}
   */
-  add_extrude_in_up(height, up_vector) {
-    _assertClass(up_vector, Vector3D);
-    var ptr0 = up_vector.__destroy_into_raw();
-    const ret = wasm.vector3d_add_extrude_in_up(this.__wbg_ptr, height, ptr0);
-    return Vector3D.__wrap(ret);
+  clone() {
+    const ret = wasm.vector3_clone(this.__wbg_ptr);
+    return Vector3.__wrap(ret);
   }
   /**
-  * @param {Vector3D} other
-  * @returns {Vector3D}
+  *
+  *  * Set the current vector elements to zero.
+  *
   */
-  cross(other) {
-    _assertClass(other, Vector3D);
-    const ret = wasm.vector3d_cross(this.__wbg_ptr, other.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+  zero() {
+    wasm.vector3_zero(this.__wbg_ptr);
   }
   /**
-  * @param {Vector3D} other
+  *
+  *  * Copy the elements from another Vector3 instance.
+  *
+  * @param {Vector3} other
+  */
+  copy(other) {
+    _assertClass(other, Vector3);
+    wasm.vector3_copy(this.__wbg_ptr, other.__wbg_ptr);
+  }
+  /**
+  *
+  *  * Multiply the vector by a scalar value.
+  *
+  * @param {number} scalar
+  * @returns {Vector3}
+  */
+  multiply_scalar(scalar) {
+    const ret = wasm.vector3_multiply_scalar(this.__wbg_ptr, scalar);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Multiply the vector by another Vector3 instance element-wise.
+  *
+  * @param {Vector3} other
+  * @returns {Vector3}
+  */
+  multiply(other) {
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_multiply(this.__wbg_ptr, other.__wbg_ptr);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Divide the vector by another Vector3 instance element-wise.
+  *
+  * @param {Vector3} other
+  * @returns {Vector3}
+  */
+  divide(other) {
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_divide(this.__wbg_ptr, other.__wbg_ptr);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Divide the vector by a scalar value.
+  *
+  * @param {number} scalar
+  * @returns {Vector3}
+  */
+  divide_scalar(scalar) {
+    const ret = wasm.vector3_divide_scalar(this.__wbg_ptr, scalar);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Invert the vector by negating the vector elements.
+  *
+  * @returns {Vector3}
+  */
+  negate() {
+    const ret = wasm.vector3_negate(this.__wbg_ptr);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Calculate the dot product of this vector with another Vector3 instance.
+  *
+  * @param {Vector3} other
   * @returns {number}
   */
   dot(other) {
-    _assertClass(other, Vector3D);
-    const ret = wasm.vector3d_dot(this.__wbg_ptr, other.__wbg_ptr);
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_dot(this.__wbg_ptr, other.__wbg_ptr);
     return ret;
   }
   /**
-  * @returns {Vector3D}
+  *
+  *  * Calculate the magnitude (length) of the vector.
+  *
+  * @returns {number}
   */
-  clone() {
-    const ret = wasm.vector3d_clone(this.__wbg_ptr);
-    return Vector3D.__wrap(ret);
+  magnitude() {
+    const ret = wasm.vector3_magnitude(this.__wbg_ptr);
+    return ret;
   }
-}
+  /**
+  *
+  *  * Calculate the length of the vector.
+  *  * Since length is equivalent to magnitude, this method is an alias.
+  *
+  * @returns {number}
+  */
+  length() {
+    const ret = wasm.vector3_length(this.__wbg_ptr);
+    return ret;
+  }
+  /**
+  *
+  *  * Normalize the vector
+  *
+  * @returns {Vector3}
+  */
+  normalize() {
+    const ret = wasm.vector3_normalize(this.__wbg_ptr);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Calculate the cross product and return the result as a new Vector3
+  *
+  * @param {Vector3} other
+  * @returns {Vector3}
+  */
+  cross(other) {
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_cross(this.__wbg_ptr, other.__wbg_ptr);
+    return Vector3.__wrap(ret);
+  }
+  /**
+  *
+  *  * Calculate the distance between this vector and another Vector3 instance.
+  *  * Return the distance as a f64 value in Euclidean space.
+  *
+  * @param {Vector3} other
+  * @returns {number}
+  */
+  distance(other) {
+    _assertClass(other, Vector3);
+    const ret = wasm.vector3_distance(this.__wbg_ptr, other.__wbg_ptr);
+    return ret;
+  }
+};
 async function __wbg_load(module, imports) {
   if (typeof Response === 'function' && module instanceof Response) {
     if (typeof WebAssembly.instantiateStreaming === 'function') {
@@ -1959,17 +2178,23 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
   const imports = {};
   imports.wbg = {};
-  imports.wbg.__wbg_vector3d_new = function (arg0) {
-    const ret = Vector3D.__wrap(arg0);
-    return addHeapObject(ret);
-  };
-  imports.wbg.__wbg_vector3d_unwrap = function (arg0) {
-    const ret = Vector3D.__unwrap(takeObject(arg0));
-    return ret;
-  };
   imports.wbg.__wbindgen_string_new = function (arg0, arg1) {
     const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
+  };
+  imports.wbg.__wbindgen_object_drop_ref = function (arg0) {
+    takeObject(arg0);
+  };
+  imports.wbg.__wbg_log_b103404cc5920657 = function (arg0) {
+    console.log(getObject(arg0));
+  };
+  imports.wbg.__wbg_vector3_new = function (arg0) {
+    const ret = Vector3$1.__wrap(arg0);
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_vector3_unwrap = function (arg0) {
+    const ret = Vector3$1.__unwrap(takeObject(arg0));
+    return ret;
   };
   imports.wbg.__wbindgen_throw = function (arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
@@ -13382,12 +13607,14 @@ class Pencil {
         // Raycaster
         this.raycaster.params.Line.threshold = 0.1;
         // A Dummy Ground Plane
-        const geometry = new PlaneGeometry(100, 100);
+        const geometry = new PlaneGeometry(1000, 1000);
+        // const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide, wireframe: true });
         const material = new MeshBasicMaterial({ color: 0xffff00, side: DoubleSide, transparent: true, opacity: 0 });
         const plane = new Mesh(geometry, material);
         plane.name = "pencil-ground";
         plane.rotation.x = Math.PI / 2;
         this.scene.add(plane);
+        // plane.visible = true;
         plane.visible = false;
         this.dummyPlane = plane;
     }
@@ -13460,6 +13687,17 @@ class Pencil {
             }
         });
     }
+    fireCursor(mouse) {
+        const rect = this.container.getBoundingClientRect();
+        const x = ((mouse.clientX - rect.left) / rect.width) * 2 - 1;
+        const y = -((mouse.clientY - rect.top) / rect.height) * 2 + 1;
+        this.raycaster.setFromCamera(new Vector2(x, y), this.camera);
+        const intersects = this.raycaster.intersectObjects([this.dummyPlane]);
+        if (intersects.length > 0) {
+            const point = intersects[0].point;
+            this.onCursorDown.trigger(point);
+        }
+    }
 }
 
 function spotLabelElement() {
@@ -13491,7 +13729,7 @@ class SimpleLine extends Line {
             this.material.color.set(color);
         }
     }
-    constructor(start = new Vector3D(1, 0, 0), end = new Vector3D(-1, 0, 0)) {
+    constructor(start = new Vector3$1(1, 0, 0), end = new Vector3$1(-1, 0, 0)) {
         super();
         this.points = [];
         this.ogid = getUUID();
@@ -13529,23 +13767,40 @@ class PolyLine extends Line {
             this.material.color.set(color);
         }
     }
-    constructor(points = []) {
+    constructor(points) {
         super();
         this.points = [];
         this.isClosed = false;
+        this.polyline = null;
         this.ogid = getUUID();
-        this.points = points;
         this.polyline = new OGPolyLine(this.ogid);
-        this.setConfig(points);
+        if (points) {
+            this.addMultiplePoints(points);
+        }
+    }
+    addMultiplePoints(points) {
+        this.points = points;
+        if (!this.polyline)
+            return;
+        this.polyline.add_multiple_points(points);
         this.generateGeometry();
     }
-    setConfig(points) {
-        if (this.points.length < 2)
+    // TODO: This needs to be improved 
+    translate(translation) {
+        if (!this.polyline)
             return;
-        this.polyline.set_config(points);
+        this.polyline.translate(translation);
+        this.generateGeometry();
+    }
+    set_position(position) {
+        if (!this.polyline)
+            return;
+        this.polyline.set_position(position);
     }
     addPoint(point) {
         this.points.push(point);
+        if (!this.polyline)
+            return;
         this.polyline.add_point(point);
         if (this.points.length < 2)
             return;
@@ -13556,6 +13811,8 @@ class PolyLine extends Line {
     }
     generateGeometry() {
         this.clearGeometry();
+        if (!this.polyline)
+            return;
         const buf = this.polyline.get_points();
         const bufFlush = JSON.parse(buf);
         const line = new BufferGeometry().setFromPoints(bufFlush);
@@ -13564,8 +13821,32 @@ class PolyLine extends Line {
         this.material = material;
         this.isClosed = this.polyline.is_closed();
     }
+    getBrepData() {
+        if (!this.polyline)
+            return null;
+        return this.polyline.get_brep_data();
+    }
+    // TODO: Add proper return type
+    createOffset(offset) {
+        if (!this.polyline)
+            return null;
+        const offsetData = this.polyline.get_offset(offset);
+        if (!offsetData)
+            return null;
+        const data = JSON.parse(offsetData);
+        if (!data.treated || data.treated.length === 0) {
+            return null;
+        }
+        return data;
+    }
+    dispose() {
+        console.log("Disposing OG - Polyline");
+        this.clearGeometry();
+        this.polyline = null;
+    }
 }
 
+// TODO: What if user wants infintely smooth circle
 class BaseCircle extends Line {
     set color(color) {
         if (this.material instanceof LineBasicMaterial) {
@@ -13590,7 +13871,6 @@ class BaseCircle extends Line {
         this.circleArc.generate_points();
         const bufRaw = this.circleArc.get_points();
         const bufFlush = JSON.parse(bufRaw);
-        console.log(bufFlush);
         const line = new BufferGeometry().setFromPoints(bufFlush);
         const material = new LineBasicMaterial({ color: 0x000000 });
         this.geometry = line;
@@ -13609,11 +13889,13 @@ class BaseCircle extends Line {
     }
 }
 
-var _Rectangle_color;
+class BasePrimitive extends Line {
+}
+
 /**
  * Rectangle
  */
-class Rectangle extends Line {
+class Rectangle extends BasePrimitive {
     set width(width) {
         this.options.width = width;
         this.polyLineRectangle.update_width(width);
@@ -13624,33 +13906,47 @@ class Rectangle extends Line {
         this.polyLineRectangle.update_breadth(breadth);
         this.generateGeometry();
     }
+    set center(center) {
+        this.options.center = center;
+        this.polyLineRectangle.update_center(center);
+        this.generateGeometry();
+    }
     set color(color) {
         if (this.material instanceof LineBasicMaterial) {
             this.material.color.set(color);
-            __classPrivateFieldSet(this, _Rectangle_color, color, "f");
+            this.options.color = color;
         }
     }
     constructor(options) {
+        var _a;
         super();
-        // nodeChild: RectanglePoly | null = null;
-        this.nodeOperation = "none";
-        _Rectangle_color.set(this, 0x000000);
-        this.ogid = getUUID();
-        this.options = options;
-        this.polyLineRectangle = new OGRectangle(this.ogid);
-        this.setConfig();
+        this.options = {
+            width: 1,
+            breadth: 1,
+            center: new Vector3$1(0, 0, 0),
+            color: 0x000000,
+        };
+        const ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
+        this.polyLineRectangle = new OGRectangle(ogid);
+        const mergedOptions = Object.assign(Object.assign(Object.assign({}, this.options), options), { ogid });
+        this.setConfig(mergedOptions);
         this.generateGeometry();
     }
-    setConfig() {
+    setConfig(options) {
+        this.options = options;
+        console.log("Rectangle options set:", this.options);
         const { breadth, width, center } = this.options;
         this.polyLineRectangle.set_config(center, width, breadth);
+    }
+    getConfig() {
+        return this.options;
     }
     generateGeometry() {
         this.polyLineRectangle.generate_points();
         const bufRaw = this.polyLineRectangle.get_points();
         const bufFlush = JSON.parse(bufRaw);
         const line = new BufferGeometry().setFromPoints(bufFlush);
-        const material = new LineBasicMaterial({ color: __classPrivateFieldGet(this, _Rectangle_color, "f") });
+        const material = new LineBasicMaterial({ color: this.options.color });
         this.geometry = line;
         this.material = material;
     }
@@ -13658,7 +13954,6 @@ class Rectangle extends Line {
         this.geometry.dispose();
     }
 }
-_Rectangle_color = new WeakMap();
 
 var _Cylinder_outlineMesh;
 class Cylinder extends Mesh {
@@ -13682,7 +13977,7 @@ class Cylinder extends Mesh {
     setConfig() {
         this.validateOptions();
         const { radius, height, segments, angle, center } = this.options;
-        this.cylinder.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3D(0, 0, 0), radius, height, angle, segments);
+        this.cylinder.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), radius, height, angle, segments);
     }
     generateGeometry() {
         var _a, _b, _c;
@@ -13770,6 +14065,19 @@ class Polygon extends Mesh {
         //   return originalCopy(v);
         // };
     }
+    translate(translation) {
+        if (!this.polygon)
+            return;
+        console.log("Translating polygon by", translation.x, translation.y, translation.z);
+        this.geometry.dispose();
+        this.polygon.clear_buffer();
+        this.polygon.translate(translation);
+        this.polygon.triangulate();
+        console.log("Polygon translated by", translation);
+        const bufFlush = this.polygon.get_buffer_flush();
+        console.log("Buffer flush after translation:", bufFlush);
+        this.addFlushBufferToScene(bufFlush);
+    }
     addVertices(vertices) {
         var _a, _b;
         if (!this.polygon)
@@ -13785,7 +14093,7 @@ class Polygon extends Mesh {
             return;
         this.layerVertices = [];
         this.geometry.dispose();
-        (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.reset_polygon();
+        (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.clear_vertices();
         this.isTriangulated = false;
     }
     addVertex(threeVertex) {
@@ -13793,15 +14101,15 @@ class Polygon extends Mesh {
         if (this.isTriangulated) {
             this.layerVertices = [];
             this.geometry.dispose();
-            (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.reset_polygon();
+            (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.clear_vertices();
             this.isTriangulated = false;
             for (const vertex of this.layerBackVertices) {
                 this.layerVertices.push(vertex.clone());
             }
         }
-        const backupVertex = new Vector3D(parseFloat(threeVertex.x.toFixed(2)), 0, parseFloat(threeVertex.z.toFixed(2)));
+        const backupVertex = new Vector3$1(parseFloat(threeVertex.x.toFixed(2)), 0, parseFloat(threeVertex.z.toFixed(2)));
         this.layerBackVertices.push(backupVertex);
-        const vertex = new Vector3D(parseFloat(threeVertex.x.toFixed(2)), 
+        const vertex = new Vector3$1(parseFloat(threeVertex.x.toFixed(2)), 
         // when doing the parse operation getting -0 instead of 0
         0, parseFloat(threeVertex.z.toFixed(2)));
         this.layerVertices.push(vertex);
@@ -13869,10 +14177,20 @@ class Polygon extends Mesh {
     }
     getBrepData() {
         if (!this.polygon)
-            return;
+            return null;
         const brepData = this.polygon.get_brep_data();
-        const parsedData = JSON.parse(brepData);
-        console.log(parsedData);
+        return brepData;
+    }
+    set outlineColor(color) {
+        if (__classPrivateFieldGet(this, _Polygon_outlineMesh, "f") && __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").material instanceof LineBasicMaterial) {
+            __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").material.color.set(color);
+        }
+    }
+    get outlineColor() {
+        if (__classPrivateFieldGet(this, _Polygon_outlineMesh, "f") && __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").material instanceof LineBasicMaterial) {
+            return __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").material.color.getHex();
+        }
+        return 0x000000; // Default color if outline mesh is not present
     }
     set outline(enable) {
         if (enable && !__classPrivateFieldGet(this, _Polygon_outlineMesh, "f") && this.polygon) {
@@ -13902,23 +14220,93 @@ class Polygon extends Mesh {
         }
         return false;
     }
+    bTree() {
+        if (!this.polygon)
+            return;
+        const bTree = this.polygon.binary_tree();
+        const parsedData = JSON.parse(bTree);
+        console.log(parsedData);
+    }
+    dispose() {
+        // console.log("Disposing OG - Polygon");
+        this.geometry.dispose();
+        if (this.material instanceof Material) {
+            this.material.dispose();
+        }
+        if (__classPrivateFieldGet(this, _Polygon_outlineMesh, "f")) {
+            __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").geometry.dispose();
+            if (__classPrivateFieldGet(this, _Polygon_outlineMesh, "f").material instanceof Material) {
+                __classPrivateFieldGet(this, _Polygon_outlineMesh, "f").material.dispose();
+            }
+        }
+        this.polygon = null;
+        this.layerVertices = [];
+        this.layerBackVertices = [];
+    }
 }
 _Polygon_outlineMesh = new WeakMap();
 
 class OpenGeometry {
+    set enablePencil(value) {
+        if (value && !this._pencil) {
+            if (!this.container || !this.scene) {
+                throw new Error("Container or Scene is not defined");
+            }
+            this._pencil = new Pencil(this.container, this.scene, this.camera);
+        }
+        else if (!value && this._pencil) ;
+    }
+    get pencil() {
+        return this._pencil;
+    }
+    get labelRenderer() {
+        return this._labelRenderer;
+    }
+    get enableDebug() {
+        return this._enableDebug;
+    }
+    /**
+     * Enables or disables debug mode for OpenGeometry.
+     * When enabled, it logs debug information to the console.
+     * Addtionally,
+     * 1. The geometry will be rendered with a semi-transparent material.
+     * 2. The faces will be rendered with a random color.
+     * 3. The normals will be rendered for better visualization.
+     * @param value - A boolean indicating whether to enable or disable debug mode.
+     */
+    set enableDebug(value) {
+        this._enableDebug = value;
+        if (this._enableDebug) {
+            console.log("OpenGeometry Debug Mode Enabled");
+        }
+    }
     constructor(container, threeScene, camera) {
         this.camera = camera;
+        this._enableDebug = false;
         this.scene = threeScene;
         this.container = container;
     }
-    // Why Generic Types are used sometimes
-    // verifyOptions(options: OpenGeometryOptions) {
-    //   for (const key in options) {
-    //     if (options[key as keyof OpenGeometryOptions] === undefined) {
-    //       throw new Error(`Missing required option: ${key}`);
-    //     }
-    //   }
-    // }
+    /**
+     * Asynchronously creates and initializes an instance of OpenGeometry.
+     *
+     * This factory method sets up the OpenGeometry engine by linking it with the
+     * rendering context and the WebAssembly module. It ensures all required
+     * options are provided and prepares the instance for 3D geometry operations.
+     *
+     * @param options - Configuration object for initializing OpenGeometry.
+     * @returns A promise that resolves to a fully initialized OpenGeometry instance.
+     * @throws If any of the required options (`container`, `scene`, or `camera`) are missing.
+     *
+     * @example
+     * ```ts
+     * const openGeometry = await OpenGeometry.create({
+     *   container: document.getElementById('myContainer')!,
+     *   scene: threeScene,
+     *   camera: threeCamera,
+     *   wasmURL: '/assets/opengeometry.wasm'
+     * });
+     * ```
+     */
     static create(options) {
         return __awaiter(this, void 0, void 0, function* () {
             const { container, scene, camera } = options;
@@ -13934,17 +14322,8 @@ class OpenGeometry {
         return __awaiter(this, void 0, void 0, function* () {
             yield __wbg_init(wasmURL);
             this.setuplabelRenderer();
-            if (!this.container || !this.scene)
-                return;
-            this._pencil = new Pencil(this.container, this.scene, this.camera);
             this.setupEvent();
         });
-    }
-    get pencil() {
-        return this._pencil;
-    }
-    get labelRenderer() {
-        return this._labelRenderer;
     }
     setuplabelRenderer() {
         if (!this.container || !this.scene) {
@@ -13958,6 +14337,8 @@ class OpenGeometry {
         this._labelRenderer = labelRenderer;
     }
     setupEvent() {
+        // NOTE: The responsibility to resize normal rendererer lies with the user
+        // but the label renderer should be resized automatically
         window.addEventListener("resize", () => {
             var _a, _b, _c;
             if (!this.container)
@@ -13965,6 +14346,13 @@ class OpenGeometry {
             (_a = this._labelRenderer) === null || _a === void 0 ? void 0 : _a.setSize((_b = this.container) === null || _b === void 0 ? void 0 : _b.clientWidth, (_c = this.container) === null || _c === void 0 ? void 0 : _c.clientHeight);
         });
     }
+    // TODO: Can this be handled inside the OpenGeometry class itself?
+    /**
+     * Updates the label renderer to render the scene with the given camera.
+     * This method should be called in the animation loop or render loop of your application.
+     * @param scene - The Three.js scene containing the objects to be rendered.
+     * @param camera - The Three.js camera used for rendering the scene.
+     */
     update(scene, camera) {
         var _a;
         (_a = this._labelRenderer) === null || _a === void 0 ? void 0 : _a.render(scene, camera);
@@ -14018,9 +14406,9 @@ class BasePoly extends Mesh {
                 this.layerVertices.push(vertex.clone());
             }
         }
-        const backupVertex = new Vector3D(parseFloat(threeVertex.x.toFixed(2)), 0, parseFloat(threeVertex.z.toFixed(2)));
+        const backupVertex = new Vector3$1(parseFloat(threeVertex.x.toFixed(2)), 0, parseFloat(threeVertex.z.toFixed(2)));
         this.layerBackVertices.push(backupVertex);
-        const vertex = new Vector3D(parseFloat(threeVertex.x.toFixed(2)), 
+        const vertex = new Vector3$1(parseFloat(threeVertex.x.toFixed(2)), 
         // when doing the parse operation getting -0 instead of 0
         0, parseFloat(threeVertex.z.toFixed(2)));
         this.layerVertices.push(vertex);
@@ -14278,6 +14666,15 @@ class CirclePoly extends Mesh {
         this.geometry = geometry;
         // this.material = material;
     }
+    dispose() {
+        var _a;
+        if (!this.polygon)
+            return;
+        this.geometry.dispose();
+        (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.clear_vertices();
+        this.polygon = null;
+        this.isExtruded = false;
+    }
 }
 class RectanglePoly extends Mesh {
     constructor(baseRectangle) {
@@ -14285,27 +14682,26 @@ class RectanglePoly extends Mesh {
         this.polygon = null;
         this.isExtruded = false;
         this.ogid = getUUID();
-        if (!baseRectangle.polyLineRectangle) {
-            throw new Error("BaseRectangle is not defined");
-        }
-        // baseRectangle.nodeChild = this;
-        baseRectangle.nodeOperation = "polygon";
+        // if (!baseRectangle.polyLineRectangle) {
+        //   throw new Error("BaseRectangle is not defined");
+        // }
+        // // baseRectangle.nodeChild = this;
+        // baseRectangle.nodeOperation = "polygon";
         this.baseRectangle = baseRectangle;
         this.generateGeometry();
         this.addFlushBufferToScene();
     }
     update() {
-        var _a, _b;
+        var _a;
         this.geometry.dispose();
         (_a = this.polygon) === null || _a === void 0 ? void 0 : _a.clear_vertices();
-        (_b = this.polygon) === null || _b === void 0 ? void 0 : _b.add_vertices(this.baseRectangle.polyLineRectangle.get_raw_points());
+        // this.polygon?.add_vertices(this.baseRectangle.polyLineRectangle.get_raw_points());
         this.generateGeometry();
         this.addFlushBufferToScene();
     }
     generateGeometry() {
-        if (!this.baseRectangle.polyLineRectangle)
-            return;
-        this.polygon = BasePolygon.new_with_rectangle(this.baseRectangle.polyLineRectangle.clone());
+        // if (!this.baseRectangle.polyLineRectangle) return;
+        // this.polygon = BasePolygon.new_with_rectangle(this.baseRectangle.polyLineRectangle.clone());
     }
     addFlushBufferToScene() {
         if (!this.polygon)
@@ -14462,5 +14858,5 @@ class FlatMesh extends Mesh {
     }
 }
 
-export { BaseCircle, BasePoly, CirclePoly, Cylinder, FlatMesh, OpenGeometry, PolyLine, Polygon, Rectangle, RectanglePoly, SimpleLine, SpotLabel, Vector3D };
+export { BaseCircle, BasePoly, CirclePoly, Cylinder, FlatMesh, OpenGeometry, PolyLine, Polygon, Rectangle, RectanglePoly, SimpleLine, SpotLabel, Vector3$1 as Vector3 };
 //# sourceMappingURL=index.js.map

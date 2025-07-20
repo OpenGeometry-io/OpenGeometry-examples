@@ -19,7 +19,7 @@
     import {
       OpenGeometry,
       Cylinder,
-      Vector3D
+      Vector3
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -94,9 +94,9 @@
       const ogCylinder = new Cylinder({
         radius: 2,
         height: 5,
-        segments: 3,
+        segments: 12,
         angle: Math.PI * 2,
-        center: new Vector3D(4, 0, 0),
+        center: new Vector3(4, 0, 0),
       });
       scene.add(ogCylinder);
 
@@ -114,7 +114,7 @@
       //     height: 5,
       //     segments: segment,
       //     angle: Math.PI * 2,
-      //     center: new Vector3D(
+      //     center: new Vector3(
       //       horizontalPlacement,
       //       0,
       //       heightPlacement
@@ -147,7 +147,7 @@
       //     height: Math.random() * 3,
       //     segments: Math.floor(Math.random() * 10) + 3,
       //     angle: Math.PI * Math.random(),
-      //     center: new Vector3D(
+      //     center: new Vector3(
       //       (Math.random() - 0.5) * 20,
       //       (Math.random() - 0.5) * 20,
       //       (Math.random() - 0.5) * 20

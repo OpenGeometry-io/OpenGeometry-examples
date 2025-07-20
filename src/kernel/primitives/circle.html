@@ -21,8 +21,8 @@
       BasePoly,
       BaseCircle,
       CirclePoly,
-      Vector3D,
-      SpotLabel
+      SpotLabel,
+      Vector3
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -77,7 +77,7 @@
       const circleData = {
         radius: 3,
         segments: 15,
-        position: new Vector3D(0, 0, 0),
+        position: new Vector3(0, 0, 0),
         startAngle: 0,
         endAngle: Math.PI * 2,
       }
@@ -97,7 +97,7 @@
       const circleData2 = {
         radius: 3,
         segments: 15,
-        position: new Vector3D(0, 3, 0),
+        position: new Vector3(0, 3, 0),
         startAngle: 0,
         endAngle: Math.PI * 2,
       }

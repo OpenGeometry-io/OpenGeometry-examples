@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | PolyLine</title>
+  <title>OpenGeometry | Polygon</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -18,15 +18,15 @@
   <script type="module">
     import {
       OpenGeometry,
-      BasePoly,
+      Polygon,
       BaseCircle,
       CirclePoly,
       Vector3,
-      SpotLabel,
-      PolyLine
+      SpotLabel
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+    import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
   
     let scene, camera, renderer;
     let openGeometry;
@@ -49,14 +49,28 @@
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
+      // grid
+      const gridHelper = new THREE.GridHelper(200, 200);
+      // scene.add(gridHelper);
+
       scene.background = new THREE.Color(0xf0f0f0);
 
-      camera.position.z = 4;
-      camera.position.y = 0;
+      camera.position.z = 20;
+      camera.position.y = 20;
     
       // ambient light
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
+
+      // directional light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(0, 50, 2);
+      scene.add(directionalLight);
+
+      // directional light 2
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight2.position.set(-20, 50, 2);
+      scene.add(directionalLight2);
 
       // controls
       const controls = new OrbitControls(
@@ -71,29 +85,38 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      const polyLine = new PolyLine();
-      scene.add(polyLine);
+      const sphereStart = new THREE.SphereGeometry(0.2, 32, 32);
+      const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const sphere = new THREE.Mesh(sphereStart, sphereMaterial);
+      sphere.position.set(1, 0, -1);
+      scene.add(sphere);
 
-      polyLine.addPoint(new Vector3(0, 0, 0));
-      polyLine.addPoint(new Vector3(1, 0, 0));
-      polyLine.addPoint(new Vector3(1, 1, 0));
-      polyLine.addPoint(new Vector3(0, 1, 0));
-      polyLine.addPoint(new Vector3(0, 0, 0));
+      const vertices = [
+        new Vector3(9.5, 0, 10),
+        new Vector3(9.5, 0, 1.0403124237432855),
+        new Vector3(4.999999999999999, 0, 4.640312423743283),
+        new Vector3(-0.31234752377721214, 0, 0.3904344047215152),
+        new Vector3(0.31234752377721214, 0, -0.3904344047215152),
+        new Vector3(4.999999999999999, 0, 3.3596875762567144),
+        new Vector3(10.5, 0, -1.0403124237432855),
+        new Vector3(10.5, 0, 10)
+      ];
+      const ogPoly = new Polygon(vertices);
+      scene.add(ogPoly);
+      
+      // Extrude Poly
+      // ogPoly.extrude(4);
 
-      console.log('Is PolyLine 1 Closed:', polyLine.isClosed);
+      // const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
+      // scene.add(helper);
 
-      // Different Color
-      const polyLine2 = new PolyLine();
-      scene.add(polyLine2);
-      polyLine2.addPoint(new Vector3(0, 0, 0));
-      polyLine2.addPoint(new Vector3(-1, 0, 0));
-      polyLine2.addPoint(new Vector3(-1, -1, 0));
-      polyLine2.addPoint(new Vector3(0, -1, 0));
+      ogPoly.outline = true;
+      
+      const brep = ogPoly.getBrepData();
+      console.log('Brep Data:', brep);
 
-      polyLine2.color = 0x00ff00;
-      console.log('Is PolyLine 2 Closed:', polyLine2.isClosed);
+      ogPoly.bTree();
 
-      initGUI();
       animate();
     }
 
@@ -104,10 +127,6 @@
     }
 
     init();
-
-    function initGUI() {
-      
-    }
   </script>
 </body>
 </html>

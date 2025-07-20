@@ -25,4 +25,5 @@ export declare class Pencil {
     groundVisible(visible: boolean): void;
     setupCursor(): void;
     setupCursorEvent(): void;
+    fireCursor(mouse: MouseEvent): void;
 }

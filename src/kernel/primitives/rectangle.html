@@ -23,7 +23,7 @@
       OpenGeometry,
       BasePoly,
       Rectangle,
-      Vector3D,
+      Vector3,
       SpotLabel,
       PolyLine
     } from './../../../core/';
@@ -74,26 +74,31 @@
       });
 
       const rectangleData = {
-        center: new Vector3D(0, 0, 0),
-        width: 2,
+        center: new Vector3(0, 0, 0),
         breadth: 10
       }
 
       // Create Base Rectangle
-      const ogRectangle = new Rectangle(rectangleData);
+      const ogRectangle = new Rectangle();
       scene.add(ogRectangle);
 
-      // Create Base Rectangle with Color and Modifying Width and Breadth
-      const ogRectangle2 = new Rectangle({
-        center: new Vector3D(0, 3, 0),
-        width: 2,
-        breadth: 10
-      });
-      ogRectangle2.color = 0x00ff00;
-      ogRectangle2.width = 5;
-      ogRectangle2.breadth = 15;
+      ogRectangle.width = 5;
+      ogRectangle.breadth = 15;
+      ogRectangle.color = 0xff0000;
+      ogRectangle.center = new Vector3(0, 5, 0);
 
-      scene.add(ogRectangle2);
+      // // Create Base Rectangle with Color and Modifying Width and Breadth
+      // const ogRectangle2 = new Rectangle({
+      //   center: new Vector3D(0, 3, 0),
+      //   width: 2,
+      //   breadth: 10
+      // });
+
+      // ogRectangle2.color = 0x00ff00;
+      // ogRectangle2.width = 5;
+      // ogRectangle2.breadth = 15;
+
+      // scene.add(ogRectangle2);
       
       animate();
     }
