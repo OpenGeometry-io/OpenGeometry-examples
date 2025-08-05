@@ -44,6 +44,30 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
 };
 
 let wasm;
+let cachedUint8ArrayMemory0 = null;
+function getUint8ArrayMemory0() {
+  if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0) {
+    cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
+  }
+  return cachedUint8ArrayMemory0;
+}
+function getArrayU8FromWasm0(ptr, len) {
+  ptr = ptr >>> 0;
+  return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
+}
+function addToExternrefTable0(obj) {
+  const idx = wasm.__externref_table_alloc();
+  wasm.__wbindgen_export_2.set(idx, obj);
+  return idx;
+}
+function handleError(f, args) {
+  try {
+    return f.apply(this, args);
+  } catch (e) {
+    const idx = addToExternrefTable0(e);
+    wasm.__wbindgen_exn_store(idx);
+  }
+}
 const cachedTextDecoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', {
   ignoreBOM: true,
   fatal: true
@@ -55,45 +79,14 @@ const cachedTextDecoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('
 if (typeof TextDecoder !== 'undefined') {
   cachedTextDecoder.decode();
 }
-let cachedUint8ArrayMemory0 = null;
-function getUint8ArrayMemory0() {
-  if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0) {
-    cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
-  }
-  return cachedUint8ArrayMemory0;
-}
 function getStringFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
   return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
-}
-const heap = new Array(128).fill(undefined);
-heap.push(undefined, null, true, false);
-let heap_next = heap.length;
-function addHeapObject(obj) {
-  if (heap_next === heap.length) heap.push(heap.length + 1);
-  const idx = heap_next;
-  heap_next = heap[idx];
-  heap[idx] = obj;
-  return idx;
-}
-function getObject(idx) {
-  return heap[idx];
-}
-function dropObject(idx) {
-  if (idx < 132) return;
-  heap[idx] = heap_next;
-  heap_next = idx;
-}
-function takeObject(idx) {
-  const ret = getObject(idx);
-  dropObject(idx);
-  return ret;
 }
 function _assertClass(instance, klass) {
   if (!(instance instanceof klass)) {
     throw new Error(`expected instance of ${klass.name}`);
   }
-  return instance.ptr;
 }
 let WASM_VECTOR_LEN = 0;
 const cachedTextEncoder = typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : {
@@ -150,9 +143,9 @@ function getDataViewMemory0() {
 }
 function passArrayJsValueToWasm0(array, malloc) {
   const ptr = malloc(array.length * 4, 4) >>> 0;
-  const mem = getDataViewMemory0();
   for (let i = 0; i < array.length; i++) {
-    mem.setUint32(ptr + 4 * i, addHeapObject(array[i]), true);
+    const add = addToExternrefTable0(array[i]);
+    getDataViewMemory0().setUint32(ptr + 4 * i, add, true);
   }
   WASM_VECTOR_LEN = array.length;
   return ptr;
@@ -162,16 +155,15 @@ function getArrayJsValueFromWasm0(ptr, len) {
   const mem = getDataViewMemory0();
   const result = [];
   for (let i = ptr; i < ptr + 4 * len; i += 4) {
-    result.push(takeObject(mem.getUint32(i, true)));
+    result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
   }
+  wasm.__externref_drop_slice(ptr, len);
   return result;
 }
 const BaseFlatMeshFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_baseflatmesh_free(ptr >>> 0, 1));
-/**
-*/
 class BaseFlatMesh {
   __destroy_into_raw() {
     const ptr = this.__wbg_ptr;
@@ -184,106 +176,102 @@ class BaseFlatMesh {
     wasm.__wbg_baseflatmesh_free(ptr, 0);
   }
   /**
-  * @returns {boolean}
-  */
+   * @returns {boolean}
+   */
   get extruded() {
     const ret = wasm.__wbg_get_baseflatmesh_extruded(this.__wbg_ptr);
     return ret !== 0;
   }
   /**
-  * @param {boolean} arg0
-  */
+   * @param {boolean} arg0
+   */
   set extruded(arg0) {
     wasm.__wbg_set_baseflatmesh_extruded(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {boolean}
-  */
+   * @returns {boolean}
+   */
   get is_mesh() {
     const ret = wasm.__wbg_get_baseflatmesh_is_mesh(this.__wbg_ptr);
     return ret !== 0;
   }
   /**
-  * @param {boolean} arg0
-  */
+   * @param {boolean} arg0
+   */
   set is_mesh(arg0) {
     wasm.__wbg_set_baseflatmesh_is_mesh(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get position() {
     const ret = wasm.__wbg_get_baseflatmesh_position(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set position(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_baseflatmesh_position(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get rotation() {
     const ret = wasm.__wbg_get_baseflatmesh_rotation(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set rotation(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_baseflatmesh_rotation(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get scale() {
     const ret = wasm.__wbg_get_baseflatmesh_scale(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set scale(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_baseflatmesh_scale(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.baseflatmesh_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.baseflatmesh_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.baseflatmesh_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -293,61 +281,51 @@ class BaseFlatMesh {
     return this;
   }
   /**
-  * @param {(Vector3)[]} vertices
-  */
+   * @param {Vector3[]} vertices
+   */
   add_vertices(vertices) {
     const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.baseflatmesh_add_vertices(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3} vertex
-  */
+   * @param {Vector3} vertex
+   */
   add_vertex(vertex) {
     _assertClass(vertex, Vector3$1);
     var ptr0 = vertex.__destroy_into_raw();
     wasm.baseflatmesh_add_vertex(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   triangulate() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.baseflatmesh_triangulate(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.baseflatmesh_triangulate(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_buffer_flush() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.baseflatmesh_get_buffer_flush(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.baseflatmesh_get_buffer_flush(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
-  /**
-  */
   reset_mesh() {
     wasm.baseflatmesh_reset_mesh(this.__wbg_ptr);
   }
@@ -358,8 +336,6 @@ const BasePolygonFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_basepolygon_free(ptr >>> 0, 1));
-/**
-*/
 class BasePolygon {
   static __wrap(ptr) {
     ptr = ptr >>> 0;
@@ -379,119 +355,115 @@ class BasePolygon {
     wasm.__wbg_basepolygon_free(ptr, 0);
   }
   /**
-  * @returns {boolean}
-  */
+   * @returns {boolean}
+   */
   get extruded() {
     const ret = wasm.__wbg_get_basepolygon_extruded(this.__wbg_ptr);
     return ret !== 0;
   }
   /**
-  * @param {boolean} arg0
-  */
+   * @param {boolean} arg0
+   */
   set extruded(arg0) {
     wasm.__wbg_set_basepolygon_extruded(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {number}
-  */
+   * @returns {number}
+   */
   get extruded_height() {
     const ret = wasm.__wbg_get_basepolygon_extruded_height(this.__wbg_ptr);
     return ret;
   }
   /**
-  * @param {number} arg0
-  */
+   * @param {number} arg0
+   */
   set extruded_height(arg0) {
     wasm.__wbg_set_basepolygon_extruded_height(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {boolean}
-  */
+   * @returns {boolean}
+   */
   get is_polygon() {
     const ret = wasm.__wbg_get_basepolygon_is_polygon(this.__wbg_ptr);
     return ret !== 0;
   }
   /**
-  * @param {boolean} arg0
-  */
+   * @param {boolean} arg0
+   */
   set is_polygon(arg0) {
     wasm.__wbg_set_basepolygon_is_polygon(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get position() {
     const ret = wasm.__wbg_get_basepolygon_position(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set position(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_basepolygon_position(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get rotation() {
     const ret = wasm.__wbg_get_basepolygon_rotation(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set rotation(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_basepolygon_rotation(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get scale() {
     const ret = wasm.__wbg_get_basepolygon_scale(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set scale(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_basepolygon_scale(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.basepolygon_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -501,9 +473,9 @@ class BasePolygon {
     return this;
   }
   /**
-  * @param {CircleArc} circle_arc
-  * @returns {BasePolygon}
-  */
+   * @param {CircleArc} circle_arc
+   * @returns {BasePolygon}
+   */
   static new_with_circle(circle_arc) {
     _assertClass(circle_arc, CircleArc);
     var ptr0 = circle_arc.__destroy_into_raw();
@@ -511,9 +483,9 @@ class BasePolygon {
     return BasePolygon.__wrap(ret);
   }
   /**
-  * @param {OGRectangle} rectangle
-  * @returns {BasePolygon}
-  */
+   * @param {OGRectangle} rectangle
+   * @returns {BasePolygon}
+   */
   static new_with_rectangle(rectangle) {
     _assertClass(rectangle, OGRectangle);
     var ptr0 = rectangle.__destroy_into_raw();
@@ -521,151 +493,123 @@ class BasePolygon {
     return BasePolygon.__wrap(ret);
   }
   /**
-  * @param {(Vector3)[]} vertices
-  */
+   * @param {Vector3[]} vertices
+   */
   add_vertices(vertices) {
     const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.basepolygon_add_vertices(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3} vertex
-  */
+   * @param {Vector3} vertex
+   */
   add_vertex(vertex) {
     _assertClass(vertex, Vector3$1);
     var ptr0 = vertex.__destroy_into_raw();
     wasm.basepolygon_add_vertex(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {(Vector3)[]} holes
-  */
+   * @param {Vector3[]} holes
+   */
   add_holes(holes) {
     const ptr0 = passArrayJsValueToWasm0(holes, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.basepolygon_add_holes(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   triangulate() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_triangulate(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_triangulate(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   new_triangulate() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_new_triangulate(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_new_triangulate(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_buffer_flush() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_get_buffer_flush(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_get_buffer_flush(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
-  /**
-  */
   clear_vertices() {
     wasm.basepolygon_clear_vertices(this.__wbg_ptr);
   }
-  /**
-  */
   reset_polygon() {
     wasm.basepolygon_reset_polygon(this.__wbg_ptr);
   }
   /**
-  * @param {number} height
-  * @returns {string}
-  */
+   * @param {number} height
+   * @returns {string}
+   */
   extrude_by_height(height) {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_extrude_by_height(retptr, this.__wbg_ptr, height);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_extrude_by_height(this.__wbg_ptr, height);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_outlines() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_get_outlines(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_get_outlines(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_geometry() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.basepolygon_get_geometry(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.basepolygon_get_geometry(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
@@ -674,8 +618,6 @@ const CircleArcFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_circlearc_free(ptr >>> 0, 1));
-/**
-*/
 class CircleArc {
   static __wrap(ptr) {
     ptr = ptr >>> 0;
@@ -695,35 +637,31 @@ class CircleArc {
     wasm.__wbg_circlearc_free(ptr, 0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.circlearc_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.circlearc_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.circlearc_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -733,87 +671,70 @@ class CircleArc {
     return this;
   }
   /**
-  * @returns {CircleArc}
-  */
+   * @returns {CircleArc}
+   */
   clone() {
     const ret = wasm.circlearc_clone(this.__wbg_ptr);
     return CircleArc.__wrap(ret);
   }
   /**
-  * @param {Vector3} center
-  * @param {number} radius
-  * @param {number} start_angle
-  * @param {number} end_angle
-  * @param {number} segments
-  */
+   * @param {Vector3} center
+   * @param {number} radius
+   * @param {number} start_angle
+   * @param {number} end_angle
+   * @param {number} segments
+   */
   set_config(center, radius, start_angle, end_angle, segments) {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.circlearc_set_config(this.__wbg_ptr, ptr0, radius, start_angle, end_angle, segments);
   }
-  /**
-  */
   generate_points() {
     wasm.circlearc_generate_points(this.__wbg_ptr);
   }
   /**
-  * @param {number} radius
-  */
+   * @param {number} radius
+   */
   update_radius(radius) {
     wasm.circlearc_update_radius(this.__wbg_ptr, radius);
   }
   /**
-  * @param {Vector3} center
-  */
+   * @param {Vector3} center
+   */
   update_center(center) {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.circlearc_update_center(this.__wbg_ptr, ptr0);
   }
-  /**
-  */
   dispose_points() {
     wasm.circlearc_destroy(this.__wbg_ptr);
   }
-  /**
-  */
   destroy() {
     wasm.circlearc_destroy(this.__wbg_ptr);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_points() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.circlearc_get_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.circlearc_get_points(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {(Vector3)[]}
-  */
+   * @returns {Vector3[]}
+   */
   get_raw_points() {
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.circlearc_get_raw_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      var v1 = getArrayJsValueFromWasm0(r0, r1).slice();
-      wasm.__wbindgen_free(r0, r1 * 4, 4);
-      return v1;
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-    }
+    const ret = wasm.circlearc_get_raw_points(this.__wbg_ptr);
+    var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+    wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+    return v1;
   }
 }
 typeof FinalizationRegistry === 'undefined' ? {
@@ -824,12 +745,133 @@ typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_matrix3_free(ptr >>> 0, 1));
 typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_matrix4_free(ptr >>> 0, 1));
+const OGCubeFinalization = typeof FinalizationRegistry === 'undefined' ? {
+  register: () => {},
+  unregister: () => {}
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogcube_free(ptr >>> 0, 1));
+/**
+ *
+ * * Copyright (c) 2025, OpenGeometry. All rights reserved.
+ * * Box primitive for OpenGeometry.
+ * *
+ * * Base created by default on XZ plane and extruded along Y axis.
+ * *
+ * * There are two ways to create a box:
+ * * 1. By creating a box with a rectangle face, create a Rectangle Poly Face and then extrude by a given height
+ * * 2. By creating a box primitive with given width, height, and depth
+ * *
+ * * This class is used to create a box primitive(2) using width, height, and depth.
+ *
+ */
+class OGCube {
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    OGCubeFinalization.unregister(this);
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_ogcube_free(ptr, 0);
+  }
+  /**
+   * @param {string} id
+   */
+  set id(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogcube_set_id(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+   * @returns {string}
+   */
+  get id() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcube_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+   * @param {string} id
+   */
+  constructor(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.ogcube_new(ptr0, len0);
+    this.__wbg_ptr = ret >>> 0;
+    OGCubeFinalization.register(this, this.__wbg_ptr, this);
+    return this;
+  }
+  /**
+   * @param {Vector3} center
+   * @param {number} width
+   * @param {number} height
+   * @param {number} depth
+   */
+  set_config(center, width, height, depth) {
+    _assertClass(center, Vector3$1);
+    var ptr0 = center.__destroy_into_raw();
+    wasm.ogcube_set_config(this.__wbg_ptr, ptr0, width, height, depth);
+  }
+  generate_geometry() {
+    wasm.ogcube_generate_geometry(this.__wbg_ptr);
+  }
+  /**
+   * @returns {string}
+   */
+  get_brep_dump() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcube_get_brep_dump(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+   * @returns {string}
+   */
+  get_geometry_serialized() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcube_get_geometry_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+   * @returns {string}
+   */
+  get_outline_geometry_serialized() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcube_get_outline_geometry_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+}
 const OGCylinderFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_ogcylinder_free(ptr >>> 0, 1));
-/**
-*/
 class OGCylinder {
   __destroy_into_raw() {
     const ptr = this.__wbg_ptr;
@@ -842,35 +884,31 @@ class OGCylinder {
     wasm.__wbg_ogcylinder_free(ptr, 0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.ogcylinder_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogcylinder_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogcylinder_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -880,299 +918,283 @@ class OGCylinder {
     return this;
   }
   /**
-  * @param {Vector3} center
-  * @param {number} radius
-  * @param {number} height
-  * @param {number} angle
-  * @param {number} segments
-  */
+   * @param {Vector3} center
+   * @param {number} radius
+   * @param {number} height
+   * @param {number} angle
+   * @param {number} segments
+   */
   set_config(center, radius, height, angle, segments) {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogcylinder_set_config(this.__wbg_ptr, ptr0, radius, height, angle, segments);
   }
-  /**
-  */
   generate_geometry() {
     wasm.ogcylinder_generate_geometry(this.__wbg_ptr);
   }
   /**
-  * @returns {string}
-  */
-  get_geometry() {
+   * @returns {string}
+   */
+  get_brep_serialized() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogcylinder_get_geometry(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogcylinder_get_brep_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  */
-  discard_geometry() {
-    wasm.ogcylinder_discard_geometry(this.__wbg_ptr);
-  }
-  /**
-  * @returns {string}
-  */
-  outline_edges() {
+   * @returns {string}
+   */
+  get_geometry_serialized() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogcylinder_outline_edges(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogcylinder_get_geometry_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
-  get_brep_dump() {
+   * @returns {string}
+   */
+  get_outline_geometry_serialized() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogcylinder_get_brep_dump(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogcylinder_get_outline_geometry_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
 }
-const OGPolyLineFinalization = typeof FinalizationRegistry === 'undefined' ? {
+const OGCylinderOldFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
-} : new FinalizationRegistry(ptr => wasm.__wbg_ogpolyline_free(ptr >>> 0, 1));
-/**
-*/
-class OGPolyLine {
-  static __wrap(ptr) {
-    ptr = ptr >>> 0;
-    const obj = Object.create(OGPolyLine.prototype);
-    obj.__wbg_ptr = ptr;
-    OGPolyLineFinalization.register(obj, obj.__wbg_ptr, obj);
-    return obj;
-  }
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogcylinderold_free(ptr >>> 0, 1));
+class OGCylinderOld {
   __destroy_into_raw() {
     const ptr = this.__wbg_ptr;
     this.__wbg_ptr = 0;
-    OGPolyLineFinalization.unregister(this);
+    OGCylinderOldFinalization.unregister(this);
     return ptr;
   }
   free() {
     const ptr = this.__destroy_into_raw();
-    wasm.__wbg_ogpolyline_free(ptr, 0);
+    wasm.__wbg_ogcylinderold_free(ptr, 0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    wasm.ogpolyline_set_id(this.__wbg_ptr, ptr0, len0);
+    wasm.ogcylinderold_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolyline_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogcylinderold_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.ogpolyline_new(ptr0, len0);
+    const ret = wasm.ogcylinderold_new(ptr0, len0);
     this.__wbg_ptr = ret >>> 0;
-    OGPolyLineFinalization.register(this, this.__wbg_ptr, this);
+    OGCylinderOldFinalization.register(this, this.__wbg_ptr, this);
     return this;
   }
   /**
-  * @returns {OGPolyLine}
-  */
-  clone() {
-    const ret = wasm.ogpolyline_clone(this.__wbg_ptr);
-    return OGPolyLine.__wrap(ret);
+   * @param {Vector3} center
+   * @param {number} radius
+   * @param {number} height
+   * @param {number} angle
+   * @param {number} segments
+   */
+  set_config(center, radius, height, angle, segments) {
+    _assertClass(center, Vector3$1);
+    var ptr0 = center.__destroy_into_raw();
+    wasm.ogcylinderold_set_config(this.__wbg_ptr, ptr0, radius, height, angle, segments);
+  }
+  generate_geometry() {
+    wasm.ogcylinderold_generate_geometry(this.__wbg_ptr);
   }
   /**
-  * @param {Vector3} translation
-  */
-  translate(translation) {
-    _assertClass(translation, Vector3$1);
-    var ptr0 = translation.__destroy_into_raw();
-    wasm.ogpolyline_translate(this.__wbg_ptr, ptr0);
+   * @returns {string}
+   */
+  get_geometry() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcylinderold_get_geometry(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  discard_geometry() {
+    wasm.ogcylinderold_discard_geometry(this.__wbg_ptr);
   }
   /**
-  * @param {Vector3} position
-  */
-  set_position(position) {
-    _assertClass(position, Vector3$1);
-    var ptr0 = position.__destroy_into_raw();
-    wasm.ogpolyline_set_position(this.__wbg_ptr, ptr0);
+   * @returns {string}
+   */
+  outline_edges() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcylinderold_outline_edges(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
   }
   /**
-  * @param {(Vector3)[]} points
-  */
-  add_multiple_points(points) {
-    const ptr0 = passArrayJsValueToWasm0(points, wasm.__wbindgen_malloc);
+   * @returns {string}
+   */
+  get_brep_dump() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogcylinderold_get_brep_dump(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+}
+const OGLineFinalization = typeof FinalizationRegistry === 'undefined' ? {
+  register: () => {},
+  unregister: () => {}
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogline_free(ptr >>> 0, 1));
+class OGLine {
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    OGLineFinalization.unregister(this);
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_ogline_free(ptr, 0);
+  }
+  /**
+   * @param {string} id
+   */
+  set id(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    wasm.ogpolyline_add_multiple_points(this.__wbg_ptr, ptr0, len0);
+    wasm.ogline_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3} point
-  */
-  add_point(point) {
-    _assertClass(point, Vector3$1);
-    var ptr0 = point.__destroy_into_raw();
-    wasm.ogpolyline_add_point(this.__wbg_ptr, ptr0);
-  }
-  /**
-  * @returns {string}
-  */
-  get_points() {
+   * @returns {string}
+   */
+  get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolyline_get_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogline_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {(Vector3)[]}
-  */
-  get_raw_points() {
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolyline_get_raw_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      var v1 = getArrayJsValueFromWasm0(r0, r1).slice();
-      wasm.__wbindgen_free(r0, r1 * 4, 4);
-      return v1;
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-    }
+   * @param {string} id
+   */
+  constructor(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.ogline_new(ptr0, len0);
+    this.__wbg_ptr = ret >>> 0;
+    OGLineFinalization.register(this, this.__wbg_ptr, this);
+    return this;
   }
   /**
-  * @returns {boolean}
-  */
-  is_closed() {
-    const ret = wasm.ogpolyline_is_closed(this.__wbg_ptr);
-    return ret !== 0;
+   * @param {Vector3} start
+   * @param {Vector3} end
+   */
+  set_config(start, end) {
+    _assertClass(start, Vector3$1);
+    var ptr0 = start.__destroy_into_raw();
+    _assertClass(end, Vector3$1);
+    var ptr1 = end.__destroy_into_raw();
+    wasm.ogline_set_config(this.__wbg_ptr, ptr0, ptr1);
+  }
+  generate_geometry() {
+    wasm.ogline_generate_geometry(this.__wbg_ptr);
+  }
+  dispose_points() {
+    wasm.ogline_dispose_points(this.__wbg_ptr);
+  }
+  destroy() {
+    wasm.ogline_destroy(this.__wbg_ptr);
   }
   /**
-  */
-  check_closed_test() {
-    wasm.ogpolyline_check_closed_test(this.__wbg_ptr);
-  }
-  /**
-  */
-  generate_brep() {
-    wasm.ogpolyline_generate_brep(this.__wbg_ptr);
-  }
-  /**
-  * @returns {string}
-  */
-  get_brep_data() {
+   * @returns {string}
+   */
+  get_brep_serialized() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolyline_get_brep_data(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogline_get_brep_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {number} distance
-  * @returns {string}
-  */
-  get_offset(distance) {
+   * @returns {string}
+   */
+  get_geometry_serialized() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolyline_get_offset(retptr, this.__wbg_ptr, distance);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogline_get_geometry_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
-  }
-  /**
-  * @param {Vector3} point_a
-  * @param {Vector3} point_b
-  * @param {Vector3} point_c
-  * @param {Vector3} point_d
-  * @returns {Vector3 | undefined}
-  */
-  static calculate_2D_interesection(point_a, point_b, point_c, point_d) {
-    _assertClass(point_a, Vector3$1);
-    _assertClass(point_b, Vector3$1);
-    _assertClass(point_c, Vector3$1);
-    _assertClass(point_d, Vector3$1);
-    const ret = wasm.ogpolyline_calculate_2D_interesection(point_a.__wbg_ptr, point_b.__wbg_ptr, point_c.__wbg_ptr, point_d.__wbg_ptr);
-    return ret === 0 ? undefined : Vector3$1.__wrap(ret);
   }
 }
 const OGPolygonFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_ogpolygon_free(ptr >>> 0, 1));
-/**
-*/
 class OGPolygon {
   static __wrap(ptr) {
     ptr = ptr >>> 0;
@@ -1192,119 +1214,115 @@ class OGPolygon {
     wasm.__wbg_ogpolygon_free(ptr, 0);
   }
   /**
-  * @returns {boolean}
-  */
+   * @returns {boolean}
+   */
   get extruded() {
     const ret = wasm.__wbg_get_ogpolygon_extruded(this.__wbg_ptr);
     return ret !== 0;
   }
   /**
-  * @param {boolean} arg0
-  */
+   * @param {boolean} arg0
+   */
   set extruded(arg0) {
     wasm.__wbg_set_ogpolygon_extruded(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {number}
-  */
+   * @returns {number}
+   */
   get extruded_height() {
     const ret = wasm.__wbg_get_ogpolygon_extruded_height(this.__wbg_ptr);
     return ret;
   }
   /**
-  * @param {number} arg0
-  */
+   * @param {number} arg0
+   */
   set extruded_height(arg0) {
     wasm.__wbg_set_ogpolygon_extruded_height(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {boolean}
-  */
+   * @returns {boolean}
+   */
   get is_polygon() {
     const ret = wasm.__wbg_get_ogpolygon_is_polygon(this.__wbg_ptr);
     return ret !== 0;
   }
   /**
-  * @param {boolean} arg0
-  */
+   * @param {boolean} arg0
+   */
   set is_polygon(arg0) {
     wasm.__wbg_set_ogpolygon_is_polygon(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get position() {
     const ret = wasm.__wbg_get_ogpolygon_position(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set position(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_ogpolygon_position(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get rotation() {
     const ret = wasm.__wbg_get_ogpolygon_rotation(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set rotation(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_ogpolygon_rotation(this.__wbg_ptr, ptr0);
   }
   /**
-  * @returns {Vector3}
-  */
+   * @returns {Vector3}
+   */
   get scale() {
     const ret = wasm.__wbg_get_ogpolygon_scale(this.__wbg_ptr);
     return Vector3$1.__wrap(ret);
   }
   /**
-  * @param {Vector3} arg0
-  */
+   * @param {Vector3} arg0
+   */
   set scale(arg0) {
     _assertClass(arg0, Vector3$1);
     var ptr0 = arg0.__destroy_into_raw();
     wasm.__wbg_set_ogpolygon_scale(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.ogpolygon_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -1314,17 +1332,17 @@ class OGPolygon {
     return this;
   }
   /**
-  * @param {Vector3} translation
-  */
+   * @param {Vector3} translation
+   */
   translate(translation) {
     _assertClass(translation, Vector3$1);
     var ptr0 = translation.__destroy_into_raw();
     wasm.ogpolygon_translate(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {CircleArc} circle_arc
-  * @returns {OGPolygon}
-  */
+   * @param {CircleArc} circle_arc
+   * @returns {OGPolygon}
+   */
   static new_with_circle(circle_arc) {
     _assertClass(circle_arc, CircleArc);
     var ptr0 = circle_arc.__destroy_into_raw();
@@ -1332,9 +1350,9 @@ class OGPolygon {
     return OGPolygon.__wrap(ret);
   }
   /**
-  * @param {OGRectangle} rectangle
-  * @returns {OGPolygon}
-  */
+   * @param {OGRectangle} rectangle
+   * @returns {OGPolygon}
+   */
   static new_with_rectangle(rectangle) {
     _assertClass(rectangle, OGRectangle);
     var ptr0 = rectangle.__destroy_into_raw();
@@ -1342,253 +1360,358 @@ class OGPolygon {
     return OGPolygon.__wrap(ret);
   }
   /**
-  * @param {(Vector3)[]} vertices
-  */
+   * @param {Vector3[]} vertices
+   */
   add_vertices(vertices) {
     const ptr0 = passArrayJsValueToWasm0(vertices, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.ogpolygon_add_vertices(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @param {Vector3} vertex
-  */
+   * @param {Vector3} vertex
+   */
   add_vertex(vertex) {
     _assertClass(vertex, Vector3$1);
     var ptr0 = vertex.__destroy_into_raw();
     wasm.ogpolygon_add_vertex(this.__wbg_ptr, ptr0);
   }
   /**
-  * @param {(Vector3)[]} holes
-  */
+   * @param {Vector3[]} holes
+   */
   add_holes(holes) {
     const ptr0 = passArrayJsValueToWasm0(holes, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.ogpolygon_add_holes(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   triangulate() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_triangulate(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_triangulate(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {boolean} is_ccw
-  * @returns {string}
-  */
+   * @param {boolean} is_ccw
+   * @returns {string}
+   */
   triangulate_with_holes_variable_geometry(is_ccw) {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_triangulate_with_holes_variable_geometry(retptr, this.__wbg_ptr, is_ccw);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_triangulate_with_holes_variable_geometry(this.__wbg_ptr, is_ccw);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   triangulate_with_holes() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_triangulate_with_holes(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_triangulate_with_holes(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_buffer_flush() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_get_buffer_flush(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_get_buffer_flush(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
-  /**
-  */
   clear_buffer() {
     wasm.ogpolygon_clear_buffer(this.__wbg_ptr);
   }
-  /**
-  */
   clear_vertices() {
     wasm.ogpolygon_clear_vertices(this.__wbg_ptr);
   }
-  /**
-  */
   reset_polygon() {
     wasm.ogpolygon_reset_polygon(this.__wbg_ptr);
   }
   /**
-  * @param {number} height
-  * @returns {string}
-  */
+   * @param {number} height
+   * @returns {string}
+   */
   extrude_by_height_with_holes(height) {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_extrude_by_height_with_holes(retptr, this.__wbg_ptr, height);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_extrude_by_height_with_holes(this.__wbg_ptr, height);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {number} height
-  * @returns {string}
-  */
+   * @param {number} height
+   * @returns {string}
+   */
   extrude_by_height(height) {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_extrude_by_height(retptr, this.__wbg_ptr, height);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_extrude_by_height(this.__wbg_ptr, height);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_outlines() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_get_outlines(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_get_outlines(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_geometry() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_get_geometry(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_get_geometry(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_brep_data() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_get_brep_data(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_get_brep_data(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   outline_edges() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_outline_edges(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_outline_edges(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   binary_tree() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogpolygon_binary_tree(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogpolygon_binary_tree(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+}
+const OGPolylineFinalization = typeof FinalizationRegistry === 'undefined' ? {
+  register: () => {},
+  unregister: () => {}
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogpolyline_free(ptr >>> 0, 1));
+class OGPolyline {
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(OGPolyline.prototype);
+    obj.__wbg_ptr = ptr;
+    OGPolylineFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    OGPolylineFinalization.unregister(this);
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_ogpolyline_free(ptr, 0);
+  }
+  /**
+   * @param {string} id
+   */
+  set id(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogpolyline_set_id(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+   * @returns {string}
+   */
+  get id() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogpolyline_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+   * @param {string} id
+   */
+  constructor(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.ogpolyline_new(ptr0, len0);
+    this.__wbg_ptr = ret >>> 0;
+    OGPolylineFinalization.register(this, this.__wbg_ptr, this);
+    return this;
+  }
+  /**
+   * @returns {OGPolyline}
+   */
+  clone() {
+    const ret = wasm.ogpolyline_clone(this.__wbg_ptr);
+    return OGPolyline.__wrap(ret);
+  }
+  /**
+   * @param {Vector3[]} points
+   */
+  set_config(points) {
+    const ptr0 = passArrayJsValueToWasm0(points, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogpolyline_set_config(this.__wbg_ptr, ptr0, len0);
+  }
+  generate_geometry() {
+    wasm.ogpolyline_generate_geometry(this.__wbg_ptr);
+  }
+  /**
+   * @param {Vector3[]} points
+   */
+  add_multiple_points(points) {
+    const ptr0 = passArrayJsValueToWasm0(points, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.ogpolyline_add_multiple_points(this.__wbg_ptr, ptr0, len0);
+  }
+  /**
+   * @param {Vector3} point
+   */
+  add_point(point) {
+    _assertClass(point, Vector3$1);
+    var ptr0 = point.__destroy_into_raw();
+    wasm.ogpolyline_add_point(this.__wbg_ptr, ptr0);
+  }
+  /**
+   * @returns {string}
+   */
+  get_points() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogpolyline_get_points(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+   * @returns {Vector3[]}
+   */
+  get_raw_points() {
+    const ret = wasm.ogpolyline_get_raw_points(this.__wbg_ptr);
+    var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+    wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+    return v1;
+  }
+  /**
+   * @returns {boolean}
+   */
+  is_closed() {
+    const ret = wasm.ogpolyline_is_closed(this.__wbg_ptr);
+    return ret !== 0;
+  }
+  check_closed_test() {
+    wasm.ogpolyline_check_closed_test(this.__wbg_ptr);
+  }
+  /**
+   * @returns {string}
+   */
+  get_brep_serialized() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogpolyline_get_brep_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+  /**
+   * @returns {string}
+   */
+  get_geometry_serialized() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogpolyline_get_geometry_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
@@ -1597,8 +1720,6 @@ const OGRectangleFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_ogrectangle_free(ptr >>> 0, 1));
-/**
-*/
 class OGRectangle {
   static __wrap(ptr) {
     ptr = ptr >>> 0;
@@ -1618,35 +1739,31 @@ class OGRectangle {
     wasm.__wbg_ogrectangle_free(ptr, 0);
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.ogrectangle_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get id() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogrectangle_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogrectangle_id(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @param {string} id
-  */
+   * @param {string} id
+   */
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -1656,225 +1773,80 @@ class OGRectangle {
     return this;
   }
   /**
-  * @returns {OGRectangle}
-  */
+   * @returns {OGRectangle}
+   */
   clone() {
     const ret = wasm.ogrectangle_clone(this.__wbg_ptr);
     return OGRectangle.__wrap(ret);
   }
   /**
-  * @param {Vector3} center
-  * @param {number} width
-  * @param {number} breadth
-  */
+   * @param {Vector3} center
+   * @param {number} width
+   * @param {number} breadth
+   */
   set_config(center, width, breadth) {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogrectangle_set_config(this.__wbg_ptr, ptr0, width, breadth);
   }
-  /**
-  */
   generate_points() {
     wasm.ogrectangle_generate_points(this.__wbg_ptr);
   }
   /**
-  * @param {number} width
-  */
+   * @param {number} width
+   */
   update_width(width) {
     wasm.ogrectangle_update_width(this.__wbg_ptr, width);
   }
   /**
-  * @param {number} breadth
-  */
+   * @param {number} breadth
+   */
   update_breadth(breadth) {
     wasm.ogrectangle_update_breadth(this.__wbg_ptr, breadth);
   }
   /**
-  * @param {Vector3} center
-  */
+   * @param {Vector3} center
+   */
   update_center(center) {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogrectangle_update_center(this.__wbg_ptr, ptr0);
   }
-  /**
-  */
   dispose_points() {
     wasm.ogrectangle_destroy(this.__wbg_ptr);
   }
-  /**
-  */
   destroy() {
     wasm.ogrectangle_destroy(this.__wbg_ptr);
   }
   /**
-  * @returns {string}
-  */
+   * @returns {string}
+   */
   get_points() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogrectangle_get_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
+      const ret = wasm.ogrectangle_get_points(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
   /**
-  * @returns {(Vector3)[]}
-  */
+   * @returns {Vector3[]}
+   */
   get_raw_points() {
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogrectangle_get_raw_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      var v1 = getArrayJsValueFromWasm0(r0, r1).slice();
-      wasm.__wbindgen_free(r0, r1 * 4, 4);
-      return v1;
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-  }
-}
-const OGSimpleLineFinalization = typeof FinalizationRegistry === 'undefined' ? {
-  register: () => {},
-  unregister: () => {}
-} : new FinalizationRegistry(ptr => wasm.__wbg_ogsimpleline_free(ptr >>> 0, 1));
-/**
-*/
-class OGSimpleLine {
-  static __wrap(ptr) {
-    ptr = ptr >>> 0;
-    const obj = Object.create(OGSimpleLine.prototype);
-    obj.__wbg_ptr = ptr;
-    OGSimpleLineFinalization.register(obj, obj.__wbg_ptr, obj);
-    return obj;
-  }
-  __destroy_into_raw() {
-    const ptr = this.__wbg_ptr;
-    this.__wbg_ptr = 0;
-    OGSimpleLineFinalization.unregister(this);
-    return ptr;
-  }
-  free() {
-    const ptr = this.__destroy_into_raw();
-    wasm.__wbg_ogsimpleline_free(ptr, 0);
-  }
-  /**
-  * @param {string} id
-  */
-  set id(id) {
-    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    wasm.ogsimpleline_set_id(this.__wbg_ptr, ptr0, len0);
-  }
-  /**
-  * @returns {string}
-  */
-  get id() {
-    let deferred1_0;
-    let deferred1_1;
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogsimpleline_id(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-    }
-  }
-  /**
-  * @param {string} id
-  */
-  constructor(id) {
-    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.ogsimpleline_new(ptr0, len0);
-    this.__wbg_ptr = ret >>> 0;
-    OGSimpleLineFinalization.register(this, this.__wbg_ptr, this);
-    return this;
-  }
-  /**
-  * @returns {OGSimpleLine}
-  */
-  clone() {
-    const ret = wasm.ogsimpleline_clone(this.__wbg_ptr);
-    return OGSimpleLine.__wrap(ret);
-  }
-  /**
-  * @param {Vector3} start
-  * @param {Vector3} end
-  */
-  set_config(start, end) {
-    _assertClass(start, Vector3$1);
-    var ptr0 = start.__destroy_into_raw();
-    _assertClass(end, Vector3$1);
-    var ptr1 = end.__destroy_into_raw();
-    wasm.ogsimpleline_set_config(this.__wbg_ptr, ptr0, ptr1);
-  }
-  /**
-  */
-  dispose_points() {
-    wasm.ogsimpleline_destroy(this.__wbg_ptr);
-  }
-  /**
-  */
-  destroy() {
-    wasm.ogsimpleline_destroy(this.__wbg_ptr);
-  }
-  /**
-  * @returns {string}
-  */
-  get_points() {
-    let deferred1_0;
-    let deferred1_1;
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogsimpleline_get_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      deferred1_0 = r0;
-      deferred1_1 = r1;
-      return getStringFromWasm0(r0, r1);
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-    }
-  }
-  /**
-  * @returns {(Vector3)[]}
-  */
-  get_raw_points() {
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.ogsimpleline_get_raw_points(retptr, this.__wbg_ptr);
-      var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-      var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-      var v1 = getArrayJsValueFromWasm0(r0, r1).slice();
-      wasm.__wbindgen_free(r0, r1 * 4, 4);
-      return v1;
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-    }
+    const ret = wasm.ogrectangle_get_raw_points(this.__wbg_ptr);
+    var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+    wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+    return v1;
   }
 }
 const Vector3Finalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
 } : new FinalizationRegistry(ptr => wasm.__wbg_vector3_free(ptr >>> 0, 1));
-/**
-*/
 let Vector3$1 = class Vector3 {
   static __wrap(ptr) {
     ptr = ptr >>> 0;
@@ -1900,49 +1872,49 @@ let Vector3$1 = class Vector3 {
     wasm.__wbg_vector3_free(ptr, 0);
   }
   /**
-  * @returns {number}
-  */
+   * @returns {number}
+   */
   get x() {
     const ret = wasm.__wbg_get_vector3_x(this.__wbg_ptr);
     return ret;
   }
   /**
-  * @param {number} arg0
-  */
+   * @param {number} arg0
+   */
   set x(arg0) {
     wasm.__wbg_set_vector3_x(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {number}
-  */
+   * @returns {number}
+   */
   get y() {
     const ret = wasm.__wbg_get_vector3_y(this.__wbg_ptr);
     return ret;
   }
   /**
-  * @param {number} arg0
-  */
+   * @param {number} arg0
+   */
   set y(arg0) {
     wasm.__wbg_set_vector3_y(this.__wbg_ptr, arg0);
   }
   /**
-  * @returns {number}
-  */
+   * @returns {number}
+   */
   get z() {
     const ret = wasm.__wbg_get_vector3_z(this.__wbg_ptr);
     return ret;
   }
   /**
-  * @param {number} arg0
-  */
+   * @param {number} arg0
+   */
   set z(arg0) {
     wasm.__wbg_set_vector3_z(this.__wbg_ptr, arg0);
   }
   /**
-  * @param {number} x
-  * @param {number} y
-  * @param {number} z
-  */
+   * @param {number} x
+   * @param {number} y
+   * @param {number} z
+   */
   constructor(x, y, z) {
     const ret = wasm.vector3_new(x, y, z);
     this.__wbg_ptr = ret >>> 0;
@@ -1950,198 +1922,198 @@ let Vector3$1 = class Vector3 {
     return this;
   }
   /**
-  *
-  *  * Add the elements of another vector to this one.
-  *
-  * @param {Vector3} other
-  * @returns {Vector3}
-  */
+   *
+   *  * Add the elements of another vector to this one.
+   *
+   * @param {Vector3} other
+   * @returns {Vector3}
+   */
   add(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_add(this.__wbg_ptr, other.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Add a scalar value to each element of the vector.
-  *
-  * @param {number} scalar
-  * @returns {Vector3}
-  */
+   *
+   *  * Add a scalar value to each element of the vector.
+   *
+   * @param {number} scalar
+   * @returns {Vector3}
+   */
   add_scalar(scalar) {
     const ret = wasm.vector3_add_scalar(this.__wbg_ptr, scalar);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Subtract the elements of another vector from this one.
-  *
-  * @param {Vector3} other
-  * @returns {Vector3}
-  */
+   *
+   *  * Subtract the elements of another vector from this one.
+   *
+   * @param {Vector3} other
+   * @returns {Vector3}
+   */
   subtract(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_subtract(this.__wbg_ptr, other.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Subtract a scalar value from each element of the vector.
-  *
-  * @param {number} scalar
-  * @returns {Vector3}
-  */
+   *
+   *  * Subtract a scalar value from each element of the vector.
+   *
+   * @param {number} scalar
+   * @returns {Vector3}
+   */
   subtract_scalar(scalar) {
     const ret = wasm.vector3_subtract_scalar(this.__wbg_ptr, scalar);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Clone the Vector3 instance and return a new one.
-  *
-  * @returns {Vector3}
-  */
+   *
+   *  * Clone the Vector3 instance and return a new one.
+   *
+   * @returns {Vector3}
+   */
   clone() {
     const ret = wasm.vector3_clone(this.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Set the current vector elements to zero.
-  *
-  */
+   *
+   *  * Set the current vector elements to zero.
+   *
+   */
   zero() {
     wasm.vector3_zero(this.__wbg_ptr);
   }
   /**
-  *
-  *  * Copy the elements from another Vector3 instance.
-  *
-  * @param {Vector3} other
-  */
+   *
+   *  * Copy the elements from another Vector3 instance.
+   *
+   * @param {Vector3} other
+   */
   copy(other) {
     _assertClass(other, Vector3);
     wasm.vector3_copy(this.__wbg_ptr, other.__wbg_ptr);
   }
   /**
-  *
-  *  * Multiply the vector by a scalar value.
-  *
-  * @param {number} scalar
-  * @returns {Vector3}
-  */
+   *
+   *  * Multiply the vector by a scalar value.
+   *
+   * @param {number} scalar
+   * @returns {Vector3}
+   */
   multiply_scalar(scalar) {
     const ret = wasm.vector3_multiply_scalar(this.__wbg_ptr, scalar);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Multiply the vector by another Vector3 instance element-wise.
-  *
-  * @param {Vector3} other
-  * @returns {Vector3}
-  */
+   *
+   *  * Multiply the vector by another Vector3 instance element-wise.
+   *
+   * @param {Vector3} other
+   * @returns {Vector3}
+   */
   multiply(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_multiply(this.__wbg_ptr, other.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Divide the vector by another Vector3 instance element-wise.
-  *
-  * @param {Vector3} other
-  * @returns {Vector3}
-  */
+   *
+   *  * Divide the vector by another Vector3 instance element-wise.
+   *
+   * @param {Vector3} other
+   * @returns {Vector3}
+   */
   divide(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_divide(this.__wbg_ptr, other.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Divide the vector by a scalar value.
-  *
-  * @param {number} scalar
-  * @returns {Vector3}
-  */
+   *
+   *  * Divide the vector by a scalar value.
+   *
+   * @param {number} scalar
+   * @returns {Vector3}
+   */
   divide_scalar(scalar) {
     const ret = wasm.vector3_divide_scalar(this.__wbg_ptr, scalar);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Invert the vector by negating the vector elements.
-  *
-  * @returns {Vector3}
-  */
+   *
+   *  * Invert the vector by negating the vector elements.
+   *
+   * @returns {Vector3}
+   */
   negate() {
     const ret = wasm.vector3_negate(this.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Calculate the dot product of this vector with another Vector3 instance.
-  *
-  * @param {Vector3} other
-  * @returns {number}
-  */
+   *
+   *  * Calculate the dot product of this vector with another Vector3 instance.
+   *
+   * @param {Vector3} other
+   * @returns {number}
+   */
   dot(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_dot(this.__wbg_ptr, other.__wbg_ptr);
     return ret;
   }
   /**
-  *
-  *  * Calculate the magnitude (length) of the vector.
-  *
-  * @returns {number}
-  */
+   *
+   *  * Calculate the magnitude (length) of the vector.
+   *
+   * @returns {number}
+   */
   magnitude() {
     const ret = wasm.vector3_magnitude(this.__wbg_ptr);
     return ret;
   }
   /**
-  *
-  *  * Calculate the length of the vector.
-  *  * Since length is equivalent to magnitude, this method is an alias.
-  *
-  * @returns {number}
-  */
+   *
+   *  * Calculate the length of the vector.
+   *  * Since length is equivalent to magnitude, this method is an alias.
+   *
+   * @returns {number}
+   */
   length() {
     const ret = wasm.vector3_length(this.__wbg_ptr);
     return ret;
   }
   /**
-  *
-  *  * Normalize the vector
-  *
-  * @returns {Vector3}
-  */
+   *
+   *  * Normalize the vector
+   *
+   * @returns {Vector3}
+   */
   normalize() {
     const ret = wasm.vector3_normalize(this.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Calculate the cross product and return the result as a new Vector3
-  *
-  * @param {Vector3} other
-  * @returns {Vector3}
-  */
+   *
+   *  * Calculate the cross product and return the result as a new Vector3
+   *
+   * @param {Vector3} other
+   * @returns {Vector3}
+   */
   cross(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_cross(this.__wbg_ptr, other.__wbg_ptr);
     return Vector3.__wrap(ret);
   }
   /**
-  *
-  *  * Calculate the distance between this vector and another Vector3 instance.
-  *  * Return the distance as a f64 value in Euclidean space.
-  *
-  * @param {Vector3} other
-  * @returns {number}
-  */
+   *
+   *  * Calculate the distance between this vector and another Vector3 instance.
+   *  * Return the distance as a f64 value in Euclidean space.
+   *
+   * @param {Vector3} other
+   * @returns {number}
+   */
   distance(other) {
     _assertClass(other, Vector3);
     const ret = wasm.vector3_distance(this.__wbg_ptr, other.__wbg_ptr);
@@ -2155,7 +2127,7 @@ async function __wbg_load(module, imports) {
         return await WebAssembly.instantiateStreaming(module, imports);
       } catch (e) {
         if (module.headers.get('Content-Type') != 'application/wasm') {
-          console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
+          console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve Wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
         } else {
           throw e;
         }
@@ -2178,22 +2150,33 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
   const imports = {};
   imports.wbg = {};
-  imports.wbg.__wbindgen_string_new = function (arg0, arg1) {
-    const ret = getStringFromWasm0(arg0, arg1);
-    return addHeapObject(ret);
+  imports.wbg.__wbg_getRandomValues_38097e921c2494c3 = function () {
+    return handleError(function (arg0, arg1) {
+      globalThis.crypto.getRandomValues(getArrayU8FromWasm0(arg0, arg1));
+    }, arguments);
   };
-  imports.wbg.__wbindgen_object_drop_ref = function (arg0) {
-    takeObject(arg0);
-  };
-  imports.wbg.__wbg_log_b103404cc5920657 = function (arg0) {
-    console.log(getObject(arg0));
+  imports.wbg.__wbg_log_0c7c294ecbc8af77 = function (arg0) {
+    console.log(arg0);
   };
   imports.wbg.__wbg_vector3_new = function (arg0) {
     const ret = Vector3$1.__wrap(arg0);
-    return addHeapObject(ret);
+    return ret;
   };
   imports.wbg.__wbg_vector3_unwrap = function (arg0) {
-    const ret = Vector3$1.__unwrap(takeObject(arg0));
+    const ret = Vector3$1.__unwrap(arg0);
+    return ret;
+  };
+  imports.wbg.__wbindgen_init_externref_table = function () {
+    const table = wasm.__wbindgen_export_2;
+    const offset = table.grow(4);
+    table.set(0, undefined);
+    table.set(offset + 0, undefined);
+    table.set(offset + 1, null);
+    table.set(offset + 2, true);
+    table.set(offset + 3, false);
+  };
+  imports.wbg.__wbindgen_string_new = function (arg0, arg1) {
+    const ret = getStringFromWasm0(arg0, arg1);
     return ret;
   };
   imports.wbg.__wbindgen_throw = function (arg0, arg1) {
@@ -2206,13 +2189,20 @@ function __wbg_finalize_init(instance, module) {
   __wbg_init.__wbindgen_wasm_module = module;
   cachedDataViewMemory0 = null;
   cachedUint8ArrayMemory0 = null;
+  wasm.__wbindgen_start();
   return wasm;
 }
 async function __wbg_init(module_or_path) {
   if (wasm !== undefined) return wasm;
-  if (typeof module_or_path !== 'undefined' && Object.getPrototypeOf(module_or_path) === Object.prototype) ({
-    module_or_path
-  } = module_or_path);else console.warn('using deprecated parameters for the initialization function; pass a single object instead');
+  if (typeof module_or_path !== 'undefined') {
+    if (Object.getPrototypeOf(module_or_path) === Object.prototype) {
+      ({
+        module_or_path
+      } = module_or_path);
+    } else {
+      console.warn('using deprecated parameters for the initialization function; pass a single object instead');
+    }
+  }
   if (typeof module_or_path === 'undefined') {
     module_or_path = new URL('opengeometry_bg.wasm', import.meta.url);
   }
@@ -12599,7 +12589,7 @@ const _sphere$1 = /*@__PURE__*/ new Sphere();
 const _intersectPointOnRay = /*@__PURE__*/ new Vector3();
 const _intersectPointOnSegment = /*@__PURE__*/ new Vector3();
 
-class Line extends Object3D {
+let Line$1 = class Line extends Object3D {
 
 	constructor( geometry = new BufferGeometry(), material = new LineBasicMaterial() ) {
 
@@ -12790,7 +12780,7 @@ class Line extends Object3D {
 
 	}
 
-}
+};
 
 function checkIntersection( object, raycaster, ray, thresholdSq, a, b ) {
 
@@ -12827,7 +12817,7 @@ function checkIntersection( object, raycaster, ray, thresholdSq, a, b ) {
 const _start = /*@__PURE__*/ new Vector3();
 const _end = /*@__PURE__*/ new Vector3();
 
-class LineSegments extends Line {
+class LineSegments extends Line$1 {
 
 	constructor( geometry, material ) {
 
@@ -13723,131 +13713,114 @@ const OPEN_GEOMETRY_THREE_VERSION = '0.0.1';
 /**
  * Simple Line defined by Two Points
  */
-class SimpleLine extends Line {
+class Line extends Line$1 {
     set color(color) {
         if (this.material instanceof LineBasicMaterial) {
             this.material.color.set(color);
         }
     }
-    constructor(start = new Vector3$1(1, 0, 0), end = new Vector3$1(-1, 0, 0)) {
+    constructor(options) {
         super();
-        this.points = [];
         this.ogid = getUUID();
-        this.points.push(start);
-        this.points.push(end);
+        this.options = options;
+        this.line = new OGLine(this.ogid);
+        this.setConfig();
         this.generateGeometry();
     }
-    addPoint(point) {
-        this.points.push(point);
-        if (this.points.length > 2) {
-            throw new Error("Simple Line can only have two points, clear points or use PolyLine");
+    validateOptions() {
+        if (!this.options) {
+            throw new Error("Options are not defined for Line");
         }
-        if (this.points.length < 2)
-            return;
-        this.generateGeometry();
+    }
+    setConfig() {
+        this.validateOptions();
+        const { start, end } = this.options;
+        this.line.set_config(start.clone(), end.clone());
     }
     generateGeometry() {
-        const ogLine = new OGSimpleLine(this.ogid);
-        ogLine.set_config(this.points[0], this.points[1]);
-        const buf = ogLine.get_points();
-        const bufFlush = JSON.parse(buf);
-        const line = new BufferGeometry().setFromPoints(bufFlush);
-        const material = new LineBasicMaterial({ color: 0xff0000 });
-        this.geometry = line;
-        this.material = material;
+        this.line.generate_geometry();
+        const geometryData = this.line.get_geometry_serialized();
+        const bufferData = JSON.parse(geometryData);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
+        this.geometry = geometry;
+        this.material = new LineBasicMaterial({ color: 0x00ff00 });
     }
 }
 
-/**
- * PolyLine defined by multiple points
- */
-class PolyLine extends Line {
+class Polyline extends Line$1 {
     set color(color) {
         if (this.material instanceof LineBasicMaterial) {
             this.material.color.set(color);
         }
     }
-    constructor(points) {
+    constructor(options) {
         super();
-        this.points = [];
+        this.options = { points: [] };
         this.isClosed = false;
-        this.polyline = null;
         this.ogid = getUUID();
-        this.polyline = new OGPolyLine(this.ogid);
-        if (points) {
-            this.addMultiplePoints(points);
+        this.polyline = new OGPolyline(this.ogid);
+        if (options) {
+            this.options = options;
+            this.setConfig();
+            this.generateGeometry();
         }
     }
-    addMultiplePoints(points) {
-        this.points = points;
-        if (!this.polyline)
-            return;
-        this.polyline.add_multiple_points(points);
-        this.generateGeometry();
+    validateOptions() {
+        if (!this.options) {
+            throw new Error("Options are not defined for Polyline");
+        }
     }
-    // TODO: This needs to be improved 
-    translate(translation) {
-        if (!this.polyline)
-            return;
-        this.polyline.translate(translation);
-        this.generateGeometry();
+    setConfig() {
+        this.validateOptions();
+        const { points } = this.options;
+        this.polyline.set_config(points);
     }
-    set_position(position) {
-        if (!this.polyline)
-            return;
-        this.polyline.set_position(position);
-    }
+    // addMultiplePoints(points: Vector3[]) {
+    //   this.points = points;
+    //   if (!this.polyline) return;
+    //   this.polyline.add_multiple_points(points);
+    //   this.generateGeometry();
+    // }
+    // // TODO: This needs to be improved 
+    // translate(translation: Vector3) {
+    //   if (!this.polyline) return;
+    //   this.polyline.translate(translation);
+    //   this.generateGeometry();
+    // }
+    // set_position(position: Vector3) {
+    //   if (!this.polyline) return;
+    //   this.polyline.set_position(position);
+    // }
     addPoint(point) {
-        this.points.push(point);
         if (!this.polyline)
             return;
         this.polyline.add_point(point);
-        if (this.points.length < 2)
-            return;
+        // if (this.points.length < 2) return;
+        this.clearGeometry();
         this.generateGeometry();
     }
+    /**
+     * Every time there are property changes, geometry needs to be discarded and regenerated.
+     * This is to ensure that the geometry is always up-to-date with the current state.
+     */
     clearGeometry() {
         this.geometry.dispose();
     }
     generateGeometry() {
-        this.clearGeometry();
-        if (!this.polyline)
-            return;
-        const buf = this.polyline.get_points();
-        const bufFlush = JSON.parse(buf);
-        const line = new BufferGeometry().setFromPoints(bufFlush);
-        const material = new LineBasicMaterial({ color: 0xff0000 });
-        this.geometry = line;
-        this.material = material;
+        this.polyline.generate_geometry();
+        const geometryData = this.polyline.get_geometry_serialized();
+        const bufferData = JSON.parse(geometryData);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
+        this.geometry = geometry;
+        this.material = new LineBasicMaterial({ color: 0x00ff00 });
         this.isClosed = this.polyline.is_closed();
-    }
-    getBrepData() {
-        if (!this.polyline)
-            return null;
-        return this.polyline.get_brep_data();
-    }
-    // TODO: Add proper return type
-    createOffset(offset) {
-        if (!this.polyline)
-            return null;
-        const offsetData = this.polyline.get_offset(offset);
-        if (!offsetData)
-            return null;
-        const data = JSON.parse(offsetData);
-        if (!data.treated || data.treated.length === 0) {
-            return null;
-        }
-        return data;
-    }
-    dispose() {
-        console.log("Disposing OG - Polyline");
-        this.clearGeometry();
-        this.polyline = null;
     }
 }
 
 // TODO: What if user wants infintely smooth circle
-class BaseCircle extends Line {
+class BaseCircle extends Line$1 {
     set color(color) {
         if (this.material instanceof LineBasicMaterial) {
             this.material.color.set(color);
@@ -13889,7 +13862,7 @@ class BaseCircle extends Line {
     }
 }
 
-class BasePrimitive extends Line {
+class BasePrimitive extends Line$1 {
 }
 
 /**
@@ -13955,17 +13928,17 @@ class Rectangle extends BasePrimitive {
     }
 }
 
-var _Cylinder_outlineMesh;
-class Cylinder extends Mesh {
+var _CylinderOld_outlineMesh;
+class CylinderOld extends Mesh {
     constructor(options) {
         super();
-        _Cylinder_outlineMesh.set(this, null);
+        _CylinderOld_outlineMesh.set(this, null);
         // Store local center offset to align outlines
         // TODO: Can this be moved to Engine? It can increase performance | Needs to be used in other shapes too
         this._geometryCenterOffset = new Vector3();
         this.ogid = getUUID();
         this.options = options;
-        this.cylinder = new OGCylinder(this.ogid);
+        this.cylinder = new OGCylinderOld(this.ogid);
         this.setConfig();
         this.generateGeometry();
     }
@@ -14004,20 +13977,20 @@ class Cylinder extends Mesh {
         this.position.set(((_a = this.options.center) === null || _a === void 0 ? void 0 : _a.x) || 0, ((_b = this.options.center) === null || _b === void 0 ? void 0 : _b.y) || 0, ((_c = this.options.center) === null || _c === void 0 ? void 0 : _c.z) || 0);
     }
     set outline(enable) {
-        if (enable && !__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+        if (enable && !__classPrivateFieldGet(this, _CylinderOld_outlineMesh, "f")) {
             const outline_buff = this.cylinder.outline_edges();
             const outline_buf = JSON.parse(outline_buff);
             const outlineGeometry = new BufferGeometry();
             outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
             outlineGeometry.translate(-this._geometryCenterOffset.x, -this._geometryCenterOffset.y, -this._geometryCenterOffset.z);
             const outlineMaterial = new LineBasicMaterial({ color: 0x000000 });
-            __classPrivateFieldSet(this, _Cylinder_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
-            this.add(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
+            __classPrivateFieldSet(this, _CylinderOld_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
+            this.add(__classPrivateFieldGet(this, _CylinderOld_outlineMesh, "f"));
         }
-        if (!enable && __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
-            this.remove(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
-            __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f").geometry.dispose();
-            __classPrivateFieldSet(this, _Cylinder_outlineMesh, null, "f");
+        if (!enable && __classPrivateFieldGet(this, _CylinderOld_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _CylinderOld_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _CylinderOld_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _CylinderOld_outlineMesh, null, "f");
         }
     }
     getBrepData() {
@@ -14026,7 +13999,7 @@ class Cylinder extends Mesh {
         console.log(brepDataParsed);
     }
 }
-_Cylinder_outlineMesh = new WeakMap();
+_CylinderOld_outlineMesh = new WeakMap();
 
 var _Polygon_outlineMesh;
 class Polygon extends Mesh {
@@ -14245,6 +14218,125 @@ class Polygon extends Mesh {
     }
 }
 _Polygon_outlineMesh = new WeakMap();
+
+var _Cylinder_outlineMesh;
+class Cylinder extends Mesh {
+    constructor(options) {
+        super();
+        _Cylinder_outlineMesh.set(this, null);
+        this.ogid = getUUID();
+        this.options = options;
+        this.cylinder = new OGCylinder(this.ogid);
+        this.setConfig();
+        this.generateGeometry();
+    }
+    validateOptions() {
+        if (!this.options) {
+            throw new Error("Options are not defined for Cylinder");
+        }
+    }
+    setConfig() {
+        this.validateOptions();
+        const { radius, height, segments, angle, center } = this.options;
+        this.cylinder.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), radius, height, angle, segments);
+    }
+    generateGeometry() {
+        this.cylinder.generate_geometry();
+        const geometryData = this.cylinder.get_geometry_serialized();
+        const bufferData = JSON.parse(geometryData);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
+        const material = new MeshStandardMaterial({
+            color: 0x00ff00,
+            transparent: true,
+            opacity: 0.6,
+        });
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        this.geometry = geometry;
+        this.material = material;
+    }
+    set outline(enable) {
+        if (enable && !__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+            const outline_buff = this.cylinder.get_outline_geometry_serialized();
+            const outline_buf = JSON.parse(outline_buff);
+            const outlineGeometry = new BufferGeometry();
+            outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
+            const outlineMaterial = new LineBasicMaterial({ color: 0x000000 });
+            __classPrivateFieldSet(this, _Cylinder_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
+            this.add(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
+        }
+        if (!enable && __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cylinder_outlineMesh, null, "f");
+        }
+    }
+}
+_Cylinder_outlineMesh = new WeakMap();
+
+var _Cube_outlineMesh;
+class Cube extends Mesh {
+    constructor(options) {
+        super();
+        _Cube_outlineMesh.set(this, null);
+        // Store local center offset to align outlines
+        // TODO: Can this be moved to Engine? It can increase performance | Needs to be used in other shapes too
+        this._geometryCenterOffset = new Vector3();
+        this.ogid = getUUID();
+        this.options = options;
+        this.cube = new OGCube(this.ogid);
+        this.setConfig();
+        this.generateGeometry();
+    }
+    validateOptions() {
+        if (!this.options) {
+            throw new Error("Options are not defined for Cylinder");
+        }
+    }
+    setConfig() {
+        this.validateOptions();
+        const { width, height, depth, center } = this.options;
+        this.cube.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), width, height, depth);
+    }
+    generateGeometry() {
+        this.cube.generate_geometry();
+        const geometryData = this.cube.get_geometry_serialized();
+        const bufferData = JSON.parse(geometryData);
+        console.log(bufferData);
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
+        const material = new MeshStandardMaterial({
+            color: 0x00ff00,
+            transparent: true,
+            opacity: 0.6,
+        });
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        this.geometry = geometry;
+        this.material = material;
+    }
+    set outline(enable) {
+        if (enable && !__classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
+            const outline_buff = this.cube.get_outline_geometry_serialized();
+            const outline_buf = JSON.parse(outline_buff);
+            const outlineGeometry = new BufferGeometry();
+            outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
+            const outlineMaterial = new LineBasicMaterial({ color: 0x000000 });
+            __classPrivateFieldSet(this, _Cube_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
+            this.add(__classPrivateFieldGet(this, _Cube_outlineMesh, "f"));
+        }
+        if (!enable && __classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cube_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cube_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cube_outlineMesh, null, "f");
+        }
+    }
+    get outlineMesh() {
+        return __classPrivateFieldGet(this, _Cube_outlineMesh, "f");
+    }
+}
+_Cube_outlineMesh = new WeakMap();
 
 class OpenGeometry {
     set enablePencil(value) {
@@ -14627,7 +14719,7 @@ class CirclePoly extends Mesh {
         // Create a new geometry with the merged vertices
         const mergedGeometry = new BufferGeometry().setFromPoints(mergedVertices);
         const mergedMaterial = new MeshBasicMaterial({ color: 0x000000, side: DoubleSide });
-        const mergedMesh = new Line(mergedGeometry, mergedMaterial);
+        const mergedMesh = new Line$1(mergedGeometry, mergedMaterial);
         return mergedMesh;
     }
     generateExtrudedGeometry(extruded_buff) {
@@ -14836,7 +14928,7 @@ class RectanglePoly extends Mesh {
         // Create a new geometry with the merged vertices
         const mergedGeometry = new BufferGeometry().setFromPoints(mergedVertices);
         const mergedMaterial = new MeshBasicMaterial({ color: 0x000000, side: DoubleSide });
-        const mergedMesh = new Line(mergedGeometry, mergedMaterial);
+        const mergedMesh = new Line$1(mergedGeometry, mergedMaterial);
         return mergedMesh;
     }
 }
@@ -14858,5 +14950,5 @@ class FlatMesh extends Mesh {
     }
 }
 
-export { BaseCircle, BasePoly, CirclePoly, Cylinder, FlatMesh, OpenGeometry, PolyLine, Polygon, Rectangle, RectanglePoly, SimpleLine, SpotLabel, Vector3$1 as Vector3 };
+export { BaseCircle, BasePoly, CirclePoly, Cube, Cylinder, CylinderOld, FlatMesh, Line, OpenGeometry, Polygon, Polyline, Rectangle, RectanglePoly, SpotLabel, Vector3$1 as Vector3 };
 //# sourceMappingURL=index.js.map

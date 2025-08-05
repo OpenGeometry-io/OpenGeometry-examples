@@ -23,7 +23,7 @@
       CirclePoly,
       Vector3,
       SpotLabel,
-      PolyLine
+      Polyline
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -71,7 +71,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      const polyLine = new PolyLine();
+      // Polyline with new points
+      const polyLine = new Polyline();
       scene.add(polyLine);
 
       polyLine.addPoint(new Vector3(0, 0, 0));
@@ -82,16 +83,20 @@
 
       console.log('Is PolyLine 1 Closed:', polyLine.isClosed);
 
-      // Different Color
-      const polyLine2 = new PolyLine();
+      // Polyline with existing points
+      const polyLine2 = new Polyline({
+        points: [
+          new Vector3(2, 0, 0),
+          new Vector3(3, 0, 0),
+          new Vector3(3, 1, 0),
+          new Vector3(2, 1, 0)
+        ]
+      });
       scene.add(polyLine2);
-      polyLine2.addPoint(new Vector3(0, 0, 0));
-      polyLine2.addPoint(new Vector3(-1, 0, 0));
-      polyLine2.addPoint(new Vector3(-1, -1, 0));
-      polyLine2.addPoint(new Vector3(0, -1, 0));
-
       polyLine2.color = 0x00ff00;
       console.log('Is PolyLine 2 Closed:', polyLine2.isClosed);
+
+      polyLine2.addPoint(new Vector3(2, 1, 2));
 
       initGUI();
       animate();

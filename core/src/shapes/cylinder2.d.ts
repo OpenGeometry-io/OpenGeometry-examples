@@ -1,4 +1,4 @@
-import { OGCylinder, Vector3 } from "../../../opengeometry/pkg/opengeometry";
+import { OGCylinder, Vector3 } from "./../../../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
 interface ICylinderOptions {
     radius: number;

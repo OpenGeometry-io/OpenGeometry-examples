@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | Line</title>
+  <title>OpenGeometry | Cylinder</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -18,17 +18,21 @@
   <script type="module">
     import {
       OpenGeometry,
-      BasePoly,
-      BaseCircle,
-      CirclePoly,
-      Vector3,
-      SpotLabel,
-      Line
+      Cube,
+      Vector3
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+    import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+
+    import Stats from 'three/examples/jsm/libs/stats.module.js';
+  
     let scene, camera, renderer;
     let openGeometry;
+    let stats = new Stats();
+
+    let ogMesh;
+    let cube;
 
     async function init(){
       const app = document.getElementById('app');
@@ -40,7 +44,7 @@
       });
       renderer.setSize(app.clientWidth, app.clientHeight);
       app.appendChild(renderer.domElement);
-      
+
       openGeometry = await OpenGeometry.create({
         container: app,
         scene: scene,
@@ -48,14 +52,30 @@
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
+      // grid
+      // const gridHelper = new THREE.GridHelper(200, 200);
+      // scene.add(gridHelper);
+
       scene.background = new THREE.Color(0xf0f0f0);
 
-      camera.position.z = 5;
-      camera.position.y = 5;
+      camera.position.z = 20;
+      camera.position.y = 20;
     
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      // ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
 
+      // directional light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(0, 50, 2);
+      scene.add(directionalLight);
+
+      // directional light 2
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight2.position.set(-20, 50, 2);
+      scene.add(directionalLight2);
+
+      // controls
       const controls = new OrbitControls(
         camera,
         openGeometry.labelRenderer.domElement
@@ -68,29 +88,24 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      // Line with 2 points
-      const ogSimple2 = new Line({
-        start: new Vector3(0, 0, 0), 
-        end: new Vector3(0, 0, 2)
+      const currentTime = performance.now();
+      const ogCube = new Cube({
+        width: 4,
+        height: 5,
+        depth: 4,
+        center: new Vector3(0, 10, 0),
       });
-      scene.add(ogSimple2);
+      // scene.add(ogCube);
 
-      // Line with 2 points and color
-      const ogSimple3 = new Line({
-        start: new Vector3(0, 0, 0), 
-        end: new Vector3(0, 2, 0)
-      });
-      ogSimple3.color = 0xff0000;
-      scene.add(ogSimple3);
+      ogCube.outline = true;
+      const helper = new VertexNormalsHelper( ogCube, 1, 0xff0000 );
+      scene.add(helper);
 
-      const ogSimple4 = new Line({
-        start: new Vector3(0, 0, 0), 
-        end: new Vector3(2, 0, 0)
-      });
-      scene.add(ogSimple4);
-      ogSimple4.color = 0x0000ff;
+      const cubeOutline = ogCube.outlineMesh.clone();
+      cubeOutline.material.color.set(0x0000ff);
+      cubeOutline.position.set(0, 0, 0);
+      scene.add(cubeOutline);
 
-      initGUI();
       animate();
     }
 
@@ -98,13 +113,11 @@
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
       openGeometry.update(scene, camera);
+      stats.update();
     }
 
     init();
-
-    function initGUI() {
-      
-    }
+    document.body.appendChild(stats.dom);
   </script>
 </body>
 </html>
