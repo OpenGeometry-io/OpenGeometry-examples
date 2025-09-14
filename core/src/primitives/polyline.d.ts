@@ -4,10 +4,12 @@ interface IPolyLineOptions {
     points: Vector3[];
 }
 export declare class Polyline extends THREE.Line {
+    #private;
     ogid: string;
     options: IPolyLineOptions;
     isClosed: boolean;
     private polyline;
+    transformationMatrix: THREE.Matrix4;
     set color(color: number);
     constructor(options?: IPolyLineOptions);
     validateOptions(): void;
@@ -18,6 +20,7 @@ export declare class Polyline extends THREE.Line {
      * This is to ensure that the geometry is always up-to-date with the current state.
      */
     private clearGeometry;
+    saveTransformationToBREP(): void;
     private generateGeometry;
 }
 export {};

@@ -7,14 +7,13 @@ export interface OpenGeometryOptions {
     camera: THREE.Camera;
     wasmURL: string;
 }
-export interface IBaseCircleOptions {
+export interface IArcOptions {
     radius: number;
     segments: number;
-    position: Vector3;
     startAngle: number;
     endAngle: number;
 }
-export interface RectangeOptions {
+export interface IRectangeOptions {
     ogid?: string;
     width: number;
     breadth: number;

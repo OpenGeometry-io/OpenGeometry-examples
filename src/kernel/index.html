@@ -1,65 +1,419 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>OpenGeometry</title>
+  <title>OpenGeometry Examples</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary-color: #64748b;
+      --accent-color: #06b6d4;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --background-color: #f8fafc;
+      --surface-color: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+    }
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      color: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-color);
+      display: inline-block;
+    }
+
+    .section-description {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      max-width: 800px;
+    }
+
+    .subsection {
+      margin-bottom: 2.5rem;
+    }
+
+    .subsection-title {
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .subsection-description {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .example-card {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .example-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-color);
+    }
+
+    .example-card.available {
+      cursor: pointer;
+    }
+
+    .example-card.in-progress {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .example-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .status-available {
+      background-color: #dcfce7;
+      color: var(--success-color);
+    }
+
+    .status-progress {
+      background-color: #fef3c7;
+      color: var(--warning-color);
+    }
+
+    .example-link {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+    }
+
+    .example-link:hover {
+      color: var(--primary-color);
+    }
+
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .examples-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Examples</h2>
+  <div class="container">
+    <header class="header">
+      <h1>OpenGeometry Examples</h1>
+      <!-- <p>Explore geometric primitives, shapes, and complex forms with interactive examples</p> -->
+    </header>
 
-  <h3>Primitives</h3>
-  <p>Primitives are simple geometric forms which cannot be further divided.
-  Primitives are the building blocks of Shapes and Polygons, often they have a formula to calculate their properties.</p>
-  
-  <p>In OpenGeometry, we are calling 2D forms as Primitives.</p>
-  <ul>
-    <li><a href="./primitives/point.html">Point</a></li>
-    <li><a href="./primitives/line.html">Line</a></li>
-    <li><a href="./primitives/polyline.html">Polyline</a></li>
-    <li><a href="./primitives/circle.html">Circle</a></li>
-    <li><a href="./primitives/rectangle.html">Rectangle</a></li>
-    <li><a href="./primitives/arc.html">Arc</a></li>
-    <li><a href="./primitives/ellipse.html">Ellipse</a></li>
-  </ul>
+    <section class="section">
+      <h2 class="section-title">Primitives</h2>
+      <p class="section-description">
+        Primitives are fundamental geometric forms that cannot be further divided. They serve as the building blocks for shapes and polygons, each with mathematical formulas to calculate their properties. In OpenGeometry, we classify 2D forms as primitives.
+      </p>
+      
+      <div class="examples-grid">
+        <div class="example-card in-progress">
+          <div class="example-title">
+            Point
+            <span class="status-badge status-progress">In Progress</span>
+          </div>
+        </div>
+        
+        <a href="./primitives/line.html" class="example-link">
+          <div class="example-card available">
+            <div class="example-title">
+              Line
+              <span class="status-badge status-available">Available</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="./primitives/polyline.html" class="example-link">
+          <div class="example-card available">
+            <div class="example-title">
+              Polyline
+              <span class="status-badge status-available">Available</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="./primitives/arc.html" class="example-link">
+          <div class="example-card available">
+            <div class="example-title">
+              Circle/Arc
+              <span class="status-badge status-available">Available</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="./primitives/rectangle.html" class="example-link">
+          <div class="example-card available">
+            <div class="example-title">
+              Rectangle
+              <span class="status-badge status-available">Available</span>
+            </div>
+          </div>
+        </a>
+        
+        <div class="example-card in-progress">
+          <div class="example-title">
+            Ellipse
+            <span class="status-badge status-progress">In Progress</span>
+          </div>
+        </div>
+        
+        <div class="example-card in-progress">
+          <div class="example-title">
+            Curve
+            <span class="status-badge status-progress">In Progress</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <br><br>
+    <section class="section">
+      <h2 class="section-title">Shapes</h2>
+      <p class="section-description">
+        Shapes are geometric forms created using 2D primitives and polygons. While complex, they maintain primitive characteristics and can be extruded to create 3D forms. Shapes are categorized into 2D, 3D, and complex shapes.
+      </p>
 
-  <h3>Shapes</h3>
-  <p>Shapes are geometric forms using 2D Primitives and Polygons, they are complex but still primitives in nature. Shapes can be extruded to create 3D forms.</p>
-  <p>Shapes can be further divided into three categories - 2D Shapes, 3D Shapes, and Complex Shapes.</p>
+      <div class="subsection">
+        <h3 class="subsection-title">2D Shapes</h3>
+        <p class="subsection-description">Flat geometric forms that exist in two-dimensional space.</p>
+        
+        <div class="examples-grid">
+          <div class="example-card in-progress">
+            <div class="example-title">
+              Circle Poly
+              <span class="status-badge status-progress">In Progress</span>
+            </div>
+          </div>
+          
+          <a href="./shapes/simplePolygon.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Simple Polygon
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+          
+          <a href="./shapes/complexPolygon.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Complex Polygon
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
 
-  <h4>2D Shapes</h4>
-  <p>2D Shapes are flat geometric forms that exist in a two-dimensional space.</p>
-  <ul>
-    <li><a href="./shapes/circlePoly.html">Circle Poly</a></li>
-    <li><a href="./shapes/basePoly.html">Polygon</a></li>
-  </ul>
+      <div class="subsection">
+        <h3 class="subsection-title">3D Shapes</h3>
+        <p class="subsection-description">Geometric forms that exist in three-dimensional space.</p>
+        
+        <div class="examples-grid">
+          <a href="./shapes/box.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Box
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+          
+          <div class="example-card in-progress">
+            <div class="example-title">
+              Sphere
+              <span class="status-badge status-progress">In Progress</span>
+            </div>
+          </div>
+          
+          <a href="./shapes/cylinder.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Cylinder
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+          
+          <a href="./shapes/cylinderOldPerformance.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Cylinder Old
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+          
+          <div class="example-card in-progress">
+            <div class="example-title">
+              Cone
+              <span class="status-badge status-progress">In Progress</span>
+            </div>
+          </div>
+          
+          <div class="example-card in-progress">
+            <div class="example-title">
+              Torus
+              <span class="status-badge status-progress">In Progress</span>
+            </div>
+          </div>
+          
+          <div class="example-card in-progress">
+            <div class="example-title">
+              Pyramid
+              <span class="status-badge status-progress">In Progress</span>
+            </div>
+          </div>
+          
+          <div class="example-card in-progress">
+            <div class="example-title">
+              Wedge
+              <span class="status-badge status-progress">In Progress</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <h4>3D Shapes</h4>
-  <p>3D Shapes are geometric forms that exist in a three-dimensional space.</p>
-  <ul>
-    <li><a href="./shapes/cube.html">Cube</a></li>
-    <li><a href="./shapes/sphere.html">Sphere</a></li>
-    <li><a href="./shapes/cylinder.html">Cylinder</a></li>
-    <li><a href="./shapes/cylinderOldPerformance.html">Cylinder Old</a></li>
-    <li><a href="./shapes/cone.html">Cone</a></li>
-    <li><a href="./shapes/torus.html">Torus</a></li>
-    <li><a href="./shapes/pyramid.html">Pyramid</a></li>
-    <li><a href="./shapes/wedge.html">Wedge</a></li>
-  </ul>
-
-  <h4>Complex Shapes</h4>
-  <p>Complex Shapes are geometric forms that are made up of multiple 2D and 3D Shapes along with operations like Holes, Extrudes, Inset.</p>
-  <ul>
-    <li><a href="./shapes/polygon-with-holes.html">Polygon with Holes</a></li>
-    <li><a href="./shapes/complex-polygon-with-holes.html">Complex Polygon with Holes</a></li>
-    <li><a href="./shapes/wallPolyComplex.html">2D Wall Example Polygon Complex</a></li>
-  </ul>
+      <div class="subsection">
+        <h3 class="subsection-title">Complex Shapes</h3>
+        <p class="subsection-description">Advanced geometric forms combining multiple 2D and 3D shapes with operations like holes, extrusions, and insets.</p>
+        
+        <div class="examples-grid">
+          <a href="./shapes/polygon-with-holes.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Polygon with Holes
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+          
+          <a href="./shapes/complex-polygon-with-holes.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                Complex Polygon with Holes
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+          
+          <a href="./shapes/wallPolyComplex.html" class="example-link">
+            <div class="example-card available">
+              <div class="example-title">
+                2D Wall Example
+                <span class="status-badge status-available">Available</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
 </body>
 </html>

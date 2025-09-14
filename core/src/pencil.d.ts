@@ -10,12 +10,22 @@ export declare class Pencil {
     private container;
     private scene;
     private raycaster;
-    pencilMeshes: THREE.Mesh[];
+    pencilMeshes: THREE.Object3D[];
     cursor: CSS2DObject | undefined;
     onCursorDown: Event<THREE.Vector3>;
     onCursorMove: Event<THREE.Vector3>;
-    onElementHover: Event<THREE.Mesh>;
-    onElementSelected: Event<THREE.Mesh>;
+    onElementHover: Event<{
+        mesh: THREE.Mesh;
+        point: THREE.Vector3;
+    }>;
+    onElementSelected: Event<{
+        mesh: THREE.Mesh;
+        point: THREE.Vector3;
+    }>;
+    onElementUnselected: Event<{
+        mesh: THREE.Mesh;
+        point: THREE.Vector3;
+    }>;
     pencilMode: PencilMode;
     private dummyPlane;
     constructor(container: HTMLElement, scene: THREE.Scene, camera: THREE.Camera);
@@ -26,4 +36,5 @@ export declare class Pencil {
     setupCursor(): void;
     setupCursorEvent(): void;
     fireCursor(mouse: MouseEvent): void;
+    fireCursorMove(mouse: MouseEvent): void;
 }

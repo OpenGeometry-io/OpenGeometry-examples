@@ -17,5 +17,6 @@ export declare class Cylinder extends THREE.Mesh {
     setConfig(): void;
     generateGeometry(): void;
     set outline(enable: boolean);
+    getBrep(): any;
 }
 export {};

@@ -1,10 +1,9 @@
-import { BasePolygon, OGPolygon, Vector3 } from "../opengeometry/pkg/opengeometry";
+import { BasePolygon, Vector3 } from "../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { Pencil } from "./src/pencil";
 import { SpotLabel } from "./src/markup/spotMarker";
 import { OpenGeometryOptions } from "./src/base-types";
-import { BaseCircle } from "./src/primitives/circle";
 import { Rectangle } from "./src/primitives/rectangle";
 export type OUTLINE_TYPE = "front" | "side" | "top";
 export declare class OpenGeometry {
@@ -77,22 +76,6 @@ export declare class BasePoly extends THREE.Mesh {
     addFlushBufferToScene(flush: string): void;
     extrude(height: number): void;
     generateExtrudedGeometry(extruded_buff: string): void;
-}
-export declare class CirclePoly extends THREE.Mesh {
-    ogid: string;
-    polygon: OGPolygon | null;
-    baseCircle: BaseCircle;
-    isExtruded: boolean;
-    constructor(baseCircle: BaseCircle);
-    update(): void;
-    generateGeometry(): void;
-    addFlushBufferToScene(): void;
-    clearGeometry(): void;
-    extrude(height: number): void;
-    getBrepData(): void;
-    getOutline(type: OUTLINE_TYPE): THREE.Line<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.MeshBasicMaterial, THREE.Object3DEventMap> | undefined;
-    generateExtrudedGeometry(extruded_buff: string): void;
-    dispose(): void;
 }
 export declare class RectanglePoly extends THREE.Mesh {
     ogid: string;

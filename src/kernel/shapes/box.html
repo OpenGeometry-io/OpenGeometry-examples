@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | Cylinder</title>
+  <title>OpenGeometry | Box</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -90,21 +90,23 @@
 
       const currentTime = performance.now();
       const ogCube = new Cube({
-        width: 4,
+        width: 1,
         height: 5,
-        depth: 4,
-        center: new Vector3(0, 10, 0),
+        depth: 20,
+        center: new Vector3(0, 20, 0),
       });
-      // scene.add(ogCube);
+      scene.add(ogCube);
 
       ogCube.outline = true;
       const helper = new VertexNormalsHelper( ogCube, 1, 0xff0000 );
       scene.add(helper);
 
-      const cubeOutline = ogCube.outlineMesh.clone();
-      cubeOutline.material.color.set(0x0000ff);
-      cubeOutline.position.set(0, 0, 0);
-      scene.add(cubeOutline);
+      // const cubeOutline = ogCube.outlineMesh.clone();
+      // cubeOutline.material.color.set(0x0000ff);
+      // cubeOutline.position.set(0, 0, 0);
+      // scene.add(cubeOutline);
+
+      console.log(ogCube.position);
 
       animate();
     }

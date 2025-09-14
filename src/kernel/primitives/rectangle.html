@@ -25,7 +25,6 @@
       Rectangle,
       Vector3,
       SpotLabel,
-      PolyLine
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -55,6 +54,10 @@
 
       camera.position.z = 15;
       camera.position.y = 5;
+
+      // Grid
+      // const gridHelper = new THREE.GridHelper(200, 200);
+      // scene.add(gridHelper);
     
       // ambient light
       const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -74,18 +77,25 @@
       });
 
       const rectangleData = {
-        center: new Vector3(0, 0, 0),
-        breadth: 10
+        center: new Vector3(0, 3, 0),
+        breadth: 2,
+        width: 5,
       }
 
       // Create Base Rectangle
-      const ogRectangle = new Rectangle();
+      const ogRectangle = new Rectangle(rectangleData);
       scene.add(ogRectangle);
+      
+      // console.log(ogRectangle.position);
+      console.log(ogRectangle.getBrep());
 
-      ogRectangle.width = 5;
-      ogRectangle.breadth = 15;
-      ogRectangle.color = 0xff0000;
-      ogRectangle.center = new Vector3(0, 5, 0);
+      // This doesn't rotate the rectangle as expected around it's center but constant point(0,0,0)
+      // ogRectangle.rotation.x = Math.PI / 4;
+
+      // ogRectangle.width = 5;
+      // ogRectangle.breadth = 15;
+      // ogRectangle.color = 0xff0000;
+      // ogRectangle.center = new Vector3(0, 5, 0);
 
       // // Create Base Rectangle with Color and Modifying Width and Breadth
       // const ogRectangle2 = new Rectangle({

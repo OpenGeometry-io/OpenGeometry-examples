@@ -18,9 +18,7 @@
   <script type="module">
     import {
       OpenGeometry,
-      BasePoly,
-      BaseCircle,
-      CirclePoly,
+      Arc,
       SpotLabel,
       Vector3
     } from './../../../core/';
@@ -49,7 +47,7 @@
       });
 
       // grid
-      const gridHelper = new THREE.GridHelper(200, 200);
+      // const gridHelper = new THREE.GridHelper(200, 200);
       // scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
@@ -75,15 +73,15 @@
       });
 
       const circleData = {
+        center: new Vector3(0, 0, 0),
         radius: 3,
         segments: 15,
-        position: new Vector3(0, 0, 0),
         startAngle: 0,
         endAngle: Math.PI * 2,
       }
 
       // Create Base Circle
-      const ogCircle = new BaseCircle(circleData);
+      const ogCircle = new Arc(circleData);
       scene.add(ogCircle);
 
       // Create Circle Poly from Base Circle
@@ -95,15 +93,16 @@
 
       // Circle with Different Colors
       const circleData2 = {
+        center: new Vector3(0, 2, 0),
         radius: 3,
-        segments: 15,
-        position: new Vector3(0, 3, 0),
+        segments: 4,
         startAngle: 0,
-        endAngle: Math.PI * 2,
+        endAngle: Math.PI * 1,
       }
-      const ogCircle2 = new BaseCircle(circleData2);
-      ogCircle2.color = 0x00ff00;
+      const ogCircle2 = new Arc(circleData2);
+      ogCircle2.color = 0xff0000;
       scene.add(ogCircle2);
+      // ogCircle2.position.set(5, 0, 0);
 
       initGUI();
       animate();

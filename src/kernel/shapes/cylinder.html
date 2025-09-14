@@ -18,7 +18,7 @@
   <script type="module">
     import {
       OpenGeometry,
-      Cylinder2,
+      Cylinder,
       Vector3
     } from './../../../core/';
     import * as THREE from 'three';
@@ -53,8 +53,8 @@
       });
 
       // grid
-      const gridHelper = new THREE.GridHelper(200, 200);
-      scene.add(gridHelper);
+      // const gridHelper = new THREE.GridHelper(200, 200);
+      // scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
 
@@ -89,10 +89,10 @@
       });
 
       const currentTime = performance.now();
-      const ogCylinder = new Cylinder2({
+      const ogCylinder = new Cylinder({
         radius: 2,
         height: 5,
-        segments: 12,
+        segments: 16,
         angle: Math.PI * 2,
         center: new Vector3(0, 10, 0),
       });
@@ -102,6 +102,8 @@
       ogCylinder.outline = true;
       const helper = new VertexNormalsHelper( ogCylinder, 1, 0xff0000 );
       scene.add(helper);
+
+      console.log(ogCylinder.getBrep());
 
       animate();
     }

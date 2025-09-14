@@ -18,9 +18,6 @@
   <script type="module">
     import {
       OpenGeometry,
-      BasePoly,
-      BaseCircle,
-      CirclePoly,
       Vector3,
       SpotLabel,
       Polyline
@@ -93,10 +90,11 @@
         ]
       });
       scene.add(polyLine2);
-      polyLine2.color = 0x00ff00;
+      polyLine2.color = 0xff0000;
       console.log('Is PolyLine 2 Closed:', polyLine2.isClosed);
 
       polyLine2.addPoint(new Vector3(2, 1, 2));
+      // console.log('Is PolyLine 2 Closed after adding point:', polyLine2.isClosed);
 
       initGUI();
       animate();

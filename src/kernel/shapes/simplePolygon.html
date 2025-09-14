@@ -19,17 +19,19 @@
     import {
       OpenGeometry,
       Polygon,
-      BaseCircle,
-      CirclePoly,
       Vector3,
       SpotLabel
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
-  
+
+    import * as dat from 'three/examples/jsm/libs/lil-gui.module.min';
+
     let scene, camera, renderer;
     let openGeometry;
+
+    let ogPoly;
 
     async function init(){
       const app = document.getElementById('app');
@@ -51,7 +53,7 @@
 
       // grid
       const gridHelper = new THREE.GridHelper(200, 200);
-      // scene.add(gridHelper);
+      scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
 
@@ -85,11 +87,11 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      const sphereStart = new THREE.SphereGeometry(0.2, 32, 32);
-      const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const sphere = new THREE.Mesh(sphereStart, sphereMaterial);
-      sphere.position.set(1, 0, -1);
-      scene.add(sphere);
+      // const sphereStart = new THREE.SphereGeometry(0.2, 32, 32);
+      // const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      // const sphere = new THREE.Mesh(sphereStart, sphereMaterial);
+      // sphere.position.set(1, 0, -1);
+      // scene.add(sphere);
 
       const vertices = [
         new Vector3(1, 0, -1),
@@ -98,9 +100,13 @@
         new Vector3(10, 0, 3),
         new Vector3(9, 0, 1),
       ];
-      const ogPoly = new Polygon(vertices);
-      scene.add(ogPoly);
       
+      ogPoly = new Polygon({
+        vertices: vertices
+      });
+      scene.add(ogPoly);
+
+      // ogPoly.position.set(6, 0, 0);
       // Extrude Poly
       // ogPoly.extrude(4);
 
@@ -109,9 +115,9 @@
 
       ogPoly.outline = true;
       
-      ogPoly.getBrepData();
+      console.log(JSON.parse(ogPoly.getBrepData()));
 
-      ogPoly.bTree();
+      // ogPoly.bTree();
 
       animate();
     }
@@ -123,6 +129,20 @@
     }
 
     init();
+
+    // const gui = new dat.GUI();
+    // const control = {
+    //   rotate: 0,
+    //   yaw: 0
+    // }
+
+    // gui.add(control, 'rotate', 0, Math.PI * 2).onChange((value) => {
+    //   ogPoly.rotation.y = value;
+    // });
+
+    // gui.add(control, 'yaw', 0, 180).onChange((value) => {
+    //   ogPoly.yaw = value;
+    // });
   </script>
 </body>
 </html>
