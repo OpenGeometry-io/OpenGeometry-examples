@@ -14096,12 +14096,18 @@ class Polygon extends Mesh {
             console.warn("Geometry has no position attribute, skipping position adjustment.");
             return;
         }
+        // Ensure buffer data length is divisible by 3 (x, y, z)
+        if (bufferData.length % 3 !== 0) {
+            return;
+        }
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         const material = new MeshStandardMaterial({
             color: __classPrivateFieldGet(this, _Polygon_color, "f"),
             transparent: true,
             opacity: 0.6,
+            // TODO: Enabling Double Side untill we have proper face normals from triangulation
+            side: DoubleSide,
         });
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
@@ -14323,7 +14329,6 @@ class Cylinder extends Mesh {
         this.cylinder.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), radius, height, angle, segments);
     }
     generateGeometry() {
-        console.log("Generating cylinder geometry...");
         this.cylinder.generate_geometry();
         const geometryData = this.cylinder.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
@@ -14338,7 +14343,6 @@ class Cylinder extends Mesh {
         geometry.computeBoundingBox();
         this.geometry = geometry;
         this.material = material;
-        console.log("Position", this.position);
     }
     set outline(enable) {
         if (enable && !__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
@@ -14368,6 +14372,11 @@ _Cylinder_outlineMesh = new WeakMap();
 
 var _Cube_outlineMesh;
 class Cube extends Mesh {
+    set width(value) {
+        this.options.width = value;
+        this.setConfig();
+        this.generateGeometry();
+    }
     constructor(options) {
         super();
         _Cube_outlineMesh.set(this, null);
@@ -14390,11 +14399,22 @@ class Cube extends Mesh {
         const { width, height, depth, center } = this.options;
         this.cube.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), width, height, depth);
     }
+    cleanGeometry() {
+        this.geometry.dispose();
+        if (Array.isArray(this.material)) {
+            this.material.forEach(mat => mat.dispose());
+        }
+        else {
+            this.material.dispose();
+        }
+    }
     generateGeometry() {
+        // Three.js cleanup
+        this.cleanGeometry();
+        // Kernel Geometry
         this.cube.generate_geometry();
         const geometryData = this.cube.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
-        console.log(bufferData);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         const material = new MeshStandardMaterial({
@@ -14406,9 +14426,18 @@ class Cube extends Mesh {
         geometry.computeBoundingBox();
         this.geometry = geometry;
         this.material = material;
+        // outline
+        if (__classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
+            this.outline = true;
+        }
     }
     set outline(enable) {
-        if (enable && !__classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
+        if (__classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cube_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cube_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cube_outlineMesh, null, "f");
+        }
+        if (enable) {
             const outline_buff = this.cube.get_outline_geometry_serialized();
             const outline_buf = JSON.parse(outline_buff);
             const outlineGeometry = new BufferGeometry();

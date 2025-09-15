@@ -12,9 +12,11 @@ export declare class Cube extends THREE.Mesh {
     options: ICubeOptions;
     cube: OGCube;
     private _geometryCenterOffset;
+    set width(value: number);
     constructor(options: ICubeOptions);
     validateOptions(): void;
     setConfig(): void;
+    cleanGeometry(): void;
     generateGeometry(): void;
     set outline(enable: boolean);
     get outlineMesh(): THREE.Line<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.Material | THREE.Material[], THREE.Object3DEventMap> | null;
