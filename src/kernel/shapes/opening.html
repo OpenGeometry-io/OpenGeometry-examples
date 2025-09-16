@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenGeometry | Box</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"
+    style="width: 100vw; height: 100vh;"
+  ></div>
+
+  <script type="module">
+    import {
+      OpenGeometry,
+      Opening,
+      Vector3
+    } from './../../../core/';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+    import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+
+    import Stats from 'three/examples/jsm/libs/stats.module.js';
+    import * as dat from 'three/examples/jsm/libs/lil-gui.module.min';
+  
+    let scene, camera, renderer;
+    let openGeometry;
+    let stats = new Stats();
+
+    let ogOpening;
+    let helper;
+
+    async function init(){
+      const app = document.getElementById('app');
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(app.clientWidth, app.clientHeight);
+      app.appendChild(renderer.domElement);
+
+      openGeometry = await OpenGeometry.create({
+        container: app,
+        scene: scene,
+        camera: camera,
+        wasmURL: './../../../core/opengeometry_bg.wasm'
+      });
+
+      scene.background = new THREE.Color(0xf0f0f0);
+
+      camera.position.z = 20;
+      camera.position.y = 20;
+    
+      // ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      // directional light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(0, 50, 2);
+      scene.add(directionalLight);
+
+      // directional light 2
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight2.position.set(-20, 50, 2);
+      scene.add(directionalLight2);
+
+      // controls
+      const controls = new OrbitControls(
+        camera,
+        openGeometry.labelRenderer.domElement
+      );
+      controls.update();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      const currentTime = performance.now();
+      ogOpening = new Opening({
+        width: 1,
+        height: 5,
+        depth: 20,
+        center: new Vector3(0, 20, 0),
+      });
+      scene.add(ogOpening);
+
+      ogOpening.outline = true;
+      helper = new VertexNormalsHelper( ogOpening, 1, 0xff0000 );
+      scene.add(helper);
+
+      // const cubeOutline = ogOpening.outlineMesh.clone();
+      // cubeOutline.material.color.set(0x0000ff);
+      // cubeOutline.position.set(0, 0, 0);
+      // scene.add(cubeOutline);
+
+      console.log(ogOpening.position);
+
+      // Setup dat.GUI
+      const gui = new dat.GUI();
+      const openingParams = {
+        width: 1,
+        height: 5,
+        depth: 20
+      };
+
+      gui.add(openingParams, 'width', 0.1, 10).onChange((value) => {
+        ogOpening.width = value;
+      });
+      gui.add(openingParams, 'height', 0.1, 10).onChange((value) => {
+        ogOpening.height = value;
+      });
+      gui.add(openingParams, 'depth', 0.1, 10).onChange((value) => {
+        ogOpening.depth = value;
+      });
+
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      openGeometry.update(scene, camera);
+      stats.update();
+    }
+
+    init();
+    document.body.appendChild(stats.dom);
+  </script>
+</body>
+</html>
