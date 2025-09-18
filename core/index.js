@@ -83,11 +83,6 @@ function getStringFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
   return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
-function _assertClass(instance, klass) {
-  if (!(instance instanceof klass)) {
-    throw new Error(`expected instance of ${klass.name}`);
-  }
-}
 let WASM_VECTOR_LEN = 0;
 const cachedTextEncoder = typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : {
   encode: () => {
@@ -133,6 +128,11 @@ function passStringToWasm0(arg, malloc, realloc) {
   }
   WASM_VECTOR_LEN = offset;
   return ptr;
+}
+function _assertClass(instance, klass) {
+  if (!(instance instanceof klass)) {
+    throw new Error(`expected instance of ${klass.name}`);
+  }
 }
 let cachedDataViewMemory0 = null;
 function getDataViewMemory0() {

@@ -89,31 +89,30 @@
 
       // Complex Polygon
       const ogVertices = [
-        new Vector3(-2, 0, 2),       // 14
-        new Vector3(1, 0, 4),        // 13
-        new Vector3(0, 0, 2),        // 12
-        new Vector3(0, 0, 0),        // 11
-        new Vector3(1.5, 0, 0.5),    // 10
-        new Vector3(1.25, 0, 1.5),   // 9
-        new Vector3(0.75, 0, 1.5),   // 8
-        new Vector3(0.75, 0, 0.5),   // 7
-        new Vector3(0.5, 0, 2),      // 6
-        new Vector3(1.5, 0, 2),      // 5
-        new Vector3(2, 0, 0),        // 4
-        new Vector3(4, 0, -1),       // 3
-        new Vector3(2, 0, -1),       // 2
+        new Vector3(-3, 0, -1),      // 0
         new Vector3(0, 0, -3),       // 1
-        new Vector3(-3, 0, -1)       // 0
+        new Vector3(2, 0, -1),       // 2
+        new Vector3(4, 0, -1),       // 3
+        new Vector3(2, 0, 0),        // 4
+        new Vector3(1.5, 0, 2),      // 5
+        new Vector3(0.5, 0, 2),      // 6
+        new Vector3(0.75, 0, 0.5),   // 7
+        new Vector3(0.75, 0, 1.5),   // 8
+        new Vector3(1.25, 0, 1.5),   // 9
+        new Vector3(1.5, 0, 0.5),    // 10
+        new Vector3(0, 0, 0),        // 11
+        new Vector3(0, 0, 2),        // 12
+        new Vector3(1, 0, 4),        // 13
+        new Vector3(-2, 0, 2)        // 14
       ];
       
       ogPoly = new Polygon({
         vertices: ogVertices
       });
       scene.add(ogPoly);
-
       ogPoly.outline = true;
       console.log(JSON.parse(ogPoly.getBrepData()));
-      // ogPoly.bTree();
+
       animate();
     }
 

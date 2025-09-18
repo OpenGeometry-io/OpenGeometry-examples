@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenGeometry | Polygon Test Suite with Dataset</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    
+    #polygon-description {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      max-width: 320px;
+      z-index: 1000;
+      line-height: 1.4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="app"
+    style="width: 100vw; height: 100vh;"
+  ></div>
+
+  <script type="module">
+    import {
+      OpenGeometry,
+      Polygon,
+      Vector3,
+      SpotLabel
+    } from './../../../core/';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+    import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+
+    import * as dat from 'three/examples/jsm/libs/lil-gui.module.min';
+
+    let scene, camera, renderer;
+    let openGeometry;
+    let gui;
+
+    let ogPoly;
+    let currentPolygonName = 'Complex Polygon';
+    let polygonDataset = {};
+
+    // Load polygon dataset from JSON file
+    async function loadPolygonDataset() {
+      try {
+        const response = await fetch('./polygonDataset.json');
+        const data = await response.json();
+        
+        // Convert array coordinates to Vector3 objects
+        for (const [name, polygonData] of Object.entries(data)) {
+          polygonDataset[name] = {
+            vertices: polygonData.vertices.map(coord => new Vector3(coord[0], coord[1], coord[2])),
+            description: polygonData.description,
+            category: polygonData.category
+          };
+        }
+        
+        console.log('Loaded polygon dataset:', Object.keys(polygonDataset));
+      } catch (error) {
+        console.warn('Could not load external JSON, using fallback dataset');
+        // Fallback to inline dataset if JSON file fails to load
+        polygonDataset = {
+          'Triangle': {
+            vertices: [
+              new Vector3(0, 0, 0),
+              new Vector3(3, 0, 0),
+              new Vector3(1.5, 0, 3)
+            ],
+            description: 'Basic triangle - simplest polygon with 3 vertices',
+            category: 'Basic Shapes'
+          },
+          'Square': {
+            vertices: [
+              new Vector3(-2, 0, -2),
+              new Vector3(2, 0, -2),
+              new Vector3(2, 0, 2),
+              new Vector3(-2, 0, 2)
+            ],
+            description: 'Perfect square with equal sides',
+            category: 'Basic Shapes'
+          },
+          'Pentagon': {
+            vertices: [
+              new Vector3(0, 0, 3),
+              new Vector3(2.85, 0, 0.93),
+              new Vector3(1.76, 0, -2.43),
+              new Vector3(-1.76, 0, -2.43),
+              new Vector3(-2.85, 0, 0.93)
+            ],
+            description: 'Regular pentagon with 5 equal sides',
+            category: 'Regular Polygons'
+          },
+          'Complex Polygon': {
+            vertices: [
+              new Vector3(-3, 0, -1),
+              new Vector3(0, 0, -3),
+              new Vector3(2, 0, -1),
+              new Vector3(4, 0, -1),
+              new Vector3(2, 0, 0),
+              new Vector3(1.5, 0, 2),
+              new Vector3(0.5, 0, 2),
+              new Vector3(0.75, 0, 0.5),
+              new Vector3(0.75, 0, 1.5),
+              new Vector3(1.25, 0, 1.5),
+              new Vector3(1.5, 0, 0.5),
+              new Vector3(0, 0, 0),
+              new Vector3(0, 0, 2),
+              new Vector3(1, 0, 4),
+              new Vector3(-2, 0, 2)
+            ],
+            description: 'Complex polygon with many vertices and irregular shape',
+            category: 'Complex Shapes'
+          }
+        };
+      }
+    }
+
+    async function init(){
+      const app = document.getElementById('app');
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(app.clientWidth, app.clientHeight);
+      app.appendChild(renderer.domElement);
+
+      openGeometry = await OpenGeometry.create({
+        container: app,
+        scene: scene,
+        camera: camera,
+        wasmURL: './../../../core/opengeometry_bg.wasm'
+      });
+
+      // Load polygon dataset
+      await loadPolygonDataset();
+
+      // grid
+      const gridHelper = new THREE.GridHelper(200, 200);
+      scene.add(gridHelper);
+
+      scene.background = new THREE.Color(0xf0f0f0);
+
+      camera.position.z = 20;
+      camera.position.y = 20;
+    
+      // ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      // directional light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(0, 50, 2);
+      scene.add(directionalLight);
+
+      // directional light 2
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight2.position.set(-20, 50, 2);
+      scene.add(directionalLight2);
+
+      // controls
+      const controls = new OrbitControls(
+        camera,
+        openGeometry.labelRenderer.domElement
+      );
+      controls.update();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      // Initialize GUI
+      setupGUI();
+
+      // Create initial polygon
+      createPolygon(currentPolygonName);
+
+      animate();
+    }
+
+    function setupGUI() {
+      gui = new dat.GUI();
+      
+      const polygonFolder = gui.addFolder('Polygon Test Suite');
+      polygonFolder.open();
+
+      const params = {
+        polygonType: currentPolygonName,
+        showOutline: true,
+        polygonColor: '#4CAF50',
+        opacity: 0.7,
+        wireframe: false
+      };
+
+      // Polygon type dropdown
+      polygonFolder.add(params, 'polygonType', Object.keys(polygonDataset))
+        .name('Polygon Shape')
+        .onChange((value) => {
+          currentPolygonName = value;
+          createPolygon(value);
+          updatePolygonDescription(value);
+        });
+
+      // Visual controls
+      polygonFolder.add(params, 'showOutline')
+        .name('Show Outline')
+        .onChange((value) => {
+          if (ogPoly) {
+            ogPoly.outline = value;
+          }
+        });
+
+      polygonFolder.addColor(params, 'polygonColor')
+        .name('Polygon Color')
+        .onChange((value) => {
+          if (ogPoly && ogPoly.material) {
+            ogPoly.material.color.setHex(value.replace('#', '0x'));
+          }
+        });
+
+      polygonFolder.add(params, 'opacity', 0, 1)
+        .name('Opacity')
+        .onChange((value) => {
+          if (ogPoly && ogPoly.material) {
+            ogPoly.material.opacity = value;
+            ogPoly.material.transparent = value < 1;
+          }
+        });
+
+      polygonFolder.add(params, 'wireframe')
+        .name('Wireframe')
+        .onChange((value) => {
+          if (ogPoly && ogPoly.material) {
+            ogPoly.material.wireframe = value;
+          }
+        });
+
+      // Info display
+      const infoFolder = gui.addFolder('Polygon Info');
+      infoFolder.open();
+      
+      const info = {
+        vertices: 0,
+        category: '',
+        description: ''
+      };
+
+      infoFolder.add(info, 'vertices').name('Vertex Count').listen();
+      infoFolder.add(info, 'category').name('Category').listen();
+      
+      // Update info when polygon changes
+      window.polygonInfo = info;
+      
+      // Description display
+      const descriptionElement = document.createElement('div');
+      descriptionElement.id = 'polygon-description';
+      document.body.appendChild(descriptionElement);
+    }
+
+    function updatePolygonDescription(polygonName) {
+      const descElement = document.getElementById('polygon-description');
+      const polygonData = polygonDataset[polygonName];
+      if (descElement && polygonData) {
+        descElement.innerHTML = `
+          <strong>${polygonName}</strong><br>
+          <em>Category: ${polygonData.category}</em><br>
+          ${polygonData.description}
+        `;
+      }
+    }
+
+    function createPolygon(polygonName) {
+      // Remove existing polygon
+      if (ogPoly) {
+        scene.remove(ogPoly);
+        ogPoly.dispose && ogPoly.dispose();
+      }
+
+      // Get polygon data from dataset
+      const polygonData = polygonDataset[polygonName];
+      if (!polygonData) {
+        console.error(`Polygon "${polygonName}" not found in dataset`);
+        return;
+      }
+
+      const vertices = polygonData.vertices;
+
+      // Create new polygon
+      ogPoly = new Polygon({
+        vertices: vertices
+      });
+      
+      // Set initial properties
+      ogPoly.outline = true;
+      ogPoly.material.color.setHex(0x4CAF50);
+      ogPoly.material.opacity = 0.7;
+      ogPoly.material.transparent = true;
+
+      scene.add(ogPoly);
+
+      // Update info display
+      if (window.polygonInfo) {
+        window.polygonInfo.vertices = vertices.length;
+        window.polygonInfo.category = polygonData.category;
+        window.polygonInfo.description = polygonData.description;
+      }
+
+      // Update description display
+      updatePolygonDescription(polygonName);
+
+      console.log(`Created ${polygonName} with ${vertices.length} vertices`);
+      console.log('Category:', polygonData.category);
+      console.log('Description:', polygonData.description);
+      
+      try {
+        console.log('BREP Data:', JSON.parse(ogPoly.getBrepData()));
+      } catch (error) {
+        console.warn('Could not parse BREP data:', error);
+      }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      openGeometry.update(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>

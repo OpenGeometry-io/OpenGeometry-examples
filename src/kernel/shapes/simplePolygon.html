@@ -100,18 +100,17 @@
         new Vector3(10, 0, 3),
         new Vector3(9, 0, 1),
       ];
-      
-      ogPoly = new Polygon({
-        vertices: vertices
-      });
+
+      const holeVertices = [
+        new Vector3(1, 0, 1),
+        new Vector3(3, 0, 1),
+        new Vector3(3, 0, 3),
+        new Vector3(1, 0, 3)
+      ];
+
+      ogPoly = new Polygon({ vertices: vertices });
       scene.add(ogPoly);
-
-      // ogPoly.position.set(6, 0, 0);
-      // Extrude Poly
-      // ogPoly.extrude(4);
-
-      // const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
-      // scene.add(helper);
+      // ogPoly.addHole(holeVertices);
 
       ogPoly.outline = true;
       
