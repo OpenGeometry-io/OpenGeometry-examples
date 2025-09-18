@@ -49,12 +49,13 @@
     let gui;
 
     let ogPoly;
-    let currentPolygonName = 'Complex Polygon';
+    let currentPolygonName = 'Triangle';
     let polygonDataset = {};
 
-    // Load polygon dataset from JSON file
+    // Polygon dataset embedded directly to avoid build issues
     async function loadPolygonDataset() {
       try {
+        // Try to load external JSON first
         const response = await fetch('./polygonDataset.json');
         const data = await response.json();
         
@@ -69,61 +70,350 @@
         
         console.log('Loaded polygon dataset:', Object.keys(polygonDataset));
       } catch (error) {
-        console.warn('Could not load external JSON, using fallback dataset');
-        // Fallback to inline dataset if JSON file fails to load
-        polygonDataset = {
-          'Triangle': {
-            vertices: [
-              new Vector3(0, 0, 0),
-              new Vector3(3, 0, 0),
-              new Vector3(1.5, 0, 3)
+        console.warn('Could not load external JSON, using embedded dataset');
+        // Embedded dataset for build compatibility
+        const embeddedData = {
+          "Triangle": {
+            "vertices": [
+              [0, 0, 0],
+              [3, 0, 0],
+              [1.5, 0, 3]
             ],
-            description: 'Basic triangle - simplest polygon with 3 vertices',
-            category: 'Basic Shapes'
+            "description": "Basic triangle - simplest polygon with 3 vertices",
+            "category": "Basic Shapes"
           },
-          'Square': {
-            vertices: [
-              new Vector3(-2, 0, -2),
-              new Vector3(2, 0, -2),
-              new Vector3(2, 0, 2),
-              new Vector3(-2, 0, 2)
+          "Square": {
+            "vertices": [
+              [-2, 0, -2],
+              [2, 0, -2],
+              [2, 0, 2],
+              [-2, 0, 2]
             ],
-            description: 'Perfect square with equal sides',
-            category: 'Basic Shapes'
+            "description": "Perfect square with equal sides",
+            "category": "Basic Shapes"
           },
-          'Pentagon': {
-            vertices: [
-              new Vector3(0, 0, 3),
-              new Vector3(2.85, 0, 0.93),
-              new Vector3(1.76, 0, -2.43),
-              new Vector3(-1.76, 0, -2.43),
-              new Vector3(-2.85, 0, 0.93)
+          "Pentagon": {
+            "vertices": [
+              [0, 0, 3],
+              [2.85, 0, 0.93],
+              [1.76, 0, -2.43],
+              [-1.76, 0, -2.43],
+              [-2.85, 0, 0.93]
             ],
-            description: 'Regular pentagon with 5 equal sides',
-            category: 'Regular Polygons'
+            "description": "Regular pentagon with 5 equal sides",
+            "category": "Regular Polygons"
           },
-          'Complex Polygon': {
-            vertices: [
-              new Vector3(-3, 0, -1),
-              new Vector3(0, 0, -3),
-              new Vector3(2, 0, -1),
-              new Vector3(4, 0, -1),
-              new Vector3(2, 0, 0),
-              new Vector3(1.5, 0, 2),
-              new Vector3(0.5, 0, 2),
-              new Vector3(0.75, 0, 0.5),
-              new Vector3(0.75, 0, 1.5),
-              new Vector3(1.25, 0, 1.5),
-              new Vector3(1.5, 0, 0.5),
-              new Vector3(0, 0, 0),
-              new Vector3(0, 0, 2),
-              new Vector3(1, 0, 4),
-              new Vector3(-2, 0, 2)
+          "Hexagon": {
+            "vertices": [
+              [3, 0, 0],
+              [1.5, 0, 2.6],
+              [-1.5, 0, 2.6],
+              [-3, 0, 0],
+              [-1.5, 0, -2.6],
+              [1.5, 0, -2.6]
             ],
-            description: 'Complex polygon with many vertices and irregular shape',
-            category: 'Complex Shapes'
+            "description": "Regular hexagon with 6 equal sides",
+            "category": "Regular Polygons"
+          },
+          "Octagon": {
+            "vertices": [
+              [3, 0, 0],
+              [2.12, 0, 2.12],
+              [0, 0, 3],
+              [-2.12, 0, 2.12],
+              [-3, 0, 0],
+              [-2.12, 0, -2.12],
+              [0, 0, -3],
+              [2.12, 0, -2.12]
+            ],
+            "description": "Regular octagon with 8 equal sides",
+            "category": "Regular Polygons"
+          },
+          "L_Shape": {
+            "vertices": [
+              [0, 0, 0],
+              [6, 0, 0],
+              [6, 0, 4],
+              [10, 0, 4],
+              [10, 0, 10],
+              [0, 0, 10]
+            ],
+            "description": "L-shaped polygon with concave angles",
+            "category": "Complex Shapes"
+          },
+          "Star_Shape": {
+            "vertices": [
+              [5, 0, 0],
+              [6, 0, 3.5],
+              [10, 0, 3.5],
+              [7, 0, 5.5],
+              [8, 0, 10],
+              [5, 0, 7.5],
+              [2, 0, 10],
+              [3, 0, 5.5],
+              [0, 0, 3.5],
+              [4, 0, 3.5]
+            ],
+            "description": "Five-pointed star polygon",
+            "category": "Complex Shapes"
+          },
+          "Arrow_Shape": {
+            "vertices": [
+              [0, 0, 3],
+              [7, 0, 3],
+              [7, 0, 0],
+              [10, 0, 5],
+              [7, 0, 10],
+              [7, 0, 7],
+              [0, 0, 7]
+            ],
+            "description": "Arrow-shaped polygon pointing right",
+            "category": "Complex Shapes"
+          },
+          "Cross_Shape": {
+            "vertices": [
+              [3, 0, 0],
+              [7, 0, 0],
+              [7, 0, 3],
+              [10, 0, 3],
+              [10, 0, 7],
+              [7, 0, 7],
+              [7, 0, 10],
+              [3, 0, 10],
+              [3, 0, 7],
+              [0, 0, 7],
+              [0, 0, 3],
+              [3, 0, 3]
+            ],
+            "description": "Plus sign shaped polygon",
+            "category": "Complex Shapes"
+          },
+          "U_Shape": {
+            "vertices": [
+              [0, 0, 0],
+              [3, 0, 0],
+              [3, 0, 7],
+              [7, 0, 7],
+              [7, 0, 0],
+              [10, 0, 0],
+              [10, 0, 10],
+              [0, 0, 10]
+            ],
+            "description": "U-shaped polygon - open structure",
+            "category": "Complex Shapes"
+          },
+          "Concave_Polygon": {
+            "vertices": [
+              [0, 0, 0],
+              [3, 0, 0],
+              [4, 0, 2],
+              [6, 0, 0],
+              [10, 0, 0],
+              [10, 0, 3],
+              [8, 0, 4],
+              [10, 0, 6],
+              [10, 0, 10],
+              [6, 0, 10],
+              [4, 0, 8],
+              [3, 0, 10],
+              [0, 0, 10],
+              [0, 0, 6],
+              [2, 0, 4],
+              [0, 0, 3]
+            ],
+            "description": "Complex concave polygon with multiple indentations",
+            "category": "Complex Shapes"
+          },
+          "Highly_Complex": {
+            "vertices": [
+              [0, 0, 0],
+              [1, 0, 0],
+              [2, 0, 1],
+              [3, 0, 0],
+              [4, 0, 1],
+              [5, 0, 0],
+              [6, 0, 1],
+              [7, 0, 0],
+              [8, 0, 1],
+              [9, 0, 0],
+              [10, 0, 1],
+              [11, 0, 2],
+              [12, 0, 1],
+              [13, 0, 2],
+              [14, 0, 3],
+              [15, 0, 4],
+              [16, 0, 5],
+              [17, 0, 6],
+              [18, 0, 7],
+              [19, 0, 8],
+              [20, 0, 9],
+              [19, 0, 10],
+              [18, 0, 9],
+              [17, 0, 8],
+              [16, 0, 7],
+              [15, 0, 6],
+              [14, 0, 5],
+              [13, 0, 4],
+              [12, 0, 3],
+              [11, 0, 2],
+              [10, 0, 3],
+              [9, 0, 2],
+              [8, 0, 3],
+              [7, 0, 2],
+              [6, 0, 3],
+              [5, 0, 2],
+              [4, 0, 3],
+              [3, 0, 2],
+              [2, 0, 3],
+              [1, 0, 2],
+              [0, 0, 1]
+            ],
+            "description": "Large complexity polygon for performance testing - 41 vertices with complex irregular pattern",
+            "category": "Performance Testing"
+          },
+          "Building": {
+            "vertices": [
+              [66.1, 0, 11.2],
+              [66.1, 0, 9.6],
+              [66.6, 0, 9.6],
+              [66.6, 0, 8.7],
+              [74.3, 0, 8.7],
+              [77.1, 0, 8.7],
+              [77.1, 0, 11.4],
+              [75.0, 0, 11.4],
+              [75.0, 0, 11.3],
+              [74.2, 0, 11.3],
+              [74.2, 0, 10.6],
+              [71.0, 0, 10.6],
+              [71.0, 0, 11.3],
+              [66.6, 0, 11.3],
+              [66.6, 0, 11.2]
+            ],
+            "description": "Building outline from Earcut test suite - architectural shape",
+            "category": "Earcut Test Suite"
+          },
+          "Dude_Human_Figure": {
+            "vertices": [
+              [28.035714, 0, 64.879075],
+              [28.678571, 0, 66.28979],
+              [26.328607, 0, 66.117871],
+              [26.231092, 0, 67.141548],
+              [25.053571, 0, 67.700504],
+              [25.053571, 0, 68.343361],
+              [25.642857, 0, 68.521933],
+              [29.714286, 0, 66.950504],
+              [28.928571, 0, 64.950504],
+              [28.5, 0, 63.16479],
+              [28.5, 0, 60.879075],
+              [29.285714, 0, 58.521932],
+              [30.642857, 0, 56.379075],
+              [32.357143, 0, 54.879075],
+              [33.928571, 0, 54.521932],
+              [35.785714, 0, 54.736218],
+              [37.5, 0, 55.021932],
+              [39.142857, 0, 56.807647],
+              [40.428571, 0, 58.879075],
+              [41.357143, 0, 61.236218],
+              [41.714286, 0, 62.807647],
+              [43.857143, 0, 61.91479],
+              [43.803572, 0, 61.896932],
+              [43.75, 0, 60.950504],
+              [42.696429, 0, 60.986218],
+              [42.464286, 0, 61.557647],
+              [41.982143, 0, 61.504075],
+              [42.035714, 0, 60.504075],
+              [42.839286, 0, 59.843361],
+              [43.785714, 0, 59.968361],
+              [44.357143, 0, 61.379075],
+              [45.071429, 0, 61.021933],
+              [43.142857, 0, 57.521932],
+              [40.571429, 0, 55.021932],
+              [37.285714, 0, 53.450504],
+              [34.928571, 0, 53.16479],
+              [34.642857, 0, 52.16479],
+              [34.642857, 0, 51.16479],
+              [35.071429, 0, 49.66479],
+              [36.785714, 0, 47.66479],
+              [37.714286, 0, 46.093361],
+              [38.571429, 0, 44.521932],
+              [38.857143, 0, 40.450504],
+              [36.0, 0, 35.236218],
+              [33.714286, 0, 32.593361],
+              [33.071429, 0, 33.450504],
+              [34.714286, 0, 35.450504],
+              [33.785714, 0, 37.021932],
+              [33.357143, 0, 35.950504],
+              [31.928571, 0, 35.307647],
+              [31.285714, 0, 36.66479],
+              [35.071429, 0, 38.736218],
+              [36.857143, 0, 40.807647],
+              [37.571429, 0, 43.16479],
+              [37.214286, 0, 45.450504],
+              [36.642857, 0, 46.236218],
+              [35.285714, 0, 46.236218],
+              [33.642857, 0, 45.66479],
+              [33.285714, 0, 43.879075],
+              [33.857143, 0, 42.379075],
+              [33.857143, 0, 41.16479],
+              [32.785714, 0, 40.593361],
+              [32.071429, 0, 40.736218],
+              [31.571429, 0, 42.307647],
+              [31.428571, 0, 44.021932],
+              [32.5, 0, 44.771932],
+              [32.482143, 0, 46.093361],
+              [31.785714, 0, 47.057647],
+              [30.428571, 0, 48.379075],
+              [28.714286, 0, 49.129075],
+              [26.303571, 0, 49.861218],
+              [25.160714, 0, 50.307647],
+              [25.125, 0, 53.361218],
+              [26.071429, 0, 53.361218],
+              [27.285714, 0, 52.843361],
+              [28.607143, 0, 51.861218],
+              [29.732143, 0, 50.825504],
+              [29.785714, 0, 50.736218],
+              [29.839286, 0, 50.646932],
+              [30.714286, 0, 49.66479],
+              [31.267857, 0, 49.16479],
+              [31.732143, 0, 50.307647],
+              [32.25, 0, 51.41479],
+              [32.553571, 0, 52.111218],
+              [32.714286, 0, 52.575504],
+              [32.696429, 0, 53.504075],
+              [31.178571, 0, 54.004075],
+              [29.107143, 0, 55.271932],
+              [27.482143, 0, 56.843361],
+              [25.910714, 0, 59.28979],
+              [25.428571, 0, 60.450504],
+              [25.107143, 0, 62.111218],
+              [25.053571, 0, 64.91479],
+              [26.81955, 0, 65.436208]
+            ],
+            "description": "Human figure outline (106 triangles) from Earcut test suite - complex organic shape",
+            "category": "Earcut Test Suite"
+          },
+          "Steiner_Points": {
+            "vertices": [
+              [0, 0, 0],
+              [10, 0, 0],
+              [10, 0, 10],
+              [0, 0, 10]
+            ],
+            "description": "Rectangle with Steiner points from Earcut test suite",
+            "category": "Earcut Test Suite"
           }
         };
+
+        // Convert array coordinates to Vector3 objects
+        for (const [name, polygonData] of Object.entries(embeddedData)) {
+          polygonDataset[name] = {
+            vertices: polygonData.vertices.map(coord => new Vector3(coord[0], coord[1], coord[2])),
+            description: polygonData.description,
+            category: polygonData.category
+          };
+        }
+        
+        console.log('Loaded embedded polygon dataset:', Object.keys(polygonDataset));
       }
     }
 
