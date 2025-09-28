@@ -12,7 +12,7 @@
     
     #polygon-description {
       position: absolute;
-      top: 10px;
+      top: 90px;
       left: 10px;
       background: rgba(0, 0, 0, 0.8);
       color: white;
@@ -23,6 +23,14 @@
       z-index: 1000;
       line-height: 1.4;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Stats panel styling */
+    #stats {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
     }
   </style>
 </head>
@@ -41,12 +49,14 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+    import Stats from 'three/examples/jsm/libs/stats.module.js';
 
     import * as dat from 'three/examples/jsm/libs/lil-gui.module.min';
 
     let scene, camera, renderer;
     let openGeometry;
     let gui;
+    let stats;
 
     let ogPoly;
     let currentPolygonName = 'Triangle';
@@ -440,7 +450,7 @@
 
       // grid
       const gridHelper = new THREE.GridHelper(200, 200);
-      scene.add(gridHelper);
+      // scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
 
@@ -474,6 +484,9 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
+      // Initialize Stats
+      setupStats();
+
       // Initialize GUI
       setupGUI();
 
@@ -481,6 +494,17 @@
       createPolygon(currentPolygonName);
 
       animate();
+    }
+
+    function setupStats() {
+      stats = new Stats();
+      stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+      stats.dom.id = 'stats';
+      stats.dom.style.position = 'absolute';
+      stats.dom.style.left = '10px';
+      stats.dom.style.top = '10px';
+      stats.dom.style.zIndex = '100';
+      document.body.appendChild(stats.dom);
     }
 
     function setupGUI() {
@@ -494,7 +518,9 @@
         showOutline: true,
         polygonColor: '#4CAF50',
         opacity: 0.7,
-        wireframe: false
+        wireframe: false,
+        showStats: true,
+        statsMode: 0
       };
 
       // Polygon type dropdown
@@ -537,6 +563,30 @@
         .onChange((value) => {
           if (ogPoly && ogPoly.material) {
             ogPoly.material.wireframe = value;
+          }
+        });
+
+      // Performance controls
+      const performanceFolder = gui.addFolder('Performance');
+      performanceFolder.open();
+      
+      performanceFolder.add(params, 'showStats')
+        .name('Show FPS Stats')
+        .onChange((value) => {
+          if (stats) {
+            stats.dom.style.display = value ? 'block' : 'none';
+          }
+        });
+
+      performanceFolder.add(params, 'statsMode', { 
+        'FPS': 0, 
+        'Frame Time (ms)': 1, 
+        'Memory (MB)': 2 
+      })
+        .name('Stats Mode')
+        .onChange((value) => {
+          if (stats) {
+            stats.showPanel(parseInt(value));
           }
         });
 
@@ -625,9 +675,13 @@
     }
 
     function animate() {
+      stats.begin();
+      
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
       openGeometry.update(scene, camera);
+      
+      stats.end();
     }
 
     init();

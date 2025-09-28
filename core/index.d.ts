@@ -1,10 +1,9 @@
-import { BasePolygon, Vector3 } from "../opengeometry/pkg/opengeometry";
+import { Vector3 } from "../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { Pencil } from "./src/pencil";
 import { SpotLabel } from "./src/markup/spotMarker";
 import { OpenGeometryOptions } from "./src/base-types";
-import { Rectangle } from "./src/primitives/rectangle";
 export type OUTLINE_TYPE = "front" | "side" | "top";
 export declare class OpenGeometry {
     private camera;
@@ -61,41 +60,6 @@ export declare class OpenGeometry {
      * @param camera - The Three.js camera used for rendering the scene.
      */
     update(scene: THREE.Scene, camera: THREE.Camera): void;
-}
-export declare class BasePoly extends THREE.Mesh {
-    ogid: string;
-    layerVertices: Vector3[];
-    layerBackVertices: Vector3[];
-    polygon: BasePolygon | null;
-    isTriangulated: boolean;
-    constructor(vertices?: Vector3[]);
-    addVertices(vertices: Vector3[]): void;
-    resetVertices(): void;
-    addVertex(threeVertex: Vector3): void;
-    addHole(holeVertices: Vector3[]): void;
-    addFlushBufferToScene(flush: string): void;
-    extrude(height: number): void;
-    generateExtrudedGeometry(extruded_buff: string): void;
-}
-export declare class RectanglePoly extends THREE.Mesh {
-    ogid: string;
-    polygon: BasePolygon | null;
-    baseRectangle: Rectangle;
-    isExtruded: boolean;
-    constructor(baseRectangle: Rectangle);
-    update(): void;
-    generateGeometry(): void;
-    addFlushBufferToScene(): void;
-    clearGeometry(): void;
-    extrude(height: number): void;
-    generateExtrudedGeometry(extruded_buff: string): void;
-    getOutline(type: OUTLINE_TYPE): THREE.Line<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.MeshBasicMaterial, THREE.Object3DEventMap> | undefined;
-}
-/**
- * Base Flat Mesh
- */
-export declare class FlatMesh extends THREE.Mesh {
-    constructor(vertices: Vector3[]);
 }
 export { Vector3, SpotLabel, };
 export * from './src/primitives/';

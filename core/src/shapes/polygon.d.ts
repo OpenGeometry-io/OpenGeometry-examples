@@ -17,6 +17,7 @@ export declare class Polygon extends THREE.Mesh {
     generateGeometry(): void;
     addVertices(vertices: Vector3[]): void;
     saveTransformationToBREP(): void;
+    addHole(holeVertices: Vector3[]): void;
     getBrepData(): string | null;
     set outlineColor(color: number);
     get outlineColor(): number;

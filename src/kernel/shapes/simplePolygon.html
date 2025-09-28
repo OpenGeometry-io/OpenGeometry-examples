@@ -53,7 +53,7 @@
 
       // grid
       const gridHelper = new THREE.GridHelper(200, 200);
-      scene.add(gridHelper);
+      // scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
 
@@ -93,6 +93,7 @@
       // sphere.position.set(1, 0, -1);
       // scene.add(sphere);
 
+      // Is Anticlockwise when looking from Y+ (Top View)
       const vertices = [
         new Vector3(1, 0, -1),
         new Vector3(1, 0, 7),
@@ -102,17 +103,29 @@
       ];
 
       const holeVertices = [
-        new Vector3(1, 0, 1),
-        new Vector3(3, 0, 1),
-        new Vector3(3, 0, 3),
-        new Vector3(1, 0, 3)
+        new Vector3(2, 0, 1),
+        new Vector3(4, 0, 1),
+        new Vector3(4, 0, 3),
+        new Vector3(2, 0, 3)
       ];
 
       ogPoly = new Polygon({ vertices: vertices });
       scene.add(ogPoly);
-      // ogPoly.addHole(holeVertices);
+      
+      ogPoly.addHole(holeVertices);
 
       ogPoly.outline = true;
+
+
+      // Hole 2
+      const hole2Vertices = [
+        new Vector3(6, 0, 2),
+        new Vector3(7, 0, 2),
+        new Vector3(7, 0, 4),
+        new Vector3(6, 0, 4)
+      ];
+      ogPoly.addHole(hole2Vertices);
+
       
       console.log(JSON.parse(ogPoly.getBrepData()));
 
