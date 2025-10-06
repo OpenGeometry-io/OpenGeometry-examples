@@ -1,29 +1,320 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>OpenGeometry</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenGeometry - Examples & Demos</title>
+  <meta name="description" content="Explore OpenGeometry examples, kernel demos, and OpenPlans interactive tools for geometric computations.">
+  
   <style>
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary-color: #10b981;
+      --background-color: #f8fafc;
+      --card-background: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .section {
+      background: var(--card-background);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-light);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .section:hover {
+      box-shadow: var(--shadow-large);
+      transform: translateY(-2px);
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .examples-icon {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+    }
+
+    .openplans-icon {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .section p {
+      color: var(--text-secondary);
+      margin: 0 0 1.5rem 0;
+      font-size: 1rem;
+    }
+
+    .links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .links li:last-child {
+      margin-bottom: 0;
+    }
+
+    .links a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-primary);
+      background-color: var(--background-color);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .links a:hover {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+      transform: translateX(4px);
+    }
+
+    .link-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .links a:hover .link-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 2rem 0;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header {
+        margin-bottom: 2rem;
+        padding: 1rem 0;
+      }
+
+      .header h1 {
+        font-size: 2.25rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .sections {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .section {
+        padding: 1.5rem;
+      }
+
+      .section h2 {
+        font-size: 1.375rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .section {
+        padding: 1.25rem;
+      }
+
+      .links a {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Animation for page load */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .section:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .section:nth-child(3) {
+      animation-delay: 0.2s;
     }
   </style>
 </head>
 <body>
-  Examples
-  <ul>
-    <li><a href="./src/kernel/index.html">Kernel</a></li>
-  </ul>
+  <div class="container">
+    <header class="header">
+      <h1>OpenGeometry</h1>
+      <p>Explore powerful geometric computation examples, interactive demos, and comprehensive tools for modern geometry applications.</p>
+      <div class="badge">Examples & Demos</div>
+    </header>
 
-  OpenPlans
-  <ul>
-    <li><a href="./src/openplans/index.html">OpenPlans</a></li>
-  </ul>
-  <!-- Shapes
-  <ul>
-    <li><a href="./geometry/simplePoly.html">Simple Poly</a></li>
-    <li><a href="./geometry/circlePoly.html">Circle Poly</a></li>
-  </ul> -->
+    <main class="sections">
+      <section class="section">
+        <h2>
+          <div class="section-icon examples-icon">🔧</div>
+          Examples
+        </h2>
+        <p>Dive into comprehensive examples showcasing OpenGeometry's kernel capabilities, including primitives, shapes, and advanced geometric operations.</p>
+        <ul class="links">
+          <li>
+            <a href="./src/kernel/index.html">
+              <div class="link-icon">K</div>
+              Kernel Examples
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>
+          <div class="section-icon openplans-icon">📐</div>
+          OpenPlans
+        </h2>
+        <p>Interactive planning and design tools powered by OpenGeometry. Create, modify, and visualize complex geometric structures with ease.</p>
+        <ul class="links">
+          <li>
+            <a href="./src/openplans/index.html">
+              <div class="link-icon">P</div>
+              OpenPlans
+            </a>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Built Dreams. OpenGeometry.</p>
+    </footer>
+  </div>
 </body>
 </html>

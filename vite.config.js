@@ -26,6 +26,9 @@ function findHtmlFiles(dir, entries = {}) {
 
 const input = findHtmlFiles(resolve(__dirname, 'src'));
 
+// Add the root index.html file to the input
+input['index'] = resolve(__dirname, 'index.html');
+
 export default defineConfig({
   base: './',
   server: {
