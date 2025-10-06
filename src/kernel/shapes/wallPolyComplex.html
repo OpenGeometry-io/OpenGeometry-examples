@@ -19,8 +19,6 @@
     import {
       OpenGeometry,
       Polygon,
-      BaseCircle,
-      CirclePoly,
       Vector3,
       SpotLabel
     } from './../../../core/';
@@ -43,9 +41,6 @@
       app.appendChild(renderer.domElement);
 
       openGeometry = await OpenGeometry.create({
-        container: app,
-        scene: scene,
-        camera: camera,
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
@@ -75,7 +70,7 @@
       // controls
       const controls = new OrbitControls(
         camera,
-        openGeometry.labelRenderer.domElement
+        renderer.domElement
       );
       controls.update();
 
@@ -84,12 +79,6 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
-
-      const sphereStart = new THREE.SphereGeometry(0.2, 32, 32);
-      const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const sphere = new THREE.Mesh(sphereStart, sphereMaterial);
-      sphere.position.set(1, 0, -1);
-      scene.add(sphere);
 
       const vertices = [
         new Vector3(9.5, 0, 10),
@@ -101,21 +90,11 @@
         new Vector3(10.5, 0, -1.0403124237432855),
         new Vector3(10.5, 0, 10)
       ];
-      const ogPoly = new Polygon(vertices);
+      const ogPoly = new Polygon({ vertices: vertices });
       scene.add(ogPoly);
       
-      // Extrude Poly
-      // ogPoly.extrude(4);
-
-      // const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
-      // scene.add(helper);
-
       ogPoly.outline = true;
-      
-      const brep = ogPoly.getBrepData();
-      console.log('Brep Data:', brep);
-
-      ogPoly.bTree();
+      // console.log(JSON.parse(ogPoly.getBrepData()));
 
       animate();
     }
@@ -123,7 +102,6 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      openGeometry.update(scene, camera);
     }
 
     init();

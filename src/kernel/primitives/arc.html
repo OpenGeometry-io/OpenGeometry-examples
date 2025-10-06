@@ -40,9 +40,6 @@
       app.appendChild(renderer.domElement);
 
       openGeometry = await OpenGeometry.create({
-        container: app,
-        scene: scene,
-        camera: camera,
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
@@ -62,7 +59,7 @@
       // controls
       const controls = new OrbitControls(
         camera,
-        openGeometry.labelRenderer.domElement
+        renderer.domElement
       );
       controls.update();
 
@@ -111,7 +108,6 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      openGeometry.update(scene, camera);
     }
 
     init();

@@ -1,15 +1,22 @@
-import { IRectangeOptions } from "../base-types";
-import { BaseLinePrimitive } from "./base-line-primitive";
-export declare class Rectangle extends BaseLinePrimitive {
+import { Vector3 } from "./../../../opengeometry/pkg/opengeometry";
+import * as THREE from "three";
+export interface IRectangleOptions {
+    ogid?: string;
+    center: Vector3;
+    width: number;
+    breadth: number;
+    color: number;
+}
+export declare class Rectangle extends THREE.Line {
     ogid: string;
-    options: IRectangeOptions;
+    options: IRectangleOptions;
     private polyLineRectangle;
     set color(color: number);
-    constructor(options?: IRectangeOptions);
+    constructor(options?: IRectangleOptions);
     validateOptions(): void;
-    setConfig(): void;
-    getConfig(): IRectangeOptions;
-    generateGeometry(): void;
+    setConfig(options: IRectangleOptions): void;
+    getConfig(): IRectangleOptions;
+    private generateGeometry;
     getBrep(): any;
     discardGeometry(): void;
 }

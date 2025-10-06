@@ -47,9 +47,6 @@
       app.appendChild(renderer.domElement);
 
       openGeometry = await OpenGeometry.create({
-        container: app,
-        scene: scene,
-        camera: camera,
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
@@ -75,7 +72,7 @@
       // controls
       const controls = new OrbitControls(
         camera,
-        openGeometry.labelRenderer.domElement
+        renderer.domElement
       );
       controls.update();
 
@@ -97,13 +94,6 @@
       ogOpening.outline = true;
       helper = new VertexNormalsHelper( ogOpening, 1, 0xff0000 );
       scene.add(helper);
-
-      // const cubeOutline = ogOpening.outlineMesh.clone();
-      // cubeOutline.material.color.set(0x0000ff);
-      // cubeOutline.position.set(0, 0, 0);
-      // scene.add(cubeOutline);
-
-      console.log(ogOpening.position);
 
       // Setup dat.GUI
       const gui = new dat.GUI();
@@ -129,7 +119,6 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      openGeometry.update(scene, camera);
       stats.update();
     }
 

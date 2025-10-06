@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | Box</title>
+  <title>OpenGeometry | Cuboid</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -18,7 +18,7 @@
   <script type="module">
     import {
       OpenGeometry,
-      Cube,
+      Cuboid,
       Vector3
     } from './../../../core/';
     import * as THREE from 'three';
@@ -33,7 +33,7 @@
     let stats = new Stats();
 
     let ogMesh;
-    let ogCube;
+    let ogCuboid;
     let helper;
 
     async function init(){
@@ -48,9 +48,6 @@
       app.appendChild(renderer.domElement);
 
       openGeometry = await OpenGeometry.create({
-        container: app,
-        scene: scene,
-        camera: camera,
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
@@ -80,7 +77,7 @@
       // controls
       const controls = new OrbitControls(
         camera,
-        openGeometry.labelRenderer.domElement
+        renderer.domElement
       );
       controls.update();
 
@@ -91,33 +88,33 @@
       });
 
       const currentTime = performance.now();
-      ogCube = new Cube({
-        width: 1,
-        height: 5,
-        depth: 20,
-        center: new Vector3(0, 20, 0),
+      ogCuboid = new Cuboid({
+        width: 5,
+        height: 4,
+        depth: 10,
+        center: new Vector3(0, 0, 0),
       });
-      scene.add(ogCube);
+      scene.add(ogCuboid);
 
-      ogCube.outline = true;
-      helper = new VertexNormalsHelper( ogCube, 1, 0xff0000 );
+      ogCuboid.outline = true;
+      helper = new VertexNormalsHelper( ogCuboid, 1, 0xff0000 );
       scene.add(helper);
 
-      // const cubeOutline = ogCube.outlineMesh.clone();
+      // const cubeOutline = ogCuboid.outlineMesh.clone();
       // cubeOutline.material.color.set(0x0000ff);
       // cubeOutline.position.set(0, 0, 0);
       // scene.add(cubeOutline);
 
-      console.log(ogCube.position);
+      console.log(ogCuboid.getBrepData());
 
       // Setup dat.GUI
       const gui = new dat.GUI();
-      const cubeParams = {
+      const cuboidParams = {
         width: 1
       };
 
-      gui.add(cubeParams, 'width', 0.1, 10).onChange((value) => {
-        ogCube.width = value;
+      gui.add(cuboidParams, 'width', 0.1, 10).onChange((value) => {
+        ogCuboid.width = value;
       });
 
       animate();
@@ -126,7 +123,6 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      openGeometry.update(scene, camera);
       stats.update();
     }
 

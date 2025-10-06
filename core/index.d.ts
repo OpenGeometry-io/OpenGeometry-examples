@@ -1,21 +1,11 @@
 import { Vector3 } from "../opengeometry/pkg/opengeometry";
-import * as THREE from "three";
-import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
-import { Pencil } from "./src/pencil";
 import { SpotLabel } from "./src/markup/spotMarker";
 import { OpenGeometryOptions } from "./src/base-types";
 export type OUTLINE_TYPE = "front" | "side" | "top";
 export declare class OpenGeometry {
-    private camera;
     static version: string;
-    protected scene: THREE.Scene | undefined;
-    protected container: HTMLElement | undefined;
-    private _pencil;
-    private _labelRenderer;
+    static instance: OpenGeometry | null;
     private _enableDebug;
-    set enablePencil(value: boolean);
-    get pencil(): Pencil | undefined;
-    get labelRenderer(): CSS2DRenderer | undefined;
     get enableDebug(): boolean;
     /**
      * Enables or disables debug mode for OpenGeometry.
@@ -27,7 +17,7 @@ export declare class OpenGeometry {
      * @param value - A boolean indicating whether to enable or disable debug mode.
      */
     set enableDebug(value: boolean);
-    constructor(container: HTMLElement, threeScene: THREE.Scene, camera: THREE.Camera);
+    constructor();
     /**
      * Asynchronously creates and initializes an instance of OpenGeometry.
      *
@@ -51,15 +41,6 @@ export declare class OpenGeometry {
      */
     static create(options: OpenGeometryOptions): Promise<OpenGeometry>;
     private setup;
-    private setuplabelRenderer;
-    private setupEvent;
-    /**
-     * Updates the label renderer to render the scene with the given camera.
-     * This method should be called in the animation loop or render loop of your application.
-     * @param scene - The Three.js scene containing the objects to be rendered.
-     * @param camera - The Three.js camera used for rendering the scene.
-     */
-    update(scene: THREE.Scene, camera: THREE.Camera): void;
 }
 export { Vector3, SpotLabel, };
 export * from './src/primitives/';

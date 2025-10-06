@@ -499,20 +499,20 @@ class OGArc {
     }
   }
 }
-const OGCubeFinalization = typeof FinalizationRegistry === 'undefined' ? {
+const OGCuboidFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
-} : new FinalizationRegistry(ptr => wasm.__wbg_ogcube_free(ptr >>> 0, 1));
-class OGCube {
+} : new FinalizationRegistry(ptr => wasm.__wbg_ogcuboid_free(ptr >>> 0, 1));
+class OGCuboid {
   __destroy_into_raw() {
     const ptr = this.__wbg_ptr;
     this.__wbg_ptr = 0;
-    OGCubeFinalization.unregister(this);
+    OGCuboidFinalization.unregister(this);
     return ptr;
   }
   free() {
     const ptr = this.__destroy_into_raw();
-    wasm.__wbg_ogcube_free(ptr, 0);
+    wasm.__wbg_ogcuboid_free(ptr, 0);
   }
   /**
    * @param {string} id
@@ -520,7 +520,7 @@ class OGCube {
   set id(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    wasm.ogcube_set_id(this.__wbg_ptr, ptr0, len0);
+    wasm.ogcuboid_set_id(this.__wbg_ptr, ptr0, len0);
   }
   /**
    * @returns {string}
@@ -529,7 +529,7 @@ class OGCube {
     let deferred1_0;
     let deferred1_1;
     try {
-      const ret = wasm.ogcube_id(this.__wbg_ptr);
+      const ret = wasm.ogcuboid_id(this.__wbg_ptr);
       deferred1_0 = ret[0];
       deferred1_1 = ret[1];
       return getStringFromWasm0(ret[0], ret[1]);
@@ -543,9 +543,9 @@ class OGCube {
   constructor(id) {
     const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.ogcube_new(ptr0, len0);
+    const ret = wasm.ogcuboid_new(ptr0, len0);
     this.__wbg_ptr = ret >>> 0;
-    OGCubeFinalization.register(this, this.__wbg_ptr, this);
+    OGCuboidFinalization.register(this, this.__wbg_ptr, this);
     return this;
   }
   /**
@@ -557,25 +557,25 @@ class OGCube {
   set_config(center, width, height, depth) {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
-    wasm.ogcube_set_config(this.__wbg_ptr, ptr0, width, height, depth);
+    wasm.ogcuboid_set_config(this.__wbg_ptr, ptr0, width, height, depth);
   }
   generate_brep() {
-    wasm.ogcube_generate_brep(this.__wbg_ptr);
+    wasm.ogcuboid_generate_brep(this.__wbg_ptr);
   }
   clean_geometry() {
-    wasm.ogcube_clean_geometry(this.__wbg_ptr);
+    wasm.ogcuboid_clean_geometry(this.__wbg_ptr);
   }
   generate_geometry() {
-    wasm.ogcube_generate_geometry(this.__wbg_ptr);
+    wasm.ogcuboid_generate_geometry(this.__wbg_ptr);
   }
   /**
    * @returns {string}
    */
-  get_brep_dump() {
+  get_brep_serialized() {
     let deferred1_0;
     let deferred1_1;
     try {
-      const ret = wasm.ogcube_get_brep_dump(this.__wbg_ptr);
+      const ret = wasm.ogcuboid_get_brep_serialized(this.__wbg_ptr);
       deferred1_0 = ret[0];
       deferred1_1 = ret[1];
       return getStringFromWasm0(ret[0], ret[1]);
@@ -590,7 +590,7 @@ class OGCube {
     let deferred1_0;
     let deferred1_1;
     try {
-      const ret = wasm.ogcube_get_geometry_serialized(this.__wbg_ptr);
+      const ret = wasm.ogcuboid_get_geometry_serialized(this.__wbg_ptr);
       deferred1_0 = ret[0];
       deferred1_1 = ret[1];
       return getStringFromWasm0(ret[0], ret[1]);
@@ -605,7 +605,7 @@ class OGCube {
     let deferred1_0;
     let deferred1_1;
     try {
-      const ret = wasm.ogcube_get_outline_geometry_serialized(this.__wbg_ptr);
+      const ret = wasm.ogcuboid_get_outline_geometry_serialized(this.__wbg_ptr);
       deferred1_0 = ret[0];
       deferred1_1 = ret[1];
       return getStringFromWasm0(ret[0], ret[1]);
@@ -674,6 +674,12 @@ class OGCylinder {
     _assertClass(center, Vector3$1);
     var ptr0 = center.__destroy_into_raw();
     wasm.ogcylinder_set_config(this.__wbg_ptr, ptr0, radius, height, angle, segments);
+  }
+  generate_brep() {
+    wasm.ogcylinder_generate_brep(this.__wbg_ptr);
+  }
+  clean_geometry() {
+    wasm.ogcylinder_clean_geometry(this.__wbg_ptr);
   }
   generate_geometry() {
     wasm.ogcylinder_generate_geometry(this.__wbg_ptr);
@@ -1532,7 +1538,7 @@ function __wbg_get_imports() {
       globalThis.crypto.getRandomValues(getArrayU8FromWasm0(arg0, arg1));
     }, arguments);
   };
-  imports.wbg.__wbg_log_0c7c294ecbc8af77 = function (arg0) {
+  imports.wbg.__wbg_log_c222819a41e063d3 = function (arg0) {
     console.log(arg0);
   };
   imports.wbg.__wbg_vector3_new = function (arg0) {
@@ -11818,100 +11824,6 @@ function checkGeometryIntersection( object, material, raycaster, ray, uv, uv1, n
 
 }
 
-class PlaneGeometry extends BufferGeometry {
-
-	constructor( width = 1, height = 1, widthSegments = 1, heightSegments = 1 ) {
-
-		super();
-
-		this.type = 'PlaneGeometry';
-
-		this.parameters = {
-			width: width,
-			height: height,
-			widthSegments: widthSegments,
-			heightSegments: heightSegments
-		};
-
-		const width_half = width / 2;
-		const height_half = height / 2;
-
-		const gridX = Math.floor( widthSegments );
-		const gridY = Math.floor( heightSegments );
-
-		const gridX1 = gridX + 1;
-		const gridY1 = gridY + 1;
-
-		const segment_width = width / gridX;
-		const segment_height = height / gridY;
-
-		//
-
-		const indices = [];
-		const vertices = [];
-		const normals = [];
-		const uvs = [];
-
-		for ( let iy = 0; iy < gridY1; iy ++ ) {
-
-			const y = iy * segment_height - height_half;
-
-			for ( let ix = 0; ix < gridX1; ix ++ ) {
-
-				const x = ix * segment_width - width_half;
-
-				vertices.push( x, - y, 0 );
-
-				normals.push( 0, 0, 1 );
-
-				uvs.push( ix / gridX );
-				uvs.push( 1 - ( iy / gridY ) );
-
-			}
-
-		}
-
-		for ( let iy = 0; iy < gridY; iy ++ ) {
-
-			for ( let ix = 0; ix < gridX; ix ++ ) {
-
-				const a = ix + gridX1 * iy;
-				const b = ix + gridX1 * ( iy + 1 );
-				const c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-				const d = ( ix + 1 ) + gridX1 * iy;
-
-				indices.push( a, b, d );
-				indices.push( b, c, d );
-
-			}
-
-		}
-
-		this.setIndex( indices );
-		this.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-		this.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
-		this.setAttribute( 'uv', new Float32BufferAttribute( uvs, 2 ) );
-
-	}
-
-	copy( source ) {
-
-		super.copy( source );
-
-		this.parameters = Object.assign( {}, source.parameters );
-
-		return this;
-
-	}
-
-	static fromJSON( data ) {
-
-		return new PlaneGeometry( data.width, data.height, data.widthSegments, data.heightSegments );
-
-	}
-
-}
-
 class LineBasicMaterial extends Material {
 
 	constructor( parameters ) {
@@ -12362,129 +12274,6 @@ class MeshStandardMaterial extends Material {
 
 }
 
-const _matrix = /*@__PURE__*/ new Matrix4();
-
-class Raycaster {
-
-	constructor( origin, direction, near = 0, far = Infinity ) {
-
-		this.ray = new Ray( origin, direction );
-		// direction is assumed to be normalized (for accurate distance calculations)
-
-		this.near = near;
-		this.far = far;
-		this.camera = null;
-		this.layers = new Layers();
-
-		this.params = {
-			Mesh: {},
-			Line: { threshold: 1 },
-			LOD: {},
-			Points: { threshold: 1 },
-			Sprite: {}
-		};
-
-	}
-
-	set( origin, direction ) {
-
-		// direction is assumed to be normalized (for accurate distance calculations)
-
-		this.ray.set( origin, direction );
-
-	}
-
-	setFromCamera( coords, camera ) {
-
-		if ( camera.isPerspectiveCamera ) {
-
-			this.ray.origin.setFromMatrixPosition( camera.matrixWorld );
-			this.ray.direction.set( coords.x, coords.y, 0.5 ).unproject( camera ).sub( this.ray.origin ).normalize();
-			this.camera = camera;
-
-		} else if ( camera.isOrthographicCamera ) {
-
-			this.ray.origin.set( coords.x, coords.y, ( camera.near + camera.far ) / ( camera.near - camera.far ) ).unproject( camera ); // set origin in plane of camera
-			this.ray.direction.set( 0, 0, -1 ).transformDirection( camera.matrixWorld );
-			this.camera = camera;
-
-		} else {
-
-			console.error( 'THREE.Raycaster: Unsupported camera type: ' + camera.type );
-
-		}
-
-	}
-
-	setFromXRController( controller ) {
-
-		_matrix.identity().extractRotation( controller.matrixWorld );
-
-		this.ray.origin.setFromMatrixPosition( controller.matrixWorld );
-		this.ray.direction.set( 0, 0, -1 ).applyMatrix4( _matrix );
-
-		return this;
-
-	}
-
-	intersectObject( object, recursive = true, intersects = [] ) {
-
-		intersect( object, this, intersects, recursive );
-
-		intersects.sort( ascSort );
-
-		return intersects;
-
-	}
-
-	intersectObjects( objects, recursive = true, intersects = [] ) {
-
-		for ( let i = 0, l = objects.length; i < l; i ++ ) {
-
-			intersect( objects[ i ], this, intersects, recursive );
-
-		}
-
-		intersects.sort( ascSort );
-
-		return intersects;
-
-	}
-
-}
-
-function ascSort( a, b ) {
-
-	return a.distance - b.distance;
-
-}
-
-function intersect( object, raycaster, intersects, recursive ) {
-
-	let propagate = true;
-
-	if ( object.layers.test( raycaster.layers ) ) {
-
-		const result = object.raycast( raycaster, intersects );
-
-		if ( result === false ) propagate = false;
-
-	}
-
-	if ( propagate === true && recursive === true ) {
-
-		const children = object.children;
-
-		for ( let i = 0, l = children.length; i < l; i ++ ) {
-
-			intersect( children[ i ], raycaster, intersects, true );
-
-		}
-
-	}
-
-}
-
 if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
 
 	__THREE_DEVTOOLS__.dispatchEvent( new CustomEvent( 'register', { detail: {
@@ -12556,377 +12345,11 @@ class CSS2DObject extends Object3D {
 
 //
 
-const _vector = new Vector3();
-const _viewMatrix = new Matrix4();
-const _viewProjectionMatrix = new Matrix4();
-const _a = new Vector3();
-const _b = new Vector3();
-
-class CSS2DRenderer {
-
-	constructor( parameters = {} ) {
-
-		const _this = this;
-
-		let _width, _height;
-		let _widthHalf, _heightHalf;
-
-		const cache = {
-			objects: new WeakMap()
-		};
-
-		const domElement = parameters.element !== undefined ? parameters.element : document.createElement( 'div' );
-
-		domElement.style.overflow = 'hidden';
-
-		this.domElement = domElement;
-
-		this.getSize = function () {
-
-			return {
-				width: _width,
-				height: _height
-			};
-
-		};
-
-		this.render = function ( scene, camera ) {
-
-			if ( scene.matrixWorldAutoUpdate === true ) scene.updateMatrixWorld();
-			if ( camera.parent === null && camera.matrixWorldAutoUpdate === true ) camera.updateMatrixWorld();
-
-			_viewMatrix.copy( camera.matrixWorldInverse );
-			_viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, _viewMatrix );
-
-			renderObject( scene, scene, camera );
-			zOrder( scene );
-
-		};
-
-		this.setSize = function ( width, height ) {
-
-			_width = width;
-			_height = height;
-
-			_widthHalf = _width / 2;
-			_heightHalf = _height / 2;
-
-			domElement.style.width = width + 'px';
-			domElement.style.height = height + 'px';
-
-		};
-
-		function hideObject( object ) {
-
-			if ( object.isCSS2DObject ) object.element.style.display = 'none';
-
-			for ( let i = 0, l = object.children.length; i < l; i ++ ) {
-
-				hideObject( object.children[ i ] );
-
-			}
-
-		}
-
-		function renderObject( object, scene, camera ) {
-
-			if ( object.visible === false ) {
-
-				hideObject( object );
-
-				return;
-
-			}
-			
-			if ( object.isCSS2DObject ) {
-
-				_vector.setFromMatrixPosition( object.matrixWorld );
-				_vector.applyMatrix4( _viewProjectionMatrix );
-
-				const visible = ( _vector.z >= -1 && _vector.z <= 1 ) && ( object.layers.test( camera.layers ) === true );
-
-				const element = object.element;
-				element.style.display = visible === true ? '' : 'none';
-
-				if ( visible === true ) {
-
-					object.onBeforeRender( _this, scene, camera );
-
-					element.style.transform = 'translate(' + ( -100 * object.center.x ) + '%,' + ( -100 * object.center.y ) + '%)' + 'translate(' + ( _vector.x * _widthHalf + _widthHalf ) + 'px,' + ( - _vector.y * _heightHalf + _heightHalf ) + 'px)';
-
-					if ( element.parentNode !== domElement ) {
-
-						domElement.appendChild( element );
-
-					}
-
-					object.onAfterRender( _this, scene, camera );
-
-				}
-
-				const objectData = {
-					distanceToCameraSquared: getDistanceToSquared( camera, object )
-				};
-
-				cache.objects.set( object, objectData );
-
-			}
-
-			for ( let i = 0, l = object.children.length; i < l; i ++ ) {
-
-				renderObject( object.children[ i ], scene, camera );
-
-			}
-
-		}
-
-		function getDistanceToSquared( object1, object2 ) {
-
-			_a.setFromMatrixPosition( object1.matrixWorld );
-			_b.setFromMatrixPosition( object2.matrixWorld );
-
-			return _a.distanceToSquared( _b );
-
-		}
-
-		function filterAndFlatten( scene ) {
-
-			const result = [];
-
-			scene.traverseVisible( function ( object ) {
-
-				if ( object.isCSS2DObject ) result.push( object );
-
-			} );
-
-			return result;
-
-		}
-
-		function zOrder( scene ) {
-
-			const sorted = filterAndFlatten( scene ).sort( function ( a, b ) {
-
-				if ( a.renderOrder !== b.renderOrder ) {
-
-					return b.renderOrder - a.renderOrder;
-
-				}
-
-				const distanceA = cache.objects.get( a ).distanceToCameraSquared;
-				const distanceB = cache.objects.get( b ).distanceToCameraSquared;
-
-				return distanceA - distanceB;
-
-			} );
-
-			const zMax = sorted.length;
-
-			for ( let i = 0, l = sorted.length; i < l; i ++ ) {
-
-				sorted[ i ].element.style.zIndex = zMax - i;
-
-			}
-
-		}
-
-	}
-
-}
-
-/**
- * Original source: Simple event handler by [Jason Kleban](https://gist.github.com/JasonKleban/50cee44960c225ac1993c922563aa540). Keep in mind that if you want to remove it later, you might want to declare the callback as an object. If you want to maintain the reference to `this`, you will need to declare the callback as an arrow function.
- * Adapted to TypeScript by ThatOpen Company
- */
-class Event {
-    constructor() {
-        /** Triggers all the callbacks assigned to this event. */
-        this.trigger = (data) => {
-            const handlers = this.handlers.slice(0);
-            for (const handler of handlers) {
-                handler(data);
-            }
-        };
-        this.handlers = [];
-    }
-    /**
-     * Add a callback to this event instance.
-     * @param handler - the callback to be added to this event.
-     */
-    add(handler) {
-        this.handlers.push(handler);
-    }
-    /**
-     * Removes a callback from this event instance.
-     * @param handler - the callback to be removed from this event.
-     */
-    remove(handler) {
-        this.handlers = this.handlers.filter((h) => h !== handler);
-    }
-    /** Gets rid of all the suscribed events. */
-    reset() {
-        this.handlers.length = 0;
-    }
-}
-
-class Pencil {
-    constructor(container, scene, camera) {
-        this.camera = camera;
-        this.raycaster = new Raycaster();
-        this.pencilMeshes = [];
-        this.onCursorDown = new Event();
-        this.onCursorMove = new Event();
-        this.onElementHover = new Event();
-        this.onElementSelected = new Event();
-        this.onElementUnselected = new Event();
-        this.pencilMode = "cursor";
-        this.container = container;
-        this.scene = scene;
-        this.setup();
-    }
-    set mode(mode) {
-        this.pencilMode = mode;
-        if (mode === "select" || mode === "view") {
-            this.container.style.cursor = "default";
-        }
-        else {
-            this.container.style.cursor = "none";
-        }
-    }
-    get drawingCanvas() {
-        return this.dummyPlane;
-    }
-    setup() {
-        this.setupCursor();
-        this.setupCursorEvent();
-        // Raycaster
-        this.raycaster.params.Line.threshold = 0.1;
-        // A Dummy Ground Plane
-        const geometry = new PlaneGeometry(1000, 1000);
-        // const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide, wireframe: true });
-        const material = new MeshBasicMaterial({ color: 0xffff00, side: DoubleSide, transparent: true, opacity: 0 });
-        const plane = new Mesh(geometry, material);
-        plane.name = "pencil-ground";
-        plane.rotation.x = Math.PI / 2;
-        this.scene.add(plane);
-        // plane.visible = true;
-        plane.visible = false;
-        this.dummyPlane = plane;
-    }
-    groundVisible(visible) {
-        if (this.dummyPlane) {
-            this.dummyPlane.visible = visible;
-        }
-    }
-    setupCursor() {
-        const cursorElement = document.createElement("div");
-        cursorElement.style.position = "absolute";
-        cursorElement.style.width = "1px";
-        cursorElement.style.height = "60px";
-        cursorElement.style.backgroundColor = "red";
-        cursorElement.style.pointerEvents = "none";
-        const horizontalLine = document.createElement("div");
-        horizontalLine.style.position = "absolute";
-        horizontalLine.style.width = "60px";
-        horizontalLine.style.height = "1px";
-        horizontalLine.style.left = "-30px";
-        horizontalLine.style.top = "30px";
-        horizontalLine.style.backgroundColor = "red";
-        horizontalLine.style.pointerEvents = "none";
-        cursorElement.appendChild(horizontalLine);
-        this.container.style.cursor = "none";
-        const cursorMesh = new CSS2DObject(cursorElement);
-        cursorMesh.name = "cursor";
-        cursorMesh.position.set(0, 0, 0);
-        this.scene.add(cursorMesh);
-        this.cursor = cursorMesh;
-    }
-    setupCursorEvent() {
-        this.container.addEventListener("mousemove", (event) => {
-            var _a;
-            const rect = this.container.getBoundingClientRect();
-            const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            this.raycaster.setFromCamera(new Vector2(x, y), this.camera);
-            if (this.pencilMode === "cursor") {
-                const intersects = this.raycaster.intersectObjects([this.dummyPlane]);
-                const intersect = intersects[0];
-                const point = intersect.point;
-                (_a = this.cursor) === null || _a === void 0 ? void 0 : _a.position.set(point.x, point.y, point.z);
-                this.onCursorMove.trigger(point);
-            }
-            else if (this.pencilMode === "select") {
-                const intersects = this.raycaster.intersectObjects(this.pencilMeshes);
-                if (intersects.length === 0) {
-                    return;
-                }
-                const intersect = intersects[0];
-                this.onElementHover.trigger({
-                    mesh: intersect.object,
-                    point: intersect.point
-                });
-            }
-        });
-        this.container.addEventListener("mousedown", (event) => {
-            const rect = this.container.getBoundingClientRect();
-            const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            this.raycaster.setFromCamera(new Vector2(x, y), this.camera);
-            if (this.pencilMode === "cursor") {
-                const intersects = this.raycaster.intersectObjects([this.dummyPlane]);
-                const intersect = intersects[0];
-                const point = intersect.point;
-                this.onCursorDown.trigger(point);
-            }
-            else if (this.pencilMode === "select") {
-                const intersects = this.raycaster.intersectObjects(this.pencilMeshes);
-                const intersect = intersects[0];
-                this.onElementSelected.trigger({
-                    mesh: intersect.object,
-                    point: intersect.point
-                });
-            }
-        });
-        this.container.addEventListener("mouseup", (event) => {
-            if (this.pencilMode === "select") {
-                const rect = this.container.getBoundingClientRect();
-                const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-                const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-                this.raycaster.setFromCamera(new Vector2(x, y), this.camera);
-                const intersects = this.raycaster.intersectObjects(this.pencilMeshes);
-                if (intersects.length > 0) {
-                    const intersect = intersects[0];
-                    this.onElementUnselected.trigger({
-                        mesh: intersect.object,
-                        point: intersect.point
-                    });
-                }
-            }
-        });
-    }
-    fireCursor(mouse) {
-        const rect = this.container.getBoundingClientRect();
-        const x = ((mouse.clientX - rect.left) / rect.width) * 2 - 1;
-        const y = -((mouse.clientY - rect.top) / rect.height) * 2 + 1;
-        this.raycaster.setFromCamera(new Vector2(x, y), this.camera);
-        const intersects = this.raycaster.intersectObjects([this.dummyPlane]);
-        if (intersects.length > 0) {
-            const point = intersects[0].point;
-            this.onCursorDown.trigger(point);
-        }
-    }
-    fireCursorMove(mouse) {
-        const rect = this.container.getBoundingClientRect();
-        const x = ((mouse.clientX - rect.left) / rect.width) * 2 - 1;
-        const y = -((mouse.clientY - rect.top) / rect.height) * 2 + 1;
-        this.raycaster.setFromCamera(new Vector2(x, y), this.camera);
-        const intersects = this.raycaster.intersectObjects([this.dummyPlane]);
-        if (intersects.length > 0) {
-            const point = intersects[0].point;
-            this.onCursorMove.trigger(point);
-        }
-    }
-}
+new Vector3();
+new Matrix4();
+new Matrix4();
+new Vector3();
+new Vector3();
 
 function spotLabelElement() {
     const spotLabelElement = document.createElement("div");
@@ -13011,36 +12434,52 @@ function getUUID() {
  */
 class Line extends Line$1 {
     set color(color) {
+        this.options.color = color;
         if (this.material instanceof LineBasicMaterial) {
             this.material.color.set(color);
         }
     }
     constructor(options) {
+        var _a;
         super();
-        this.ogid = getUUID();
-        this.options = options;
+        this.options = {
+            start: new Vector3$1(0, 0, 0.5),
+            end: new Vector3$1(1, 0, 0.5),
+            color: 0x000000
+        };
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
         this.line = new OGLine(this.ogid);
-        this.setConfig();
-        this.generateGeometry();
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Line");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { start, end } = this.options;
+        const { start, end } = options;
         this.line.set_config(start.clone(), end.clone());
+        this.generateGeometry();
+    }
+    /**
+     * Every time there are property changes, geometry needs to be discarded and regenerated.
+     * This is to ensure that the geometry is always up-to-date with the current state.
+     */
+    discardGeometry() {
+        this.geometry.dispose();
     }
     generateGeometry() {
+        this.discardGeometry();
         this.line.generate_geometry();
         const geometryData = this.line.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         this.geometry = geometry;
-        this.material = new LineBasicMaterial({ color: 0x00ff00 });
+        this.material = new LineBasicMaterial({ color: this.options.color });
     }
 }
 
@@ -13053,68 +12492,53 @@ class Polyline extends Line$1 {
         }
     }
     constructor(options) {
+        var _a;
         super();
-        this.options = { points: [] };
+        this.options = {
+            points: [],
+            color: 0x00ff00
+        };
         this.isClosed = false;
         this.transformationMatrix = new Matrix4();
         // Properties that can be set externally but are not part of the constructor
         // TODO: Consider making these properties part of the constructor options
         _Polyline_color.set(this, 0x00ff00);
-        this.ogid = getUUID();
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
         this.polyline = new OGPolyline(this.ogid);
-        if (options) {
-            this.options = options;
-            this.setConfig();
-            this.generateGeometry();
-        }
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Polyline");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { points } = this.options;
-        this.polyline.set_config(points);
+        const { points } = options;
+        this.polyline.set_config(points.map(p => p.clone()));
+        this.generateGeometry();
     }
-    // addMultiplePoints(points: Vector3[]) {
-    //   this.points = points;
-    //   if (!this.polyline) return;
-    //   this.polyline.add_multiple_points(points);
-    //   this.generateGeometry();
-    // }
-    // // TODO: This needs to be improved 
-    // translate(translation: Vector3) {
-    //   if (!this.polyline) return;
-    //   this.polyline.translate(translation);
-    //   this.generateGeometry();
-    // }
-    // set_position(position: Vector3) {
-    //   if (!this.polyline) return;
-    //   this.polyline.set_position(position);
-    // }
     addPoint(point) {
         if (!this.polyline)
             return;
-        this.polyline.add_point(point);
-        // if (this.points.length < 2) return;
-        this.clearGeometry();
-        this.generateGeometry();
+        const { points } = this.options;
+        points.push(point);
+        if (this.options.points.length < 2)
+            return;
+        console.log(this.options.points);
+        this.setConfig(this.options);
     }
     /**
      * Every time there are property changes, geometry needs to be discarded and regenerated.
      * This is to ensure that the geometry is always up-to-date with the current state.
      */
-    clearGeometry() {
+    discardGeometry() {
         this.geometry.dispose();
     }
-    saveTransformationToBREP() {
-        if (!this.polyline)
-            return;
-        // this.polyline.set_transformation_matrix(this.transformationMatrix.toArray());
-    }
     generateGeometry() {
+        this.discardGeometry();
         this.polyline.generate_geometry();
         const geometryData = this.polyline.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
@@ -13130,31 +12554,49 @@ _Polyline_color = new WeakMap();
 var _Arc_color;
 class Arc extends Line$1 {
     set color(color) {
+        __classPrivateFieldSet(this, _Arc_color, color, "f");
         if (this.material instanceof LineBasicMaterial) {
             this.material.color.set(color);
         }
     }
     constructor(options) {
+        var _a;
         super();
+        this.options = {
+            center: new Vector3$1(0, 0, 0),
+            radius: 3.5,
+            startAngle: 0,
+            endAngle: Math.PI * 2,
+            segments: 32,
+        };
         // TODO: Create local properties for all Primitive classes
         _Arc_color.set(this, 0x00ff00);
-        this.ogid = getUUID();
-        this.options = options;
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
         this.arc = new OGArc(this.ogid);
-        this.setConfig();
-        this.generateGeometry();
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Circle Arc");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { center, radius, segments, startAngle, endAngle } = this.options;
+        const { center, radius, segments, startAngle, endAngle } = options;
         this.arc.set_config(center.clone(), radius, startAngle, endAngle, segments);
+        // If Config changes we need to regenerate geometry
+        // TODO: can geometry generation be made optional
+        this.generateGeometry();
+    }
+    getConfig() {
+        return this.options;
     }
     generateGeometry() {
+        if (this.geometry) {
+            this.geometry.dispose();
+        }
         this.arc.generate_geometry();
         const geometryData = this.arc.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
@@ -13163,19 +12605,20 @@ class Arc extends Line$1 {
         this.geometry = geometry;
         this.material = new LineBasicMaterial({ color: __classPrivateFieldGet(this, _Arc_color, "f") });
     }
-    discardGeoemtry() {
+    getBrep() {
+        const brepData = this.arc.get_brep_serialized();
+        if (!brepData) {
+            throw new Error("Brep data is not available for Arc");
+        }
+        return JSON.parse(brepData);
+    }
+    discardGeometry() {
         this.geometry.dispose();
     }
 }
 _Arc_color = new WeakMap();
 
-/**
- * Base class for all line-based primitives in OpenGeometry.
- */
-class BaseLinePrimitive extends Line$1 {
-}
-
-class Rectangle extends BaseLinePrimitive {
+class Rectangle extends Line$1 {
     // set width(width: number) {
     //   this.options.width = width;
     //   this.polyLineRectangle.update_width(width);
@@ -13202,46 +12645,41 @@ class Rectangle extends BaseLinePrimitive {
         var _a;
         super();
         this.options = {
+            center: new Vector3$1(0, 0, 0),
             width: 1,
             breadth: 1,
-            center: new Vector3$1(0, 0, 0),
             color: 0x00ff00,
         };
-        const ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
-        this.polyLineRectangle = new OGRectangle(ogid);
-        // const mergedOptions = { ...this.options, ...options, ogid };
-        if (options) {
-            this.options = Object.assign(Object.assign({}, this.options), options);
-            this.ogid = options.ogid || getUUID();
-        }
-        else {
-            this.ogid = getUUID();
-        }
-        this.setConfig();
-        this.generateGeometry();
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
+        this.polyLineRectangle = new OGRectangle(this.ogid);
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Rectangle");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { width, breadth, center, color } = this.options;
-        this.polyLineRectangle.set_config(center.clone() || new Vector3$1(0, 0, 0), width, breadth);
+        const { width, breadth, center } = options;
+        this.polyLineRectangle.set_config(center.clone(), width, breadth);
+        this.generateGeometry();
     }
     getConfig() {
+        console.log("Getting rectangle config", this.options);
         return this.options;
     }
     generateGeometry() {
+        this.discardGeometry();
         this.polyLineRectangle.generate_geometry();
         const geometryData = this.polyLineRectangle.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
-        console.log(bufferData);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         this.geometry = geometry;
-        this.material = new LineBasicMaterial({ color: 0x00ff00 });
+        this.material = new LineBasicMaterial({ color: this.options.color });
     }
     getBrep() {
         const brepData = this.polyLineRectangle.get_brep_serialized();
@@ -13585,33 +13023,65 @@ _Polygon_outlineMesh = new WeakMap(), _Polygon_color = new WeakMap();
 
 var _Cylinder_outlineMesh;
 class Cylinder extends Mesh {
+    set radius(value) {
+        this.options.radius = value;
+        this.setConfig(this.options);
+    }
+    set color(color) {
+        this.options.color = color;
+        if (this.material instanceof LineBasicMaterial) {
+            this.material.color.set(color);
+        }
+    }
     constructor(options) {
+        var _a;
         super();
+        this.options = {
+            center: new Vector3$1(0, 0, 0),
+            radius: 1,
+            height: 1,
+            segments: 32,
+            angle: 2 * Math.PI,
+            color: 0x00ff00,
+        };
         _Cylinder_outlineMesh.set(this, null);
-        this.ogid = getUUID();
-        this.options = options;
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
         this.cylinder = new OGCylinder(this.ogid);
-        this.setConfig();
-        this.generateGeometry();
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Cylinder");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { radius, height, segments, angle, center } = this.options;
-        this.cylinder.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), radius, height, angle, segments);
+        const { radius, height, segments, angle, center } = options;
+        this.cylinder.set_config(center === null || center === void 0 ? void 0 : center.clone(), radius, height, angle, segments);
+        this.generateGeometry();
+    }
+    cleanGeometry() {
+        this.geometry.dispose();
+        if (Array.isArray(this.material)) {
+            this.material.forEach(mat => mat.dispose());
+        }
+        else {
+            this.material.dispose();
+        }
     }
     generateGeometry() {
-        this.cylinder.generate_geometry();
+        this.cleanGeometry();
+        // Kernel Geometry
+        // Since geometry is already generated in set_config, we don't need to call it again
+        // this.cylinder.generate_geometry();
         const geometryData = this.cylinder.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         const material = new MeshStandardMaterial({
-            color: 0x00ff00,
+            color: this.options.color,
             transparent: true,
             opacity: 0.6,
         });
@@ -13619,9 +13089,27 @@ class Cylinder extends Mesh {
         geometry.computeBoundingBox();
         this.geometry = geometry;
         this.material = material;
+        // outline
+        if (__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+            this.outline = true;
+        }
+    }
+    getBrep() {
+        if (!this.cylinder)
+            return null;
+        const brepData = this.cylinder.get_brep_serialized();
+        if (!brepData) {
+            throw new Error("Brep data is not available for this cylinder.");
+        }
+        return JSON.parse(brepData);
     }
     set outline(enable) {
-        if (enable && !__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+        if (__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cylinder_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cylinder_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cylinder_outlineMesh, null, "f");
+        }
+        if (enable) {
             const outline_buff = this.cylinder.get_outline_geometry_serialized();
             const outline_buf = JSON.parse(outline_buff);
             const outlineGeometry = new BufferGeometry();
@@ -13636,44 +13124,54 @@ class Cylinder extends Mesh {
             __classPrivateFieldSet(this, _Cylinder_outlineMesh, null, "f");
         }
     }
-    getBrep() {
-        const brepData = this.cylinder.get_brep_serialized();
-        if (!brepData) {
-            throw new Error("Brep data is not available for this cylinder.");
-        }
-        return JSON.parse(brepData);
+    discardGeometry() {
+        this.geometry.dispose();
     }
 }
 _Cylinder_outlineMesh = new WeakMap();
 
-var _Cube_outlineMesh;
-class Cube extends Mesh {
+var _Cuboid_outlineMesh;
+class Cuboid extends Mesh {
     set width(value) {
         this.options.width = value;
-        this.setConfig();
-        this.generateGeometry();
+        this.setConfig(this.options);
+    }
+    set color(color) {
+        this.options.color = color;
+        if (this.material instanceof LineBasicMaterial) {
+            this.material.color.set(color);
+        }
     }
     constructor(options) {
+        var _a;
         super();
-        _Cube_outlineMesh.set(this, null);
+        this.options = {
+            center: new Vector3$1(0, 0, 0),
+            width: 1,
+            height: 1,
+            depth: 1,
+            color: 0x00ff00,
+        };
+        _Cuboid_outlineMesh.set(this, null);
         // Store local center offset to align outlines
         // TODO: Can this be moved to Engine? It can increase performance | Needs to be used in other shapes too
         this._geometryCenterOffset = new Vector3();
-        this.ogid = getUUID();
-        this.options = options;
-        this.cube = new OGCube(this.ogid);
-        this.setConfig();
-        this.generateGeometry();
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
+        this.cuboid = new OGCuboid(this.ogid);
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Cylinder");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { width, height, depth, center } = this.options;
-        this.cube.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), width, height, depth);
+        const { width, height, depth, center } = options;
+        this.cuboid.set_config(center.clone(), width, height, depth);
+        this.generateGeometry();
     }
     cleanGeometry() {
         this.geometry.dispose();
@@ -13685,16 +13183,16 @@ class Cube extends Mesh {
         }
     }
     generateGeometry() {
-        // Three.js cleanup
         this.cleanGeometry();
         // Kernel Geometry
-        this.cube.generate_geometry();
-        const geometryData = this.cube.get_geometry_serialized();
+        // Since geometry is already generated in set_config, we don't need to call it again
+        // this.cuboid.generate_geometry();
+        const geometryData = this.cuboid.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         const material = new MeshStandardMaterial({
-            color: 0x00ff00,
+            color: this.options.color,
             transparent: true,
             opacity: 0.6,
         });
@@ -13703,36 +13201,48 @@ class Cube extends Mesh {
         this.geometry = geometry;
         this.material = material;
         // outline
-        if (__classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
+        if (__classPrivateFieldGet(this, _Cuboid_outlineMesh, "f")) {
             this.outline = true;
         }
     }
+    getBrepData() {
+        if (!this.cuboid)
+            return null;
+        const brepData = this.cuboid.get_brep_serialized();
+        if (!brepData) {
+            throw new Error("Brep data is not available for this cuboid.");
+        }
+        return JSON.parse(brepData);
+    }
     set outline(enable) {
-        if (__classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
-            this.remove(__classPrivateFieldGet(this, _Cube_outlineMesh, "f"));
-            __classPrivateFieldGet(this, _Cube_outlineMesh, "f").geometry.dispose();
-            __classPrivateFieldSet(this, _Cube_outlineMesh, null, "f");
+        if (__classPrivateFieldGet(this, _Cuboid_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cuboid_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cuboid_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cuboid_outlineMesh, null, "f");
         }
         if (enable) {
-            const outline_buff = this.cube.get_outline_geometry_serialized();
+            const outline_buff = this.cuboid.get_outline_geometry_serialized();
             const outline_buf = JSON.parse(outline_buff);
             const outlineGeometry = new BufferGeometry();
             outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
             const outlineMaterial = new LineBasicMaterial({ color: 0x000000 });
-            __classPrivateFieldSet(this, _Cube_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
-            this.add(__classPrivateFieldGet(this, _Cube_outlineMesh, "f"));
+            __classPrivateFieldSet(this, _Cuboid_outlineMesh, new LineSegments(outlineGeometry, outlineMaterial), "f");
+            this.add(__classPrivateFieldGet(this, _Cuboid_outlineMesh, "f"));
         }
-        if (!enable && __classPrivateFieldGet(this, _Cube_outlineMesh, "f")) {
-            this.remove(__classPrivateFieldGet(this, _Cube_outlineMesh, "f"));
-            __classPrivateFieldGet(this, _Cube_outlineMesh, "f").geometry.dispose();
-            __classPrivateFieldSet(this, _Cube_outlineMesh, null, "f");
+        if (!enable && __classPrivateFieldGet(this, _Cuboid_outlineMesh, "f")) {
+            this.remove(__classPrivateFieldGet(this, _Cuboid_outlineMesh, "f"));
+            __classPrivateFieldGet(this, _Cuboid_outlineMesh, "f").geometry.dispose();
+            __classPrivateFieldSet(this, _Cuboid_outlineMesh, null, "f");
         }
     }
     get outlineMesh() {
-        return __classPrivateFieldGet(this, _Cube_outlineMesh, "f");
+        return __classPrivateFieldGet(this, _Cuboid_outlineMesh, "f");
+    }
+    discardGeometry() {
+        this.geometry.dispose();
     }
 }
-_Cube_outlineMesh = new WeakMap();
+_Cuboid_outlineMesh = new WeakMap();
 
 var _Opening_outlineMesh, _Opening_color;
 class Opening extends Mesh {
@@ -13767,7 +13277,7 @@ class Opening extends Mesh {
         this._geometryCenterOffset = new Vector3();
         this.ogid = getUUID();
         this.options = options;
-        this.cube = new OGCube(this.ogid);
+        this.cube = new OGCuboid(this.ogid);
         this.setConfig();
         this.generateGeometry();
     }
@@ -13841,21 +13351,6 @@ class Opening extends Mesh {
 _Opening_outlineMesh = new WeakMap(), _Opening_color = new WeakMap();
 
 class OpenGeometry {
-    set enablePencil(value) {
-        if (value && !this._pencil) {
-            if (!this.container || !this.scene) {
-                throw new Error("Container or Scene is not defined");
-            }
-            this._pencil = new Pencil(this.container, this.scene, this.camera);
-        }
-        else if (!value && this._pencil) ;
-    }
-    get pencil() {
-        return this._pencil;
-    }
-    get labelRenderer() {
-        return this._labelRenderer;
-    }
     get enableDebug() {
         return this._enableDebug;
     }
@@ -13874,11 +13369,8 @@ class OpenGeometry {
             console.log("OpenGeometry Debug Mode Enabled");
         }
     }
-    constructor(container, threeScene, camera) {
-        this.camera = camera;
+    constructor() {
         this._enableDebug = false;
-        this.scene = threeScene;
-        this.container = container;
     }
     /**
      * Asynchronously creates and initializes an instance of OpenGeometry.
@@ -13903,56 +13395,22 @@ class OpenGeometry {
      */
     static create(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { container, scene, camera } = options;
-            if (!container || !scene || !camera) {
-                throw new Error("Missing required options");
+            if (!OpenGeometry.instance) {
+                const og = new OpenGeometry();
+                yield og.setup(options.wasmURL);
+                OpenGeometry.instance = og;
             }
-            const openGeometry = new OpenGeometry(container, scene, camera);
-            yield openGeometry.setup(options.wasmURL);
-            return openGeometry;
+            return OpenGeometry.instance;
         });
     }
     setup(wasmURL) {
         return __awaiter(this, void 0, void 0, function* () {
             yield __wbg_init(wasmURL);
-            this.setuplabelRenderer();
-            this.setupEvent();
         });
-    }
-    setuplabelRenderer() {
-        if (!this.container || !this.scene) {
-            throw new Error("Container or Scene is not defined");
-        }
-        const labelRenderer = new CSS2DRenderer();
-        labelRenderer.setSize(this.container.clientWidth, this.container.clientHeight);
-        labelRenderer.domElement.style.position = "absolute";
-        labelRenderer.domElement.style.top = "0";
-        this.container.appendChild(labelRenderer.domElement);
-        this._labelRenderer = labelRenderer;
-    }
-    setupEvent() {
-        // NOTE: The responsibility to resize normal rendererer lies with the user
-        // but the label renderer should be resized automatically
-        window.addEventListener("resize", () => {
-            var _a, _b, _c;
-            if (!this.container)
-                return;
-            (_a = this._labelRenderer) === null || _a === void 0 ? void 0 : _a.setSize((_b = this.container) === null || _b === void 0 ? void 0 : _b.clientWidth, (_c = this.container) === null || _c === void 0 ? void 0 : _c.clientHeight);
-        });
-    }
-    // TODO: Can this be handled inside the OpenGeometry class itself?
-    /**
-     * Updates the label renderer to render the scene with the given camera.
-     * This method should be called in the animation loop or render loop of your application.
-     * @param scene - The Three.js scene containing the objects to be rendered.
-     * @param camera - The Three.js camera used for rendering the scene.
-     */
-    update(scene, camera) {
-        var _a;
-        (_a = this._labelRenderer) === null || _a === void 0 ? void 0 : _a.render(scene, camera);
     }
 }
 OpenGeometry.version = OPEN_GEOMETRY_THREE_VERSION;
+OpenGeometry.instance = null;
 
-export { Arc, Cube, Cylinder, Line, OpenGeometry, Opening, Polygon, Polyline, Rectangle, SpotLabel, Vector3$1 as Vector3 };
+export { Arc, Cuboid, Cylinder, Line, OpenGeometry, Opening, Polygon, Polyline, Rectangle, SpotLabel, Vector3$1 as Vector3 };
 //# sourceMappingURL=index.js.map

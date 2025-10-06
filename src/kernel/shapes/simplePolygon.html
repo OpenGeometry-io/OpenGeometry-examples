@@ -45,9 +45,6 @@
       app.appendChild(renderer.domElement);
 
       openGeometry = await OpenGeometry.create({
-        container: app,
-        scene: scene,
-        camera: camera,
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
@@ -77,7 +74,7 @@
       // controls
       const controls = new OrbitControls(
         camera,
-        openGeometry.labelRenderer.domElement
+        renderer.domElement
       );
       controls.update();
 
@@ -102,34 +99,14 @@
         new Vector3(9, 0, 1),
       ];
 
-      const holeVertices = [
-        new Vector3(2, 0, 1),
-        new Vector3(4, 0, 1),
-        new Vector3(4, 0, 3),
-        new Vector3(2, 0, 3)
-      ];
-
       ogPoly = new Polygon({ vertices: vertices });
       scene.add(ogPoly);
       
-      ogPoly.addHole(holeVertices);
-
-      ogPoly.outline = true;
-
-
-      // Hole 2
-      const hole2Vertices = [
-        new Vector3(6, 0, 2),
-        new Vector3(7, 0, 2),
-        new Vector3(7, 0, 4),
-        new Vector3(6, 0, 4)
-      ];
-      ogPoly.addHole(hole2Vertices);
-
-      
+      ogPoly.outline = true;      
       console.log(JSON.parse(ogPoly.getBrepData()));
 
-      // ogPoly.bTree();
+      const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
+      scene.add(helper);
 
       animate();
     }
@@ -137,7 +114,6 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      openGeometry.update(scene, camera);
     }
 
     init();

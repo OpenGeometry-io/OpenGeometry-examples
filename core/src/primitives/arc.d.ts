@@ -1,6 +1,7 @@
 import { Vector3 } from "../../../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
-interface IArcOptions {
+export interface IArcOptions {
+    ogid?: string;
     center: Vector3;
     radius: number;
     startAngle: number;
@@ -13,10 +14,11 @@ export declare class Arc extends THREE.Line {
     options: IArcOptions;
     private arc;
     set color(color: number);
-    constructor(options: IArcOptions);
+    constructor(options?: IArcOptions);
     validateOptions(): void;
-    setConfig(): void;
+    setConfig(options: IArcOptions): void;
+    getConfig(): IArcOptions;
     private generateGeometry;
-    discardGeoemtry(): void;
+    getBrep(): any;
+    discardGeometry(): void;
 }
-export {};

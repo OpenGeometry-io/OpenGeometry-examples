@@ -1,22 +1,27 @@
-import { OGCylinder, Vector3 } from "../../../opengeometry/pkg/opengeometry";
+import { Vector3 } from "../../../opengeometry/pkg/opengeometry";
 import * as THREE from "three";
-interface ICylinderOptions {
+export interface ICylinderOptions {
+    ogid?: string;
+    center: Vector3;
     radius: number;
     height: number;
     segments: number;
     angle: number;
-    center?: Vector3;
+    color: number;
 }
 export declare class Cylinder extends THREE.Mesh {
     #private;
     ogid: string;
     options: ICylinderOptions;
-    cylinder: OGCylinder;
-    constructor(options: ICylinderOptions);
+    private cylinder;
+    set radius(value: number);
+    set color(color: number);
+    constructor(options?: ICylinderOptions);
     validateOptions(): void;
-    setConfig(): void;
+    setConfig(options: ICylinderOptions): void;
+    cleanGeometry(): void;
     generateGeometry(): void;
-    set outline(enable: boolean);
     getBrep(): any;
+    set outline(enable: boolean);
+    discardGeometry(): void;
 }
-export {};

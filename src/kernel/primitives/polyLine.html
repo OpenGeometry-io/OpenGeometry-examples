@@ -40,9 +40,6 @@
       app.appendChild(renderer.domElement);
 
       openGeometry = await OpenGeometry.create({
-        container: app,
-        scene: scene,
-        camera: camera,
         wasmURL: './../../../core/opengeometry_bg.wasm'
       });
 
@@ -58,7 +55,7 @@
       // controls
       const controls = new OrbitControls(
         camera,
-        openGeometry.labelRenderer.domElement
+        renderer.domElement
       );
       controls.update();
 
@@ -93,7 +90,7 @@
       polyLine2.color = 0xff0000;
       console.log('Is PolyLine 2 Closed:', polyLine2.isClosed);
 
-      polyLine2.addPoint(new Vector3(2, 1, 2));
+      // polyLine2.addPoint(new Vector3(2, 1, 2));
       // console.log('Is PolyLine 2 Closed after adding point:', polyLine2.isClosed);
 
       initGUI();
@@ -103,7 +100,6 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      openGeometry.update(scene, camera);
     }
 
     init();
