@@ -13244,22 +13244,19 @@ class Cuboid extends Mesh {
 }
 _Cuboid_outlineMesh = new WeakMap();
 
-var _Opening_outlineMesh, _Opening_color;
+var _Opening_outlineMesh;
 class Opening extends Mesh {
     set width(value) {
         this.options.width = value;
-        this.setConfig();
-        this.generateGeometry();
+        this.setConfig(this.options);
     }
     set height(value) {
         this.options.height = value;
-        this.setConfig();
-        this.generateGeometry();
+        this.setConfig(this.options);
     }
     set depth(value) {
         this.options.depth = value;
-        this.setConfig();
-        this.generateGeometry();
+        this.setConfig(this.options);
     }
     get dimensions() {
         return {
@@ -13269,27 +13266,35 @@ class Opening extends Mesh {
         };
     }
     constructor(options) {
+        var _a;
         super();
+        this.options = {
+            center: new Vector3$1(0, 0, 0),
+            width: 1,
+            height: 1,
+            depth: 0.2,
+            color: 0xdad7cd,
+        };
         _Opening_outlineMesh.set(this, null);
-        _Opening_color.set(this, 0xdad7cd);
         // Store local center offset to align outlines
         // TODO: Can this be moved to Engine? It can increase performance | Needs to be used in other shapes too
         this._geometryCenterOffset = new Vector3();
-        this.ogid = getUUID();
-        this.options = options;
-        this.cube = new OGCuboid(this.ogid);
-        this.setConfig();
-        this.generateGeometry();
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
+        this.opening = new OGCuboid(this.ogid);
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
     }
     validateOptions() {
         if (!this.options) {
             throw new Error("Options are not defined for Opening");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { width, height, depth, center } = this.options;
-        this.cube.set_config((center === null || center === void 0 ? void 0 : center.clone()) || new Vector3$1(0, 0, 0), width, height, depth);
+        const { width, height, depth, center } = options;
+        this.opening.set_config(center === null || center === void 0 ? void 0 : center.clone(), width, height, depth);
+        this.generateGeometry();
     }
     cleanGeometry() {
         this.geometry.dispose();
@@ -13304,13 +13309,13 @@ class Opening extends Mesh {
         // Three.js cleanup
         this.cleanGeometry();
         // Kernel Geometry
-        this.cube.generate_geometry();
-        const geometryData = this.cube.get_geometry_serialized();
+        this.opening.generate_geometry();
+        const geometryData = this.opening.get_geometry_serialized();
         const bufferData = JSON.parse(geometryData);
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
         const material = new MeshStandardMaterial({
-            color: __classPrivateFieldGet(this, _Opening_color, "f"),
+            color: this.options.color,
             transparent: true,
             opacity: 0.6,
         });
@@ -13323,6 +13328,15 @@ class Opening extends Mesh {
             this.outline = true;
         }
     }
+    getBrepData() {
+        if (!this.opening)
+            return null;
+        const brepData = this.opening.get_brep_serialized();
+        if (!brepData) {
+            throw new Error("Brep data is not available for this opening.");
+        }
+        return JSON.parse(brepData);
+    }
     set outline(enable) {
         if (__classPrivateFieldGet(this, _Opening_outlineMesh, "f")) {
             this.remove(__classPrivateFieldGet(this, _Opening_outlineMesh, "f"));
@@ -13330,7 +13344,7 @@ class Opening extends Mesh {
             __classPrivateFieldSet(this, _Opening_outlineMesh, null, "f");
         }
         if (enable) {
-            const outline_buff = this.cube.get_outline_geometry_serialized();
+            const outline_buff = this.opening.get_outline_geometry_serialized();
             const outline_buf = JSON.parse(outline_buff);
             const outlineGeometry = new BufferGeometry();
             outlineGeometry.setAttribute("position", new Float32BufferAttribute(outline_buf, 3));
@@ -13347,8 +13361,11 @@ class Opening extends Mesh {
     get outlineMesh() {
         return __classPrivateFieldGet(this, _Opening_outlineMesh, "f");
     }
+    discardGeometry() {
+        this.geometry.dispose();
+    }
 }
-_Opening_outlineMesh = new WeakMap(), _Opening_color = new WeakMap();
+_Opening_outlineMesh = new WeakMap();
 
 class OpenGeometry {
     get enableDebug() {
