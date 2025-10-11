@@ -17,14 +17,20 @@ const mixpanelScript = `<script type="text/javascript">
     });
   </script>`;
 
-// Plugin to inject Mixpanel script into HTML files
+// Plugin to inject Mixpanel script into HTML files (production only)
 function injectMixpanelScript() {
   return {
     name: 'inject-mixpanel-script',
     transformIndexHtml: {
       order: 'post',
       handler(html, context) {
-        // Find the closing </head> tag and inject the script before it
+        // Only inject Mixpanel script in production builds
+        if (context.server) {
+          // Development mode - don't inject Mixpanel
+          return html;
+        }
+        
+        // Production mode - inject Mixpanel script
         return html.replace('</head>', `  ${mixpanelScript}\n</head>`);
       }
     }

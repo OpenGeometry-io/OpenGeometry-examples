@@ -129,11 +129,6 @@ function passStringToWasm0(arg, malloc, realloc) {
   WASM_VECTOR_LEN = offset;
   return ptr;
 }
-function _assertClass(instance, klass) {
-  if (!(instance instanceof klass)) {
-    throw new Error(`expected instance of ${klass.name}`);
-  }
-}
 let cachedDataViewMemory0 = null;
 function getDataViewMemory0() {
   if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer) {
@@ -162,6 +157,11 @@ function passArrayF64ToWasm0(arg, malloc) {
   getFloat64ArrayMemory0().set(arg, ptr / 8);
   WASM_VECTOR_LEN = arg.length;
   return ptr;
+}
+function _assertClass(instance, klass) {
+  if (!(instance instanceof klass)) {
+    throw new Error(`expected instance of ${klass.name}`);
+  }
 }
 function getArrayJsValueFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
@@ -12369,7 +12369,7 @@ class SpotLabel extends CSS2DObject {
     }
 }
 
-const OPEN_GEOMETRY_THREE_VERSION = '0.0.1';
+const OPEN_GEOMETRY_THREE_VERSION = '0.0.6';
 
 /**
  * Convert array of 16 byte values to UUID string format of the form:
@@ -12527,7 +12527,6 @@ class Polyline extends Line$1 {
         points.push(point);
         if (this.options.points.length < 2)
             return;
-        console.log(this.options.points);
         this.setConfig(this.options);
     }
     /**
@@ -12668,7 +12667,6 @@ class Rectangle extends Line$1 {
         this.generateGeometry();
     }
     getConfig() {
-        console.log("Getting rectangle config", this.options);
         return this.options;
     }
     generateGeometry() {
