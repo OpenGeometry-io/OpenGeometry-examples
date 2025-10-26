@@ -68,37 +68,41 @@ function handleError(f, args) {
     wasm.__wbindgen_exn_store(idx);
   }
 }
-const cachedTextDecoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', {
+let cachedTextDecoder = new TextDecoder('utf-8', {
   ignoreBOM: true,
   fatal: true
-}) : {
-  decode: () => {
-    throw Error('TextDecoder not available');
+});
+cachedTextDecoder.decode();
+const MAX_SAFARI_DECODE_BYTES = 2146435072;
+let numBytesDecoded = 0;
+function decodeText(ptr, len) {
+  numBytesDecoded += len;
+  if (numBytesDecoded >= MAX_SAFARI_DECODE_BYTES) {
+    cachedTextDecoder = new TextDecoder('utf-8', {
+      ignoreBOM: true,
+      fatal: true
+    });
+    cachedTextDecoder.decode();
+    numBytesDecoded = len;
   }
-};
-if (typeof TextDecoder !== 'undefined') {
-  cachedTextDecoder.decode();
+  return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
 function getStringFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
-  return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
+  return decodeText(ptr, len);
 }
 let WASM_VECTOR_LEN = 0;
-const cachedTextEncoder = typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : {
-  encode: () => {
-    throw Error('TextEncoder not available');
-  }
-};
-const encodeString = typeof cachedTextEncoder.encodeInto === 'function' ? function (arg, view) {
-  return cachedTextEncoder.encodeInto(arg, view);
-} : function (arg, view) {
-  const buf = cachedTextEncoder.encode(arg);
-  view.set(buf);
-  return {
-    read: arg.length,
-    written: buf.length
+const cachedTextEncoder = new TextEncoder();
+if (!('encodeInto' in cachedTextEncoder)) {
+  cachedTextEncoder.encodeInto = function (arg, view) {
+    const buf = cachedTextEncoder.encode(arg);
+    view.set(buf);
+    return {
+      read: arg.length,
+      written: buf.length
+    };
   };
-};
+}
 function passStringToWasm0(arg, malloc, realloc) {
   if (realloc === undefined) {
     const buf = cachedTextEncoder.encode(arg);
@@ -122,12 +126,17 @@ function passStringToWasm0(arg, malloc, realloc) {
     }
     ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
     const view = getUint8ArrayMemory0().subarray(ptr + offset, ptr + len);
-    const ret = encodeString(arg, view);
+    const ret = cachedTextEncoder.encodeInto(arg, view);
     offset += ret.written;
     ptr = realloc(ptr, len, offset, 1) >>> 0;
   }
   WASM_VECTOR_LEN = offset;
   return ptr;
+}
+function _assertClass(instance, klass) {
+  if (!(instance instanceof klass)) {
+    throw new Error(`expected instance of ${klass.name}`);
+  }
 }
 let cachedDataViewMemory0 = null;
 function getDataViewMemory0() {
@@ -158,11 +167,6 @@ function passArrayF64ToWasm0(arg, malloc) {
   WASM_VECTOR_LEN = arg.length;
   return ptr;
 }
-function _assertClass(instance, klass) {
-  if (!(instance instanceof klass)) {
-    throw new Error(`expected instance of ${klass.name}`);
-  }
-}
 function getArrayJsValueFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
   const mem = getDataViewMemory0();
@@ -179,8 +183,95 @@ function getArrayF64FromWasm0(ptr, len) {
 }
 typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_color_free(ptr >>> 0, 1));
-typeof FinalizationRegistry === 'undefined' ? {
-  } : new FinalizationRegistry(ptr => wasm.__wbg_colorrgb_free(ptr >>> 0, 1));
+const ColorRGBFinalization = typeof FinalizationRegistry === 'undefined' ? {
+  register: () => {},
+  unregister: () => {}
+} : new FinalizationRegistry(ptr => wasm.__wbg_colorrgb_free(ptr >>> 0, 1));
+class ColorRGB {
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(ColorRGB.prototype);
+    obj.__wbg_ptr = ptr;
+    ColorRGBFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    ColorRGBFinalization.unregister(this);
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_colorrgb_free(ptr, 0);
+  }
+  /**
+   * @returns {number}
+   */
+  get r() {
+    const ret = wasm.__wbg_get_colorrgb_r(this.__wbg_ptr);
+    return ret;
+  }
+  /**
+   * @param {number} arg0
+   */
+  set r(arg0) {
+    wasm.__wbg_set_colorrgb_r(this.__wbg_ptr, arg0);
+  }
+  /**
+   * @returns {number}
+   */
+  get g() {
+    const ret = wasm.__wbg_get_colorrgb_g(this.__wbg_ptr);
+    return ret;
+  }
+  /**
+   * @param {number} arg0
+   */
+  set g(arg0) {
+    wasm.__wbg_set_colorrgb_g(this.__wbg_ptr, arg0);
+  }
+  /**
+   * @returns {number}
+   */
+  get b() {
+    const ret = wasm.__wbg_get_colorrgb_b(this.__wbg_ptr);
+    return ret;
+  }
+  /**
+   * @param {number} arg0
+   */
+  set b(arg0) {
+    wasm.__wbg_set_colorrgb_b(this.__wbg_ptr, arg0);
+  }
+  /**
+   * @param {number} r
+   * @param {number} g
+   * @param {number} b
+   */
+  constructor(r, g, b) {
+    const ret = wasm.colorrgb_new(r, g, b);
+    this.__wbg_ptr = ret >>> 0;
+    ColorRGBFinalization.register(this, this.__wbg_ptr, this);
+    return this;
+  }
+  /**
+   * @returns {string}
+   */
+  to_hex() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.colorrgb_to_hex(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
+}
+if (Symbol.dispose) ColorRGB.prototype[Symbol.dispose] = ColorRGB.prototype.free;
 typeof FinalizationRegistry === 'undefined' ? {
   } : new FinalizationRegistry(ptr => wasm.__wbg_matrix3_free(ptr >>> 0, 1));
 const Matrix4Finalization = typeof FinalizationRegistry === 'undefined' ? {
@@ -398,6 +489,7 @@ let Matrix4$1 = class Matrix4 {
     return Matrix4.__wrap(ret);
   }
 };
+if (Symbol.dispose) Matrix4$1.prototype[Symbol.dispose] = Matrix4$1.prototype.free;
 const OGArcFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -499,6 +591,7 @@ class OGArc {
     }
   }
 }
+if (Symbol.dispose) OGArc.prototype[Symbol.dispose] = OGArc.prototype.free;
 const OGCuboidFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -614,6 +707,7 @@ class OGCuboid {
     }
   }
 }
+if (Symbol.dispose) OGCuboid.prototype[Symbol.dispose] = OGCuboid.prototype.free;
 const OGCylinderFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -730,6 +824,7 @@ class OGCylinder {
     }
   }
 }
+if (Symbol.dispose) OGCylinder.prototype[Symbol.dispose] = OGCylinder.prototype.free;
 const OGLineFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -829,7 +924,23 @@ class OGLine {
       wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
   }
+  /**
+   * @returns {string}
+   */
+  get_dxf_serialized() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+      const ret = wasm.ogline_get_dxf_serialized(this.__wbg_ptr);
+      deferred1_0 = ret[0];
+      deferred1_1 = ret[1];
+      return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+      wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+  }
 }
+if (Symbol.dispose) OGLine.prototype[Symbol.dispose] = OGLine.prototype.free;
 const OGPolygonFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -966,6 +1077,7 @@ class OGPolygon {
     }
   }
 }
+if (Symbol.dispose) OGPolygon.prototype[Symbol.dispose] = OGPolygon.prototype.free;
 const OGPolylineFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -1121,6 +1233,7 @@ class OGPolyline {
     }
   }
 }
+if (Symbol.dispose) OGPolyline.prototype[Symbol.dispose] = OGPolyline.prototype.free;
 const OGRectangleFinalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -1214,6 +1327,7 @@ class OGRectangle {
     }
   }
 }
+if (Symbol.dispose) OGRectangle.prototype[Symbol.dispose] = OGRectangle.prototype.free;
 const Vector3Finalization = typeof FinalizationRegistry === 'undefined' ? {
   register: () => {},
   unregister: () => {}
@@ -1503,13 +1617,16 @@ let Vector3$1 = class Vector3 {
     wasm.vector3_apply_matrix4(this.__wbg_ptr, ptr0);
   }
 };
+if (Symbol.dispose) Vector3$1.prototype[Symbol.dispose] = Vector3$1.prototype.free;
+const EXPECTED_RESPONSE_TYPES = new Set(['basic', 'cors', 'default']);
 async function __wbg_load(module, imports) {
   if (typeof Response === 'function' && module instanceof Response) {
     if (typeof WebAssembly.instantiateStreaming === 'function') {
       try {
         return await WebAssembly.instantiateStreaming(module, imports);
       } catch (e) {
-        if (module.headers.get('Content-Type') != 'application/wasm') {
+        const validResponse = module.ok && EXPECTED_RESPONSE_TYPES.has(module.type);
+        if (validResponse && module.headers.get('Content-Type') !== 'application/wasm') {
           console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve Wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
         } else {
           throw e;
@@ -1533,13 +1650,29 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
   const imports = {};
   imports.wbg = {};
-  imports.wbg.__wbg_getRandomValues_38097e921c2494c3 = function () {
+  imports.wbg.__wbg_getRandomValues_38a1ff1ea09f6cc7 = function () {
     return handleError(function (arg0, arg1) {
       globalThis.crypto.getRandomValues(getArrayU8FromWasm0(arg0, arg1));
     }, arguments);
   };
-  imports.wbg.__wbg_log_c222819a41e063d3 = function (arg0) {
+  imports.wbg.__wbg_getTime_6bb3f64e0f18f817 = function (arg0) {
+    const ret = arg0.getTime();
+    return ret;
+  };
+  imports.wbg.__wbg_getTimezoneOffset_1e3ddc1382e7c8b0 = function (arg0) {
+    const ret = arg0.getTimezoneOffset();
+    return ret;
+  };
+  imports.wbg.__wbg_log_6c7b5f4f00b8ce3f = function (arg0) {
     console.log(arg0);
+  };
+  imports.wbg.__wbg_new0_b0a0a38c201e6df5 = function () {
+    const ret = new Date();
+    return ret;
+  };
+  imports.wbg.__wbg_new_5a2ae4557f92b50e = function (arg0) {
+    const ret = new Date(arg0);
+    return ret;
   };
   imports.wbg.__wbg_vector3_new = function (arg0) {
     const ret = Vector3$1.__wrap(arg0);
@@ -1547,6 +1680,19 @@ function __wbg_get_imports() {
   };
   imports.wbg.__wbg_vector3_unwrap = function (arg0) {
     const ret = Vector3$1.__unwrap(arg0);
+    return ret;
+  };
+  imports.wbg.__wbg_wbindgenthrow_451ec1a8469d7eb6 = function (arg0, arg1) {
+    throw new Error(getStringFromWasm0(arg0, arg1));
+  };
+  imports.wbg.__wbindgen_cast_2241b6af4c4b2941 = function (arg0, arg1) {
+    // Cast intrinsic for `Ref(String) -> Externref`.
+    const ret = getStringFromWasm0(arg0, arg1);
+    return ret;
+  };
+  imports.wbg.__wbindgen_cast_d6cd19b81560fd6e = function (arg0) {
+    // Cast intrinsic for `F64 -> Externref`.
+    const ret = arg0;
     return ret;
   };
   imports.wbg.__wbindgen_init_externref_table = function () {
@@ -1557,13 +1703,6 @@ function __wbg_get_imports() {
     table.set(offset + 1, null);
     table.set(offset + 2, true);
     table.set(offset + 3, false);
-  };
-  imports.wbg.__wbindgen_string_new = function (arg0, arg1) {
-    const ret = getStringFromWasm0(arg0, arg1);
-    return ret;
-  };
-  imports.wbg.__wbindgen_throw = function (arg0, arg1) {
-    throw new Error(getStringFromWasm0(arg0, arg1));
   };
   return imports;
 }
@@ -12481,6 +12620,10 @@ class Line extends Line$1 {
         this.geometry = geometry;
         this.material = new LineBasicMaterial({ color: this.options.color });
     }
+    getDXF() {
+        const dxfData = this.line.get_dxf_serialized();
+        return dxfData;
+    }
 }
 
 var _Polyline_color;
@@ -13315,7 +13458,9 @@ class Opening extends Mesh {
         const material = new MeshStandardMaterial({
             color: this.options.color,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0,
+            // Disable depth writing for transparent materials, so that we can see through openings and elements behind them
+            depthWrite: false,
         });
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();

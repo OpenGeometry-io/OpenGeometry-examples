@@ -9,6 +9,7 @@
       margin: 0;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
 </head>
 <body>
   <div id="app"
@@ -26,6 +27,9 @@
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     let scene, camera, renderer;
     let openGeometry;
+
+    // Geometry
+    let ogSimple2;
 
     async function init(){
       const app = document.getElementById('app');
@@ -69,7 +73,7 @@
       });
 
       // Line with 2 points
-      const ogSimple2 = new Line({
+      ogSimple2 = new Line({
         start: new Vector3(0, 0, 0), 
         end: new Vector3(0, 0, 2)
       });
@@ -102,7 +106,18 @@
     init();
 
     function initGUI() {
+      const gui = new dat.GUI();
       
+      // Create an object to hold our button function
+      const guiControls = {
+        myButton: function() {
+          const dxf = ogSimple2.getDXF();
+          console.log(dxf);
+        }
+      };
+      
+      // Add the button to the GUI
+      gui.add(guiControls, 'myButton').name('Click Me');
     }
   </script>
 </body>

@@ -23,4 +23,5 @@ export declare class Line extends THREE.Line {
      */
     discardGeometry(): void;
     private generateGeometry;
+    getDXF(): string;
 }
