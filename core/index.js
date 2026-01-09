@@ -133,11 +133,6 @@ function passStringToWasm0(arg, malloc, realloc) {
   WASM_VECTOR_LEN = offset;
   return ptr;
 }
-function _assertClass(instance, klass) {
-  if (!(instance instanceof klass)) {
-    throw new Error(`expected instance of ${klass.name}`);
-  }
-}
 let cachedDataViewMemory0 = null;
 function getDataViewMemory0() {
   if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer) {
@@ -166,6 +161,11 @@ function passArrayF64ToWasm0(arg, malloc) {
   getFloat64ArrayMemory0().set(arg, ptr / 8);
   WASM_VECTOR_LEN = arg.length;
   return ptr;
+}
+function _assertClass(instance, klass) {
+  if (!(instance instanceof klass)) {
+    throw new Error(`expected instance of ${klass.name}`);
+  }
 }
 function getArrayJsValueFromWasm0(ptr, len) {
   ptr = ptr >>> 0;
@@ -1655,24 +1655,8 @@ function __wbg_get_imports() {
       globalThis.crypto.getRandomValues(getArrayU8FromWasm0(arg0, arg1));
     }, arguments);
   };
-  imports.wbg.__wbg_getTime_6bb3f64e0f18f817 = function (arg0) {
-    const ret = arg0.getTime();
-    return ret;
-  };
-  imports.wbg.__wbg_getTimezoneOffset_1e3ddc1382e7c8b0 = function (arg0) {
-    const ret = arg0.getTimezoneOffset();
-    return ret;
-  };
   imports.wbg.__wbg_log_6c7b5f4f00b8ce3f = function (arg0) {
     console.log(arg0);
-  };
-  imports.wbg.__wbg_new0_b0a0a38c201e6df5 = function () {
-    const ret = new Date();
-    return ret;
-  };
-  imports.wbg.__wbg_new_5a2ae4557f92b50e = function (arg0) {
-    const ret = new Date(arg0);
-    return ret;
   };
   imports.wbg.__wbg_vector3_new = function (arg0) {
     const ret = Vector3$1.__wrap(arg0);
@@ -1688,11 +1672,6 @@ function __wbg_get_imports() {
   imports.wbg.__wbindgen_cast_2241b6af4c4b2941 = function (arg0, arg1) {
     // Cast intrinsic for `Ref(String) -> Externref`.
     const ret = getStringFromWasm0(arg0, arg1);
-    return ret;
-  };
-  imports.wbg.__wbindgen_cast_d6cd19b81560fd6e = function (arg0) {
-    // Cast intrinsic for `F64 -> Externref`.
-    const ret = arg0;
     return ret;
   };
   imports.wbg.__wbindgen_init_externref_table = function () {
@@ -12834,10 +12813,10 @@ class Rectangle extends Line$1 {
     }
 }
 
-var _Polygon_outlineMesh, _Polygon_color;
+var _Polygon_outlineMesh;
 class Polygon extends Mesh {
     set color(color) {
-        __classPrivateFieldSet(this, _Polygon_color, color, "f");
+        this.options.color = color;
         if (this.material instanceof MeshStandardMaterial) {
             this.material.color.set(color);
         }
@@ -12845,23 +12824,21 @@ class Polygon extends Mesh {
     // TODO: Make Options Optional
     // constructor(vertices?: Vector3[]) // If no vertices are provided, it will be an empty polygon
     constructor(options) {
+        var _a;
         super();
-        this.options = { vertices: [] };
+        this.options = { vertices: [], color: 0x00ff00 };
         _Polygon_outlineMesh.set(this, null);
-        _Polygon_color.set(this, 0x00ff00);
         this.transformationMatrix = new Matrix4();
         // private _placement: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
         // private _yaw: number = 0;
         // Store local center offset to align outlines
         // TODO: Can this be moved to Engine? It can increase performance | Needs to be used in other shapes too
         this._geometryCenterOffset = new Vector3();
-        this.ogid = getUUID();
-        if (options) {
-            this.options = options;
-        }
+        this.ogid = (_a = options === null || options === void 0 ? void 0 : options.ogid) !== null && _a !== void 0 ? _a : getUUID();
         this.polygon = new OGPolygon(this.ogid);
-        this.setConfig();
-        this.generateGeometry();
+        this.options = Object.assign(Object.assign({}, this.options), options);
+        this.options.ogid = this.ogid;
+        this.setConfig(this.options);
         // TODO: THIS MIGHT HELP WITH SHARING THE POSITION with KERNEL when something is changed
         // const originalSet = this.position.set.bind(this.position);
         // this.position.set = (x: number, y: number, z: number) => {
@@ -12881,10 +12858,12 @@ class Polygon extends Mesh {
             throw new Error("Options are not defined for Polygon");
         }
     }
-    setConfig() {
+    setConfig(options) {
         this.validateOptions();
-        const { vertices } = this.options;
+        const { vertices, color } = options;
         this.polygon.set_config(vertices);
+        this.options.color = color;
+        this.generateGeometry();
     }
     // /**
     //  * Sets the placement of the polygon in 3D space.
@@ -12934,7 +12913,17 @@ class Polygon extends Mesh {
     // get yaw() {
     //   return this._yaw;
     // }
+    cleanGeometry() {
+        this.geometry.dispose();
+        if (Array.isArray(this.material)) {
+            this.material.forEach(mat => mat.dispose());
+        }
+        else {
+            this.material.dispose();
+        }
+    }
     generateGeometry() {
+        this.cleanGeometry();
         // this.updateMatrix();
         // this.transformationMatrix.copy(this.matrix);
         // console.log("Transformation matrix set for polygon:", this.transformationMatrix.elements);
@@ -12952,10 +12941,10 @@ class Polygon extends Mesh {
         }
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(bufferData, 3));
-        const material = new MeshStandardMaterial({
-            color: __classPrivateFieldGet(this, _Polygon_color, "f"),
-            transparent: true,
-            opacity: 0.6,
+        const material = new MeshBasicMaterial({
+            color: this.options.color,
+            // transparent: true,
+            // opacity: 1,
             // TODO: Enabling Double Side untill we have proper face normals from triangulation
             side: DoubleSide,
         });
@@ -13160,7 +13149,7 @@ class Polygon extends Mesh {
         // this.layerBackVertices = [];
     }
 }
-_Polygon_outlineMesh = new WeakMap(), _Polygon_color = new WeakMap();
+_Polygon_outlineMesh = new WeakMap();
 
 var _Cylinder_outlineMesh;
 class Cylinder extends Mesh {
@@ -13310,8 +13299,9 @@ class Cuboid extends Mesh {
     }
     setConfig(options) {
         this.validateOptions();
-        const { width, height, depth, center } = options;
+        const { width, height, depth, center, color } = options;
         this.cuboid.set_config(center.clone(), width, height, depth);
+        this.options.color = color;
         this.generateGeometry();
     }
     cleanGeometry() {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenGeometry | Polygon</title>
+  <title>OpenGeometry | Sphere</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -18,20 +18,22 @@
   <script type="module">
     import {
       OpenGeometry,
-      Polygon,
-      Vector3,
-      SpotLabel
+      Sphere,
+      Vector3
     } from './../../../core/';
     import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
 
+    import Stats from 'three/examples/jsm/libs/stats.module.js';
     import * as dat from 'three/examples/jsm/libs/lil-gui.module.min';
-
+  
     let scene, camera, renderer;
     let openGeometry;
+    let stats = new Stats();
 
-    let ogPoly;
+    let ogSphere;
+    let helper;
 
     async function init(){
       const app = document.getElementById('app');
@@ -49,7 +51,7 @@
       });
 
       // grid
-      const gridHelper = new THREE.GridHelper(200, 200);
+      // const gridHelper = new THREE.GridHelper(200, 200);
       // scene.add(gridHelper);
 
       scene.background = new THREE.Color(0xf0f0f0);
@@ -84,38 +86,38 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      // Is Anticlockwise when looking from Y+ (Top View)
-      const vertices = [
-        new Vector3(1, 0, -1),
-        new Vector3(1, 0, 7),
-        new Vector3(9, 0, 6),
-        new Vector3(10, 0, 3),
-        new Vector3(9, 0, 1),
-      ];
+      const currentTime = performance.now();
+      ogSphere = new Sphere({
+        radius: 5,
+        widthSegments: 32,
+        heightSegments: 32,
+        center: new Vector3(0, 0, 0),
+        color: 0x00ff00
+      });
+      scene.add(ogSphere);
+      console.log('Sphere created with BREP Support', performance.now() - currentTime, 'ms');
 
-      ogPoly = new Polygon({ vertices: vertices });
-      console.log(`Polygon with OGID: ${ogPoly.ogid}`);
-      scene.add(ogPoly);
-      
-      ogPoly.outline = true;      
-      console.log(JSON.parse(ogPoly.getBrepData()));
-
-      const helper = new VertexNormalsHelper( ogPoly, 1, 0xff0000 );
+      ogSphere.outline = true;
+      helper = new VertexNormalsHelper( ogSphere, 1, 0xff0000 );
       scene.add(helper);
 
-      // OpenGeometry Polygon with Custom Config
-      const ogPolyNoVertices = new Polygon({
-        ogid: 'custom-polygon-001',
-        vertices: [
-          new Vector3(-10, 0, -1),
-          new Vector3(-10, 0, 10),
-          new Vector3(0, 0, 10),
-          new Vector3(0, 0, -1),
-        ],
-        color: 0xffffff,
+      console.log(ogSphere.getBrep());
+
+      // Setup dat.GUI
+      const gui = new dat.GUI();
+      const sphereParams = {
+        radius: 5,
+        color: 0x00ff00
+      };
+
+      gui.add(sphereParams, 'radius', 0.1, 10).onChange((value) => {
+        ogSphere.radius = value;
+        helper.update();
       });
-      scene.add(ogPolyNoVertices);
-      console.log(`Custom Polygon with OGID: ${ogPolyNoVertices.ogid} created`);
+
+      gui.addColor(sphereParams, 'color').onChange((value) => {
+        ogSphere.color = value;
+      });
 
       animate();
     }
@@ -123,23 +125,11 @@
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
+      stats.update();
     }
 
     init();
-
-    // const gui = new dat.GUI();
-    // const control = {
-    //   rotate: 0,
-    //   yaw: 0
-    // }
-
-    // gui.add(control, 'rotate', 0, Math.PI * 2).onChange((value) => {
-    //   ogPoly.rotation.y = value;
-    // });
-
-    // gui.add(control, 'yaw', 0, 180).onChange((value) => {
-    //   ogPoly.yaw = value;
-    // });
+    document.body.appendChild(stats.dom);
   </script>
 </body>
 </html>

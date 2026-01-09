@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import { OGPolygon, Vector3 } from "../../../opengeometry/pkg/opengeometry";
 interface IPolygonOptions {
+    ogid?: string;
     vertices: Vector3[];
+    color: number;
 }
 export declare class Polygon extends THREE.Mesh {
     #private;
@@ -13,7 +15,8 @@ export declare class Polygon extends THREE.Mesh {
     private _geometryCenterOffset;
     constructor(options?: IPolygonOptions);
     validateOptions(): void;
-    setConfig(): void;
+    setConfig(options: IPolygonOptions): void;
+    cleanGeometry(): void;
     generateGeometry(): void;
     addVertices(vertices: Vector3[]): void;
     saveTransformationToBREP(): void;
