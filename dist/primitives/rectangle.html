@@ -29,6 +29,7 @@
     var pagePath = "/primitives/rectangle.html";
     var pageName = pagePath.split("/").pop().replace(/\.html$/, "") || "index";
     var pageSection = pagePath.split("/").length > 2 ? pagePath.split("/")[1] : "catalog";
+    var distinctId = null;
     var pageProperties = {
       example_name: pageName,
       example_path: pagePath,
@@ -36,13 +37,69 @@
       page_title: document.title,
     };
 
+    if (typeof mixpanel !== "undefined" && typeof mixpanel.get_distinct_id === "function") {
+      distinctId = mixpanel.get_distinct_id();
+    }
+
+    if (distinctId && typeof mixpanel !== "undefined" && typeof mixpanel.identify === "function") {
+      mixpanel.identify(distinctId);
+    }
+
     if (typeof mixpanel !== "undefined" && typeof mixpanel.register === "function") {
       mixpanel.register(pageProperties);
+    }
+
+    if (
+      distinctId
+      && typeof mixpanel !== "undefined"
+      && typeof mixpanel.people === "object"
+      && typeof mixpanel.people.set_once === "function"
+    ) {
+      mixpanel.people.set_once({
+        first_example_name: pageName,
+        first_example_path: pagePath,
+        first_example_section: pageSection,
+        first_seen_page_title: document.title,
+      });
     }
 
     if (typeof mixpanel !== "undefined" && typeof mixpanel.track === "function") {
       mixpanel.track("Example Loaded", pageProperties);
     }
+
+    function normalizeLabel(value) {
+      if (!value) {
+        return null;
+      }
+
+      var normalized = value.replace(/\s+/g, " ").trim();
+      if (!normalized) {
+        return null;
+      }
+
+      return normalized.length > 80 ? normalized.slice(0, 80) + "..." : normalized;
+    }
+
+    document.addEventListener("click", function (event) {
+      if (typeof mixpanel === "undefined" || typeof mixpanel.track !== "function") {
+        return;
+      }
+
+      var target = event.target instanceof Element ? event.target.closest("button, a") : null;
+      if (!target) {
+        return;
+      }
+
+      mixpanel.track("Example Button Clicked", {
+        example_name: pageName,
+        example_path: pagePath,
+        example_section: pageSection,
+        button_label: normalizeLabel(target.textContent),
+        button_id: target.id || null,
+        button_href: target.tagName === "A" ? target.getAttribute("href") || null : null,
+        button_role: target.getAttribute("role") || null,
+      });
+    }, true);
   })();
 </script>
   </head>

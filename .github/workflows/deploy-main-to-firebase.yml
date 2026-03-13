@@ -16,15 +16,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # Or whatever version you use
-
-      # - name: Install dependencies
-      #   run: npm install
-
-      # - name: Build project
-      #   run: npm run build
+          node-version: '22'
 
       - name: Deploy to Firebase
-        run: npx firebase deploy --only hosting
+        run: npx firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
